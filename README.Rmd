@@ -62,16 +62,24 @@ agdb_60s
 
 The Sadeh sleep scoring algorithm is primarily used for younger adolescents as the supporting research was performed on children and young adults. It requires 60s epochs and uses an 11-minute window that includes the five previous and five future epochs. The `apply_sadeh` function in the `actigraph.sleepr` package implements the algorithm as described in the ActiGraph user manual.
 
-```{r , echo = TRUE}
+```{r }
 agdb_sadeh <- apply_sadeh(agdb_60s)
+agdb_sadeh
 ```
 
 ### Apply the Cole-Kripke algorithm
 
 The Cole-Kripke sleep scoring algorithm is primarily used for adult populations as the supporting research was performed on subjects ranging from 35 to 65 years of age. Like the Sadeh algorithm, it requires 60s epochs and uses a 7-minute window that includes the four previous and two future epochs. The `apply_cole` function in the `actigraph.sleepr` package implements the algorithm as described in the ActiGraph user manual.
 
-```{r , echo = TRUE}
+```{r }
 agdb_colekripke <- apply_cole_kripke(agdb_60s)
+agdb_colekripke
+```
+
+What is the agreement between the Sadeh and Cole-Kripke asleep/awake algorithms, on the example dataset?
+
+```{r }
+table(agdb_sadeh$state, agdb_colekripke$state)
 ```
 
 ### Apply the Tudor-Locke algorithm

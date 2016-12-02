@@ -1,12 +1,13 @@
 
 library("actigraph.sleepr")
+library("lubridate")
+library("dplyr")
 library("readr")
 
 context("General tests")
 if (requireNamespace("lintr", quietly = TRUE)) {
   context("lints")
   test_that("Package Style", {
-    skip_on_appveyor()
     lintr::expect_lint_free()
   })
 }
@@ -25,13 +26,17 @@ test_that("read_agd errors if file doesn't exist", {
 })
 
 context("Manipulate agdb data frame")
-test_that("can mutate agdb to add new columns", {
+test_that("all dplyr verbs work on a tbl_agd", {
   file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
                       package = "actigraph.sleepr")
   agdb <- read_agd(file)
   agdb <- agdb %>%
     mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2))
   expect_true(exists("magnitude", where = agdb))
+  x <- agdb %>%
+    group_by(day = day(timestamp)) %>%
+    summarise_each(funs(sum), starts_with("axis"))
+  expect_named(x, c("day", "axis1", "axis2", "axis3"))
 })
 
 context("Collapse to 60s epochs")
