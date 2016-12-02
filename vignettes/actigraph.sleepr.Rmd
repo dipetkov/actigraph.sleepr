@@ -15,7 +15,7 @@ inst <- suppressMessages(lapply(pckg, library, character.only = TRUE))
 theme_set(theme_light())
 ```
 
-The `actigraph.sleepr` package implements functions to read AGD files and to apply three standard sleep algorithms: Sadeh, Cole-Kripke and Tudor-Locke. For illustration, GT3X+ / ActiSleep+ sample data is taken from [ActiGraph's online documentation](https://actigraph.desk.com).
+The `actigraph.sleepr` package implements functions to read AGD files and to apply three standard sleep algorithms: Sadeh, Cole-Kripke and Tudor-Locke. GT3X+ / ActiSleep+ sample data for illustration is taken from [ActiGraph's online documentation](https://actigraph.desk.com).
 
 ```{r }
 file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
@@ -127,7 +127,7 @@ LG
 
 The time series of activity counts is padded with zeros as necessary, at the beginning and at the end, to compute the three functions AVG, SD, NATS within a rolling window. Finally, the state is awake (W) if the sleep index SI is greater than -4; otherwise the state is asleep (S).
 
-```{r fig.width = 7, fig.height = 4, fig.cap = "For each one-minute epoch, the Sadeh algorithm infers whether the subject is sleeping or not. A blue dot means awake (W), a red dot means asleep (S). The algorithm thresholds the raw activity counts at 300."}
+```{r fig.width = 7, fig.height = 4, fig.cap = "The Sadeh algorithm infers whether the subject is sleeping or not, for each one-minute epoch. A blue dot means awake (W), a red dot means asleep (S). The algorithm thresholds the raw activity counts at 300."}
 ggplot(agdb_sadeh, aes(timestamp, count)) +
   geom_line() +
   geom_point(aes(timestamp, 300 * recode(state, S = 0, W = 1), 
@@ -162,7 +162,7 @@ Epoch_next(i)
 
 The time series of activity counts is padded with zeros as necessary, at the beginning and at the end. Finally, the state is awake (W) if the sleep index SI is less than 1; otherwise the state is asleep (S).
 
-```{r fig.width = 7, fig.height = 4, fig.cap = "For each one-minute epoch, the Cole-Kripke algorithm infers whether the subject is sleeping or not. A blue dot means awake (W), a red dot means asleep (S)."}
+```{r fig.width = 7, fig.height = 4, fig.cap = "The Cole-Kripke algorithm infers whether the subject is sleeping or not, for each one-minute epoch. A blue dot means awake (W), a red dot means asleep (S)."}
 ggplot(agdb_colekripke, aes(timestamp, count)) +
   geom_line() +
   geom_point(aes(timestamp, 100 * recode(state, S = 0, W = 1), 
@@ -179,7 +179,7 @@ table(agdb_sadeh$state, agdb_colekripke$state)
 
 ### Apply the Tudor-Locke algorithm
 
-Once each one-minute epoch is labeled as asleep (S) or awake (W), we can use the Tudor-Locke algorithm to detect periods of time in bed and, for each period, to compute sleep quality metrics such as total minutes in bed, total sleep time, number and average length of awakenings, movement and fragmentation index.
+Once each one-minute epoch is labeled as asleep (S) or awake (W), we can use the Tudor-Locke algorithm to detect periods of time in bed and, for each period, to compute sleep quality metrics such as total minutes in bed, total sleep time, number and average length of awakenings, movement and fragmentation indices
 
 The Tudor-Locke algorithm has several parameters:
 
@@ -247,7 +247,8 @@ fragmentation_index
 sleep_fragmentation_index
  : Sleep fragmentation index – The sum of the movement and fragmentation indices.
 
-```{r fig.width = 7, fig.height = 4, fig.cap = "Given the asleep/awake state of each epoch, the Tudor-Locke algorithm detects sleep periods. These are highlighted as gray rectangles."}
+```{r fig.width = 7, fig.height = 4, fig.cap = "The Tudor-Locke algorithm detects sleep periods from asleep/awake status indicators per epoch. These are highlighted as gray rectangles."}
+# Construct polygons to represent each sleep period visually
 ymax <- max(agdb_60s$axis1)
 ymin <- 0
 p <- nrow(agdb_sleep)
