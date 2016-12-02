@@ -16,6 +16,7 @@ RoxygenNote: 5.0.1
 Depends: R (>= 3.2)
 Imports:
   RcppRoll,
+  RSQLite,
   dplyr,
   flux,
   lazyeval,

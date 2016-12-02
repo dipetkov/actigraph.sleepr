@@ -70,6 +70,8 @@ test_that("apply_tudor_locke return same result as ActiLife 6", {
 # values for the sleep quality metrics (up to rounding errors)
 test_that("apply_tudor_locke to a batch of 200 agd files", {
   skip_on_cran()
+  skip_on_travis()
+  skip_on_appveyor()
   agd_path <- path.expand(file.path("~",
                                     "Documents", "GitHub", "PG-Sensors",
                                     "BabySleepStudy", "data", "raw"))
