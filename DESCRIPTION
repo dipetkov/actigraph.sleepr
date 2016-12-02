@@ -18,10 +18,8 @@ Imports:
   RcppRoll,
   RSQLite,
   dplyr,
-  flux,
   lazyeval,
   lubridate,
-  signal,
   stats,
   tidyr,
   zoo
