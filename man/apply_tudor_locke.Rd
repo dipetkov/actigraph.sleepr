@@ -69,8 +69,8 @@ library("dplyr")
 # This grouping is chosen not because it is interesting but to split
 # one longer sleep period in two, for illustration of how grouping works
 agdb_60s <- agdb_60s \%>\%
-  mutate(hour = hour(timestamp)) \%>\%
-  group_by(hour < 6)
+  mutate(hour_lt6 = hour(timestamp) < 6) \%>\%
+  group_by(hour_lt6)
 agdb_60s_scored <- apply_sadeh(agdb_60s)
 agdb_60s_sleep <- apply_tudor_locke(agdb_60s_scored, min_sleep_period = 60)
 agdb_60s_sleep
