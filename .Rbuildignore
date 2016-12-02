@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 ^README\.Rmd$
 ^appveyor\.yml$
+^\.travis\.yml$
