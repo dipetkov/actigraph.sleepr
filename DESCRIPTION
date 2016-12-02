@@ -13,22 +13,22 @@ License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 5.0.1
-Depends: R (>= 3.3)
+Depends: R (>= 3.2)
 Imports:
-  RcppRoll (>= 0.2.3),
-  dplyr (>= 0.5.0.9),
-  flux (>= 0.3.0),
-  lazyeval (>= 0.2.0.9),
-  lubridate (>= 1.6.0),
-  signal (>= 0.7.6),
-  stats (>= 3.3.2),
-  tidyr (>= 0.6.0.9),
-  zoo (>= 1.7.13)
+  RcppRoll,
+  dplyr,
+  flux,
+  lazyeval,
+  lubridate,
+  signal,
+  stats,
+  tidyr,
+  zoo
 Suggests:
-  ggplot2 (>= 2.2.0),
-  knitr (>= 1.15.1),
-  readr (>= 1.0.0),
-  rmarkdown (>= 1.2),
-  testthat (>= 1.0.2.9),
-  tools (>= 3.3.2)
+  ggplot2,
+  knitr,
+  readr,
+  rmarkdown,
+  testthat,
+  tools
 VignetteBuilder: knitr
