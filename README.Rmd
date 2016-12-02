@@ -1,0 +1,80 @@
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+actigraph.sleepr: Sleep detection from ActiGraph data
+
+---------------
+
+```{r , echo = FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
+                      collapse = TRUE, comment = "#>")
+```
+
+The `actigraph.sleepr` package implements functions to read AGD files and to apply three standard sleep algorithms: Sadeh, Cole-Kripke and Tudor-Locke.
+
+### Installation
+
+```{r , eval = FALSE}
+library("devtools")
+install_github("dipetkov/actigraph.sleepr")
+```
+
+### Read AGD file(s)
+
+An AGD file is an SQLite database file exported by an ActiGraph device. See the [ActiLife 6 User manual](http://actigraphcorp.com/support/manuals/actilife-6-manual/). For illustration let's use GT3X+ sample data taken from [ActiGraph's online documentation](https://actigraph.desk.com).
+
+```{r }
+library("actigraph.sleepr")
+file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
+                        package = "actigraph.sleepr")
+agdb_10s <- read_agd(file_10s)
+```
+
+The `read_agd` function loads the raw activity measurements into a convenient format: a `dplyr` data frame (a tibble) of timestamped activity counts, whose attributes are the device settings.
+
+```{r }
+str(agdb_10s)
+```
+
+Since the data is stored in a tibble, we can use the `dplyr` verbs to manipulate the data. For example, let's compute the vector magnitude from the axis variables. The formula for vector magnitude (norm) is straightforward. Let $x$, $y$ and $z$ be the three axis measurements, `axis1`, `axis2` and `axis3`, respectively. Then the magnitude of the movement vector is $$\sqrt{x^2 + y^2 + z^2}$$.
+
+```{r }
+library("dplyr")
+agdb_10s %>%
+  rename(y = axis1, x = axis2, z = axis3) %>%
+  mutate(magnitude = sqrt(x^2 + y^2 + z^2))
+```
+
+### Reintegrate from 10s to 60s epochs
+
+The standard algorithms for converting activity measurements into asleep/awake indicators -- Sadeh and Cole-Kripke -- were developed for 60s epochs. If the data is in smaller epochs, we need to collapse or aggregate the epochs. The example data is in 10s epochs. So we aggregate the epochs from 10 sec to 60 sec by adding the counts for the six consecutive 10s epochs that fall in the same 60s epoch.
+
+```{r }
+# Collapse epochs from 10 sec to 60 sec by summing
+agdb_60s <- collapse_epochs(agdb_10s, 60)
+agdb_60s
+```
+
+### Apply the Sadeh algorithm
+
+The Sadeh sleep scoring algorithm is primarily used for younger adolescents as the supporting research was performed on children and young adults. It requires 60s epochs and uses an 11-minute window that includes the five previous and five future epochs. The `apply_sadeh` function in the `actigraph.sleepr` package implements the algorithm as described in the ActiGraph user manual.
+
+```{r , echo = TRUE}
+agdb_sadeh <- apply_sadeh(agdb_60s)
+```
+
+### Apply the Cole-Kripke algorithm
+
+The Cole-Kripke sleep scoring algorithm is primarily used for adult populations as the supporting research was performed on subjects ranging from 35 to 65 years of age. Like the Sadeh algorithm, it requires 60s epochs and uses a 7-minute window that includes the four previous and two future epochs. The `apply_cole` function in the `actigraph.sleepr` package implements the algorithm as described in the ActiGraph user manual.
+
+```{r , echo = TRUE}
+agdb_colekripke <- apply_cole_kripke(agdb_60s)
+```
+
+### Apply the Tudor-Locke algorithm
+
+Once each one-minute epoch is labeled as asleep (S) or awake (W), we can use the Tudor-Locke algorithm to detect periods of time in bed and, for each period, to compute sleep quality metrics such as total minutes in bed, total sleep time, number and average length of awakenings, movement and fragmentation index.
+
+```{r }
+agdb_sleep <- apply_tudor_locke(agdb_sadeh)
+agdb_sleep
+```
