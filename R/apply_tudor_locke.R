@@ -40,17 +40,18 @@
 #' file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
 #'                     package = "actigraph.sleepr")
 #'
+#' library("lubridate")
+#' library("dplyr")
+#'
 #' agdb_10s <- read_agd(file)
-#' agdb_60s <- collapse_epochs(agdb_10s, 60)
+#' agdb_60s <- collapse_epochs(agdb_10s, 60) %>%
+#'   filter(day(timestamp) == 28)
 #'
 #' # Detect sleep periods using Sadeh as the sleep/awake algorithm
 #' # and Tudor-Locke as the sleep period algorithm
 #' agdb_60s_scored <- apply_sadeh(agdb_60s)
 #' agdb_60s_sleep <- apply_tudor_locke(agdb_60s_scored, min_sleep_period = 60)
 #' agdb_60s_sleep
-#'
-#' library("lubridate")
-#' library("dplyr")
 #'
 #' # Group and summarize by an extra varible: hour < 6 or not
 #' # This grouping is chosen not because it is interesting but to split
@@ -70,32 +71,38 @@ apply_tudor_locke <- function(agdb,
                               max_sleep_period = 1440,
                               min_nonzero_epochs = 0) {
 
-  # TODO: What if there are NAs?
-  # Stopping if any NAs is too extreme?
-  # First na.trim(data) then check for NAs?
-
-  # TODO: Also need to check that no epochs are missings
-  # i.e., epochs are evenly spaced
+  if (attr(agdb, "epochlength") != 60)
+    stop("Epochs should have length 60s to apply Tudor-Locke. ",
+         "Epochs can be aggregated with `collapse_epochs`.")
+  if (missing_epochs(agdb))
+    stop("Missing timestamps. ",
+         "Epochs should be evenly spaced from ",
+         "first(timestamp) to last(timestamp).")
+  if (!exists("state", agdb))
+    stop("Missing asleep/awake (S/W) indicator column. ",
+         "S/W states can be inferred with `apply_sadeh` ",
+         "or `apply_cole_kripke.`")
+  if (anyNA(agdb$state))
+    stop("Missing asleep/awake values.")
 
   # TODO: Some parameter combinations might not make sense.
   # For example, I expect that:
-  # * `min_nonzero_epochs` < `min_sleep_period`
-  # * `n_bedtime_start` + `n_wake_time_end` < `min_sleep_period`
-
-  epoch_len <- attr(agdb, "epochlength")
-  stopifnot(epoch_len == 60)
-
-  # Check that asleep/awake states were called, with the Sadeh,
-  # the Cole-Kripke or a custom algorithm.
-  stopifnot(exists("state", agdb))
+  # * min_nonzero_epochs < min_sleep_period
+  # * n_bedtime_start + n_wake_time_end < min_sleep_period
 
   sleep <- agdb %>%
     do(apply_tudor_locke_(., n_bedtime_start, n_wake_time_end,
                           min_sleep_period, max_sleep_period,
                           min_nonzero_epochs))
 
-  # TODO: Let's add appropriate attributes, e.g.,
-  # the parameter settings
+  attr(sleep, "sleep_algorithm") <- attr(agdb, "sleep_algorithm")
+  attr(sleep, "period_algorithm") <- "Tudor-Locke"
+  attr(sleep, "n_bedtime_start") <- n_bedtime_start
+  attr(sleep, "n_wake_time_end") <- n_wake_time_end
+  attr(sleep, "min_sleep_period") <- min_sleep_period
+  attr(sleep, "max_sleep_period") <- max_sleep_period
+  attr(sleep, "min_nonzero_epochs") <- min_nonzero_epochs
+
   structure(sleep, class = c("tbl_sleep", "tbl_df", "tbl", "data.frame"))
 }
 
@@ -103,8 +110,6 @@ apply_tudor_locke_ <- function(data,
                                n_bedtime_start, n_wake_time_end,
                                min_sleep_period, max_sleep_period,
                                min_nonzero_epochs) {
-
-  stopifnot(!anyNA(data %>% select(timestamp, axis1)))
 
   # It seems that a sleep period must be followed by a sequence of n W's
   # where n = n_wake_time_end, *even at the end of the time series*.

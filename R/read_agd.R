@@ -25,7 +25,7 @@
 #' path_in <- system.file("extdata", package = "actigraph.sleepr")
 #' path_out <- path.expand("~")
 #' filenames <- list.files(path_in, pattern = ".agd", full.names = FALSE)
-#' basenames <- tools::file_path_sans_ext(filenames)
+#' basenames <- file_path_sans_ext(filenames)
 #'
 #' for (basename in basenames) {
 #'   file_in <- file.path(path_in, paste0(basename, ".agd"))

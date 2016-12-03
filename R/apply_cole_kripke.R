@@ -40,23 +40,22 @@
 
 apply_cole_kripke <- function(agdb) {
 
-  # TODO: What if there are NAs?
-  # Stopping if any NAs is too extreme?
-  # First na.trim(data) then check for NAs?
+  if (attr(agdb, "epochlength") != 60)
+    stop("Epochs should have length 60s to apply Cole-Kripke. ",
+         "Epochs can be aggregated with `collapse_epochs`.")
+  if (missing_epochs(agdb))
+    stop("Missing timestamps. ",
+         "Epochs should be evenly spaced from ",
+         "first(timestamp) to last(timestamp).")
+  if (anyNA(agdb$axis1))
+    stop("Missing axis1 counts. ",
+         "These can be imputed with `impute_na_epochs`.")
 
-  # TODO: Also need to check that no epochs are missings
-  # i.e., epochs are evenly spaced
-
-  epoch_len <- attr(agdb, "epochlength")
-  stopifnot(epoch_len == 60)
-
-  agdb %>%
-    do(apply_cole_kripke_(.))
+  attr(agdb, "sleep_algorithm") <- "Cole-Kripke"
+  agdb %>% do(apply_cole_kripke_(.))
 }
 
 apply_cole_kripke_ <- function(data) {
-
-  stopifnot(!anyNA(data %>% select(timestamp, axis1)))
 
   data %>%
     mutate(count = pmin(axis1 / 100, 300),

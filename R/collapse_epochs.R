@@ -21,24 +21,29 @@
 collapse_epochs <- function(agdb, epoch_len_out,
                             use_incomplete = TRUE) {
 
+  epoch_len_in <- attr(agdb, "epochlength")
+
+  if (epoch_len_out != 60)
+    stop("Use `collapse_epochs` to aggregate to 60s epochs.")
+  if (epoch_len_out %% epoch_len_in)
+    stop("Output epoch length is not an exact multiple ",
+         "of input epoch length.")
+
+  collapse_factor <- epoch_len_out / epoch_len_in
+  if (collapse_factor == 1) return(agdb)
+
+  if (missing_epochs(agdb))
+    stop("Missing timestamps. ",
+         "Epochs should be evenly spaced from ",
+         "first(timestamp) to last(timestamp).")
+  if (anyNA(agdb$axis1))
+    stop("Missing axis1 counts. ",
+         "These can be imputed with `impute_na_epochs`.")
+
   # TODO: a more general approach to collapsing
   # might use the findInterval function
   # though care must be taken with "incomplete"
   # epochs at the start/end of the time series
-
-  # TODO: Decide what to do with incomplete
-  # epochs -- set to NA or trim.
-
-  # TODO: Decide what to do when there is no
-  # grouping variable. Right now I add `group`
-  # if doesn't exist already. But it is still
-  # there at the end which might be confusing.
-
-  epoch_len_in <- attr(agdb, "epochlength")
-  stopifnot(epoch_len_out == 60)
-  stopifnot(epoch_len_out %% epoch_len_in == 0)
-  collapse_factor <- epoch_len_out / epoch_len_in
-  if (collapse_factor == 1) return(agdb)
 
   agdb <- agdb %>%
     do(collapse_epochs_(., collapse_factor, use_incomplete))
@@ -60,7 +65,7 @@ collapse_epochs_ <- function(data, collapse_factor, use_incomplete) {
   }
 
   # I've excluded lux because to aggregate lux correctly,
-  # it's necessary to take floor(mean(lux)) instead of sum (lux)
+  # it's necessary to take floor(mean(lux)) instead of sum(lux)
   vars <- intersect(colnames(data),
                     c("axis1", "axis2", "axis3", "steps",
                       "inclineoff", "inclinestanding",

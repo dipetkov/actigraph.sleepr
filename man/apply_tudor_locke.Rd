@@ -53,17 +53,18 @@ For each sleep period, the algorithm calculates several measures of sleep qualit
 file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
                     package = "actigraph.sleepr")
 
+library("lubridate")
+library("dplyr")
+
 agdb_10s <- read_agd(file)
-agdb_60s <- collapse_epochs(agdb_10s, 60)
+agdb_60s <- collapse_epochs(agdb_10s, 60) \%>\%
+  filter(day(timestamp) == 28)
 
 # Detect sleep periods using Sadeh as the sleep/awake algorithm
 # and Tudor-Locke as the sleep period algorithm
 agdb_60s_scored <- apply_sadeh(agdb_60s)
 agdb_60s_sleep <- apply_tudor_locke(agdb_60s_scored, min_sleep_period = 60)
 agdb_60s_sleep
-
-library("lubridate")
-library("dplyr")
 
 # Group and summarize by an extra varible: hour < 6 or not
 # This grouping is chosen not because it is interesting but to split
