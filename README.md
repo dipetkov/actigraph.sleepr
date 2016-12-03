@@ -1,24 +1,15 @@
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sleepr?branch=master&svg=true)](https://ci.appveyor.com/project/dipetkov/actigraph.sleepr)
-[![Travis-CI Build Status](https://travis-ci.org/dipetkov/actigraph.sleepr.svg?branch=master)](https://travis-ci.org/dipetkov/actigraph.sleepr)
-[![codecov](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/dipetkov/actigraph.sleepr)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sleepr?branch=master&svg=true)](https://ci.appveyor.com/project/dipetkov/actigraph.sleepr) [![Travis-CI Build Status](https://travis-ci.org/dipetkov/actigraph.sleepr.svg?branch=master)](https://travis-ci.org/dipetkov/actigraph.sleepr) [![codecov](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/dipetkov/actigraph.sleepr)
 
-[![minimal R version](https://img.shields.io/badge/R%3E%3D-3.2.4-6666ff.svg)](https://cran.r-project.org/)
-[![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2016--12--02-yellowgreen.svg)](/commits/master)
+[![minimal R version](https://img.shields.io/badge/R%3E%3D-3.2.4-6666ff.svg)](https://cran.r-project.org/) [![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2016--12--03-yellowgreen.svg)](/commits/master)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
 ### actigraph.sleepr: Sleep detection from ActiGraph data using standard algorithms
-
-
 
 The `actigraph.sleepr` package implements functions to read AGD files and to apply three standard sleep algorithms: Sadeh, Cole-Kripke and Tudor-Locke.
 
 ### Installation
 
-
-```r
+``` r
 library("devtools")
 install_github("dipetkov/actigraph.sleepr")
 ```
@@ -27,8 +18,7 @@ install_github("dipetkov/actigraph.sleepr")
 
 An AGD file is an SQLite database file exported by an ActiGraph device. See the [ActiLife 6 User manual](http://actigraphcorp.com/support/manuals/actilife-6-manual/). For illustration let's use GT3X+ sample data taken from [ActiGraph's online documentation](https://actigraph.desk.com).
 
-
-```r
+``` r
 library("actigraph.sleepr")
 file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
                         package = "actigraph.sleepr")
@@ -37,10 +27,9 @@ agdb_10s <- read_agd(file_10s)
 
 The `read_agd` function loads the raw activity measurements into a convenient format: a `dplyr` data frame (a tibble) of timestamped activity counts, whose attributes are the device settings.
 
-
-```r
+``` r
 str(agdb_10s)
-#> Classes 'tbl_agd', 'tbl_df', 'tbl' and 'data.frame':	8999 obs. of  10 variables:
+#> Classes 'tbl_agd', 'tbl_df', 'tbl' and 'data.frame': 8999 obs. of  10 variables:
 #>  $ timestamp      : POSIXct, format: "2012-06-27 10:54:00" "2012-06-27 10:54:10" ...
 #>  $ axis1          : int  377 465 505 73 45 0 0 207 0 0 ...
 #>  $ axis2          : int  397 816 444 91 43 0 0 218 0 0 ...
@@ -86,17 +75,18 @@ str(agdb_10s)
 #>  - attr(*, "unexpectedResets")= chr "0"
 ```
 
-Since the data is stored in a tibble, we can use the `dplyr` verbs to manipulate the data. For example, let's compute the vector magnitude from the axis variables. The formula for vector magnitude (norm) is straightforward. Let $x$, $y$ and $z$ be the three axis measurements, `axis1`, `axis2` and `axis3`, respectively. Then the magnitude of the movement vector is $$\sqrt{x^2 + y^2 + z^2}$$.
+Since the data is stored in a tibble, we can use the `dplyr` verbs to manipulate the data. For example, let's compute the vector magnitude from the axis variables. The formula for vector magnitude (norm) is straightforward. Let *x*, *y* and *z* be the three axis measurements, `axis1`, `axis2` and `axis3`, respectively. Then the magnitude of the movement vector is
+$$\\sqrt{x^2 + y^2 + z^2}$$
+.
 
-
-```r
+``` r
 library("dplyr")
 agdb_10s %>%
   rename(y = axis1, x = axis2, z = axis3) %>%
   mutate(magnitude = sqrt(x^2 + y^2 + z^2))
 #> # A tibble: 8,999 × 11
 #>              timestamp     y     x     z steps   lux inclineoff
-#> *               <dttm> <int> <int> <int> <int> <int>      <int>
+#>                 <dttm> <int> <int> <int> <int> <int>      <int>
 #> 1  2012-06-27 10:54:00   377   397   413     2     0          0
 #> 2  2012-06-27 10:54:10   465   816  1225     4     0          0
 #> 3  2012-06-27 10:54:20   505   444   713     6     0          0
@@ -115,8 +105,7 @@ agdb_10s %>%
 
 The standard algorithms for converting activity measurements into asleep/awake indicators -- Sadeh and Cole-Kripke -- were developed for 60s epochs. If the data is in smaller epochs, we need to collapse or aggregate the epochs. The example data is in 10s epochs. So we aggregate the epochs from 10 sec to 60 sec by adding the counts for the six consecutive 10s epochs that fall in the same 60s epoch.
 
-
-```r
+``` r
 # Collapse epochs from 10 sec to 60 sec by summing
 agdb_60s <- collapse_epochs(agdb_10s, 60)
 agdb_60s
@@ -141,8 +130,7 @@ agdb_60s
 
 The Sadeh sleep scoring algorithm is primarily used for younger adolescents as the supporting research was performed on children and young adults. It requires 60s epochs and uses an 11-minute window that includes the five previous and five future epochs. The `apply_sadeh` function in the `actigraph.sleepr` package implements the algorithm as described in the ActiGraph user manual.
 
-
-```r
+``` r
 agdb_sadeh <- apply_sadeh(agdb_60s)
 agdb_sadeh
 #> # A tibble: 1,500 × 11
@@ -166,8 +154,7 @@ agdb_sadeh
 
 The Cole-Kripke sleep scoring algorithm is primarily used for adult populations as the supporting research was performed on subjects ranging from 35 to 65 years of age. Like the Sadeh algorithm, it requires 60s epochs and uses a 7-minute window that includes the four previous and two future epochs. The `apply_cole` function in the `actigraph.sleepr` package implements the algorithm as described in the ActiGraph user manual.
 
-
-```r
+``` r
 agdb_colekripke <- apply_cole_kripke(agdb_60s)
 agdb_colekripke
 #> # A tibble: 1,500 × 11
@@ -189,8 +176,7 @@ agdb_colekripke
 
 What is the agreement between the Sadeh and Cole-Kripke asleep/awake algorithms, on the example dataset?
 
-
-```r
+``` r
 table(agdb_sadeh$state, agdb_colekripke$state)
 #>    
 #>       S   W
@@ -202,8 +188,7 @@ table(agdb_sadeh$state, agdb_colekripke$state)
 
 Once each one-minute epoch is labeled as asleep (S) or awake (W), we can use the Tudor-Locke algorithm to detect periods of time in bed and, for each period, to compute sleep quality metrics such as total minutes in bed, total sleep time, number and average length of awakenings, movement and fragmentation index.
 
-
-```r
+``` r
 agdb_sleep <- apply_tudor_locke(agdb_sadeh)
 agdb_sleep
 #> # A tibble: 1 × 14
@@ -215,3 +200,11 @@ agdb_sleep
 #> #   awakenings <int>, ave_awakening <dbl>, movement_index <dbl>,
 #> #   fragmentation_index <dbl>, sleep_fragmentation_index <dbl>
 ```
+
+### References
+
+A Sadeh, KM Sharkey and MA Carskadon. Activity based sleep-wake identification: An empirical test of methodological issues. *Sleep*, 17(3):201–207, 1994.
+
+RJ Cole, DF Kripke, W Gruen, DJ Mullaney and JC Gillin. Automatic sleep/wake identification from wrist activity. *Sleep*, 15(5):461–469, 1992.
+
+C Tudor-Locke, TV Barreira, JM Schuna Jr, EF Mire and PT Katzmarzyk. Fully automated waist-worn accelerometer algorithm for detecting children's sleep-period time separate from 24-h physical activity or sedentary behaviors. *Applied Physiology*, Nutrition, and Metabolism, 39(1):53–57, 2014.

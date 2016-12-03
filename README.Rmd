@@ -99,3 +99,11 @@ Once each one-minute epoch is labeled as asleep (S) or awake (W), we can use the
 agdb_sleep <- apply_tudor_locke(agdb_sadeh)
 agdb_sleep
 ```
+
+### References
+
+A Sadeh, KM Sharkey and MA Carskadon. Activity based sleep-wake identification: An empirical test of methodological issues. *Sleep*, 17(3):201–207, 1994.
+
+RJ Cole, DF Kripke, W Gruen, DJ Mullaney and JC Gillin. Automatic sleep/wake identification from wrist activity. *Sleep*, 15(5):461–469, 1992.
+
+C Tudor-Locke, TV Barreira, JM Schuna Jr, EF Mire and PT Katzmarzyk. Fully automated waist-worn accelerometer algorithm for detecting children's sleep-period time separate from 24-h physical activity or sedentary behaviors. *Applied Physiology*, Nutrition, and Metabolism, 39(1):53–57, 2014.
