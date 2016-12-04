@@ -40,6 +40,7 @@
 
 apply_sadeh <- function(agdb) {
 
+  stopifnot(inherits(agdb, "tbl_agd"))
   if (attr(agdb, "epochlength") != 60)
     stop("Epochs should have length 60s to apply Sadeh. ",
          "Epochs can be aggregated with `collapse_epochs`.")

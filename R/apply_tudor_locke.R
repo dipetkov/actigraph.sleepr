@@ -71,6 +71,7 @@ apply_tudor_locke <- function(agdb,
                               max_sleep_period = 1440,
                               min_nonzero_epochs = 0) {
 
+  stopifnot(inherits(agdb, "tbl_agd"))
   if (attr(agdb, "epochlength") != 60)
     stop("Epochs should have length 60s to apply Tudor-Locke. ",
          "Epochs can be aggregated with `collapse_epochs`.")

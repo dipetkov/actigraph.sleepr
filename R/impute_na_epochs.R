@@ -17,6 +17,7 @@
 #' @export
 impute_na_epochs <- function(agdb, activity_var) {
 
+  stopifnot(inherits(agdb, "tbl_agd"))
   agdb <- agdb %>% do(impute_na_epochs_(., activity_var))
 }
 impute_na_epochs_ <- function(data, activity_var) {

@@ -75,9 +75,8 @@ test_that("apply_tudor_locke to a batch of 200 agd files", {
   agd_path <- path.expand(file.path("~",
                                     "Documents", "GitHub", "PG-Sensors",
                                     "BabySleepStudy", "data", "raw"))
-  rda_file <- system.file("extdata", "test-sleep-periods.rda",
-                          package = "actigraph.sleepr")
-  load(rda_file)
+  load(system.file("extdata", "test-sleep-periods.rda",
+                   package = "actigraph.sleepr"))
 
   # Sometimes I might want to do just a few tests....
   for (filebase in subject_n200$file[1:10]) {
@@ -122,4 +121,49 @@ test_that("apply_tudor_locke to a batch of 200 agd files", {
       }
     }
   }
+})
+test_that("apply_tudor_locke on a grouped tibble of 200 agd datasets", {
+  skip_on_cran()
+  skip_on_travis()
+  skip_on_appveyor()
+  agd_path <- path.expand(file.path("~",
+                                    "Documents", "GitHub", "PG-Sensors",
+                                    "BabySleepStudy", "data", "raw"))
+  load(system.file("extdata", "test-sleep-periods.rda",
+                   package = "actigraph.sleepr"))
+
+  batch_agdb_epoch <- NULL
+  batch_agdb_sleep <- NULL
+  n_bedtime_start <- 10
+  n_wake_time_end <- 10
+  min_sleep_period <- 45
+  max_sleep_period <- 1440
+  min_nonzero_epochs <- 15
+
+  # Sometimes I might want to do just a few tests....
+  for (filebase in subject_n200$file[1:10]) {
+    subject <- strsplit(filebase, " ")[[1]][1]
+    agdb_epoch <- read_agd(file.path(agd_path, paste0(filebase, "10sec.agd")))
+    batch_agdb_epoch <- bind_rows(batch_agdb_epoch,
+                                  agdb_epoch %>% mutate(subject = subject))
+    agdb_epoch <- collapse_epochs(agdb_epoch, 60)
+    agdb_sleep <- apply_tudor_locke(apply_sadeh(agdb_epoch),
+                                    n_bedtime_start = n_bedtime_start,
+                                    n_wake_time_end = n_wake_time_end,
+                                    min_sleep_period = min_sleep_period,
+                                    max_sleep_period = max_sleep_period,
+                                    min_nonzero_epochs = min_nonzero_epochs)
+    batch_agdb_sleep <- bind_rows(batch_agdb_sleep,
+                                  agdb_sleep %>% mutate(subject = subject))
+  }
+  attr(batch_agdb_epoch, "epochlength") <- 10
+  batch_agdb_epoch <- batch_agdb_epoch %>% group_by(subject)
+  batch_agdb_epoch <- collapse_epochs(batch_agdb_epoch, 60)
+  expect_equivalent(batch_agdb_sleep,
+                    apply_tudor_locke(apply_sadeh(batch_agdb_epoch),
+                                      n_bedtime_start = n_bedtime_start,
+                                      n_wake_time_end = n_wake_time_end,
+                                      min_sleep_period = min_sleep_period,
+                                      max_sleep_period = max_sleep_period,
+                                      min_nonzero_epochs = min_nonzero_epochs))
 })

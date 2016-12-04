@@ -21,6 +21,7 @@
 collapse_epochs <- function(agdb, epoch_len_out,
                             use_incomplete = TRUE) {
 
+  stopifnot(inherits(agdb, "tbl_agd"))
   epoch_len_in <- attr(agdb, "epochlength")
 
   if (epoch_len_out != 60)

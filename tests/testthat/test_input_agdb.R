@@ -38,6 +38,20 @@ test_that("all dplyr verbs work on a tbl_agd", {
         summarise_each(funs(sum), starts_with("axis"))
     expect_named(x, c("day", "axis1", "axis2", "axis3"))
 })
+test_that("group_by works as expected on tbl_agd with time gap", {
+  file1 <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec60sec.agd",
+                       package = "actigraph.sleepr")
+  file2 <- system.file("extdata", "ActiSleepPlus-RawData-Day01-10sec60sec.agd",
+                       package = "actigraph.sleepr")
+  agdb1 <- read_agd(file1) %>% mutate(group = "a")
+  agdb2 <- read_agd(file2) %>% mutate(group = "b")
+  agdb <- bind_rows(agdb2, agdb1)
+  attr(agdb, "epochlength") <- 60
+  expect_true(missing_epochs(agdb))
+  agdb <- agdb %>% group_by(group)
+  expect_false(missing_epochs(agdb))
+})
+
 
 context("Collapse to 60s epochs")
 test_that("collapse_epochs returns same result as ActiLife 6", {
@@ -67,17 +81,4 @@ test_that("collapse_epochs errors if unexpected epoch length", {
   dummy_agdb <- tbl_agd(data_frame(timestamp = 1:12, axis1 = 0),
                         data_frame(epochlength = 9))
   expect_error(collapse_epochs(dummy_agdb, 60))
-})
-test_that("group_by works as expected on tbl_agd with time gap", {
-  file1 <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec60sec.agd",
-                       package = "actigraph.sleepr")
-  file2 <- system.file("extdata", "ActiSleepPlus-RawData-Day01-10sec60sec.agd",
-                       package = "actigraph.sleepr")
-  agdb1 <- read_agd(file1) %>% mutate(group = "a")
-  agdb2 <- read_agd(file2) %>% mutate(group = "b")
-  agdb <- bind_rows(agdb2, agdb1)
-  attr(agdb, "epochlength") <- 60
-  expect_true(missing_epochs(agdb))
-  agdb <- agdb %>% group_by(group)
-  expect_false(missing_epochs(agdb))
 })
