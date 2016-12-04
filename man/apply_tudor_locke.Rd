@@ -21,7 +21,7 @@ apply_tudor_locke(agdb, n_bedtime_start = 5, n_wake_time_end = 10,
 \item{min_nonzero_epochs}{Min number of epochs with non-zero activity. The default is 0.}
 }
 \value{
-A summary \code{tibble} of the detected sleep periods. If the activity data is grouped, then sleep periods are detected seprately for each group.
+A summary \code{tibble} of the detected sleep periods. If the activity data is grouped, then sleep periods are detected separately for each group.
 \describe{
   \item{in_bed_timestamp}{The first minute of the bedtime.}
   \item{out_bed_timestamp}{The first minute of wake time.}

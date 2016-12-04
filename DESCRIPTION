@@ -12,6 +12,7 @@ BugReports: http://github.com/dipetkov/actigraph.sleepr/issues
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
+NeedsCompilation: no
 RoxygenNote: 5.0.1
 Depends:
   R (>= 3.2.4)
@@ -31,4 +32,7 @@ Suggests:
   rmarkdown,
   testthat,
   tools
+Collate: "actigraph.sleepr-package.R" "tbl_agd.R" "read_agd.R"
+  "check_arguments.R" "impute_epochs.R" "collapse_epochs.R"
+  "apply_sadeh.R" "apply_cole_kripke.R" "apply_tudor_locke.R"
 VignetteBuilder: knitr

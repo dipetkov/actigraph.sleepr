@@ -1,7 +1,6 @@
 #' Apply the Cole-Kripke algorithm
 #'
 #' The Cole-Kripke sleep scoring algorithm is primarily used for adult populations as the supporting research was performed on subjects ranging from 35 to 65 years of age.
-#' @import dplyr
 #' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 sec.
 #' @return A \code{tibble} (\code{tbl}) of activity data. A new column \code{state} indicates whether each 60s epoch is scored as asleep (S) or awake (W).
 #' @details
@@ -40,18 +39,7 @@
 
 apply_cole_kripke <- function(agdb) {
 
-  stopifnot(inherits(agdb, "tbl_agd"))
-  if (attr(agdb, "epochlength") != 60)
-    stop("Epochs should have length 60s to apply Cole-Kripke. ",
-         "Epochs can be aggregated with `collapse_epochs`.")
-  if (missing_epochs(agdb))
-    stop("Missing timestamps. ",
-         "Epochs should be evenly spaced from ",
-         "first(timestamp) to last(timestamp).")
-  if (anyNA(agdb$axis1))
-    stop("Missing axis1 counts. ",
-         "These can be imputed with `impute_na_epochs`.")
-
+  check_args_sleep_algorithm(agdb, "Cole-Kripke")
   attr(agdb, "sleep_algorithm") <- "Cole-Kripke"
   agdb %>% do(apply_cole_kripke_(.))
 }

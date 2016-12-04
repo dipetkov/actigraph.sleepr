@@ -1,7 +1,6 @@
 #' Re-integrate epochs
 #'
 #' Collapse post-filtered activity counts into larger epoch "buckets".
-#' @import dplyr
 #' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute.
 #' @param epoch_len_out Output (longer) epoch length in seconds, must be exact multiple of the input epoch length. Currently only \code{epoch_len_out} = 60 is supported.
 #' @param use_incomplete logical. Set to \code{TRUE} to follow ActiLife convention, which collapses all observed epochs even if they are incomplete.
@@ -21,25 +20,9 @@
 collapse_epochs <- function(agdb, epoch_len_out,
                             use_incomplete = TRUE) {
 
-  stopifnot(inherits(agdb, "tbl_agd"))
-  epoch_len_in <- attr(agdb, "epochlength")
-
-  if (epoch_len_out != 60)
-    stop("Use `collapse_epochs` to aggregate to 60s epochs.")
-  if (epoch_len_out %% epoch_len_in)
-    stop("Output epoch length is not an exact multiple ",
-         "of input epoch length.")
-
-  collapse_factor <- epoch_len_out / epoch_len_in
+  check_args_collapse_method(agdb, epoch_len_out)
+  collapse_factor <- epoch_len_out / attr(agdb, "epochlength")
   if (collapse_factor == 1) return(agdb)
-
-  if (missing_epochs(agdb))
-    stop("Missing timestamps. ",
-         "Epochs should be evenly spaced from ",
-         "first(timestamp) to last(timestamp).")
-  if (anyNA(agdb$axis1))
-    stop("Missing axis1 counts. ",
-         "These can be imputed with `impute_na_epochs`.")
 
   # TODO: a more general approach to collapsing
   # might use the findInterval function

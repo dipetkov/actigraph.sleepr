@@ -47,9 +47,9 @@ test_that("group_by works as expected on tbl_agd with time gap", {
   agdb2 <- read_agd(file2) %>% mutate(group = "b")
   agdb <- bind_rows(agdb2, agdb1)
   attr(agdb, "epochlength") <- 60
-  expect_true(missing_epochs(agdb))
+  expect_true(has_missing_epochs(agdb))
   agdb <- agdb %>% group_by(group)
-  expect_false(missing_epochs(agdb))
+  expect_false(has_missing_epochs(agdb))
 })
 
 

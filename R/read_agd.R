@@ -1,10 +1,6 @@
 #' Read an *.agd file
 #'
 #' Read ActiGraph sleep watch data from a database stored in an AGD file. Return a tibble.
-#' @import dplyr
-#' @importFrom stats setNames
-#' @importFrom tidyr spread
-#' @importFrom lubridate ymd_hms
 #' @param file Full path to an agd file to read.
 #' @param tz Time zone to convert DateTime ticks to POSIX time.
 #' @return A \code{tibble} (\code{tbl}) of activity data with at least two columns: timestamp and axis1 counts. Optional columns include axis2, axis2, steps, lux and inclinometer indicators (incline off, standing, sitting and lying). The device settings are stored as attributes, which include \code{epochlength}.
@@ -66,8 +62,6 @@ read_agd <- function(file, tz = "UTC") {
 #' Read ActiGraph sleep watch data from an SQLite database stored in an AGD file. Return a list of five tables: data, sleep, filters, settings, awakenings.
 #'
 #' These tables have the schema described in the ActiLife 6 User manual -- at least the column names, though not the data types. In particular, the timestamps are converted to human-readable POSIXct representation.
-#' @import dplyr
-#' @import tidyr
 #' @param file Full path to an agd file to read.
 #' @param tz Time zone to convert DateTime ticks to POSIX time.
 #' @return A list of five tables: settings, data, filters, sleep and awakenings.

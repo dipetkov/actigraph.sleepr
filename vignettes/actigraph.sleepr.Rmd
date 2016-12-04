@@ -7,9 +7,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r , echo = FALSE}
+```{r echo = FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
-                      collapse = TRUE, comment = "#>")
+                      collapse = TRUE, comment = "#>", out.width = "75%",
+                      fig.asp = 1 / 1.6, fig.width = 5, dpi = 600,
+                      fig.retina = NULL)
 pckg <- c("actigraph.sleepr", "dplyr", "lubridate", "ggplot2")
 inst <- suppressMessages(lapply(pckg, library, character.only = TRUE))
 theme_set(theme_light())
@@ -51,10 +53,11 @@ agdb_10s %>%
   mutate(magnitude = sqrt(x^2 + y^2 + z^2))
 ```
 
-```{r fig.width = 7, fig.height = 4, fig.cap = "24 hours of activity data taken with an ActiGraph device at a frequency of 10 sec."}
+```{r fig.cap = "24 hours of activity data taken with an ActiGraph device at a frequency of 10 sec."}
 ggplot(agdb_10s, aes(timestamp, axis1)) +
   geom_line() +
-  labs(x = "", y = "activity")
+  labs(x = "", y = "activity") +
+  scale_x_datetime(date_labels = "%H:%M")
 ```
 
 ### Reintegrate from 10s to 60s epochs
@@ -67,17 +70,18 @@ agdb_60s <- collapse_epochs(agdb_10s, 60)
 agdb_60s
 ```
 
-```{r fig.width = 7, fig.height = 4, fig.cap = "24 hours of activity data taken with an ActiGraph device at a frequency of 10 sec and then aggregated into 60 sec epochs."}
+```{r fig.cap = "24 hours of activity data taken with an ActiGraph device at a frequency of 10 sec and then aggregated into 60 sec epochs."}
 ggplot(agdb_60s, aes(timestamp, axis1)) +
   geom_line() +
-  labs(x = "", y = "activity")
+  labs(x = "", y = "activity") +
+  scale_x_datetime(date_labels = "%H:%M")
 ```
 
 ### Process a batch of AGD files
 
 We can load each AGD file in a directory, collapse from 10s to 60s and save the integrated activity data with a few lines of code.
 
-```{r , eval = FALSE}
+```{r eval = FALSE}
 library("readr")
 library("tools")
 
@@ -101,7 +105,7 @@ for (basename in basenames) {
 
 The Sadeh sleep scoring algorithm is primarily used for younger adolescents as the supporting research was performed on children and young adults. It requires 60s epochs and uses an 11-minute window that includes the five previous and five future epochs. The `apply_sadeh` function in the `actigraph.sleepr` package implements the algorithm as described in the ActiGraph user manual.
 
-```{r , echo = TRUE}
+```{r echo = TRUE}
 agdb_sadeh <- apply_sadeh(agdb_60s)
 ```
 
@@ -127,12 +131,13 @@ LG
 
 The time series of activity counts is padded with zeros as necessary, at the beginning and at the end, to compute the three functions AVG, SD, NATS within a rolling window. Finally, the state is awake (W) if the sleep index SI is greater than -4; otherwise the state is asleep (S).
 
-```{r fig.width = 7, fig.height = 4, fig.cap = "The Sadeh algorithm infers whether the subject is sleeping or not, for each one-minute epoch. A blue dot means awake (W), a red dot means asleep (S). The algorithm thresholds the raw activity counts at 300."}
+```{r fig.cap = "The Sadeh algorithm infers whether the subject is sleeping or not, for each one-minute epoch. A blue dot means awake (W), a red dot means asleep (S). The algorithm thresholds the raw activity counts at 300."}
 ggplot(agdb_sadeh, aes(timestamp, count)) +
   geom_line() +
   geom_point(aes(timestamp, 300 * recode(state, S = 0, W = 1), 
                  color = state), shape = 1) +
   labs(x = "", y = "(scaled) activity") +
+  scale_x_datetime(date_labels = "%H:%M") +
   guides(color = FALSE)
 ```
 
@@ -140,7 +145,7 @@ ggplot(agdb_sadeh, aes(timestamp, count)) +
 
 The Cole-Kripke sleep scoring algorithm is primarily used for adult populations as the supporting research was performed on subjects ranging from 35 to 65 years of age. Like the Sadeh algorithm, it requires 60s epochs and uses a 7-minute window that includes the four previous and two future epochs. The `apply_cole_kripke` function in the `actigraph.sleepr` package implements the algorithm as described in the ActiGraph user manual.
 
-```{r , echo = TRUE}
+```{r echo = TRUE}
 agdb_colekripke <- apply_cole_kripke(agdb_60s)
 ```
 
@@ -162,12 +167,13 @@ Epoch_next(i)
 
 The time series of activity counts is padded with zeros as necessary, at the beginning and at the end. Finally, the state is awake (W) if the sleep index SI is less than 1; otherwise the state is asleep (S).
 
-```{r fig.width = 7, fig.height = 4, fig.cap = "The Cole-Kripke algorithm infers whether the subject is sleeping or not, for each one-minute epoch. A blue dot means awake (W), a red dot means asleep (S)."}
+```{r fig.cap = "The Cole-Kripke algorithm infers whether the subject is sleeping or not, for each one-minute epoch. A blue dot means awake (W), a red dot means asleep (S)."}
 ggplot(agdb_colekripke, aes(timestamp, count)) +
   geom_line() +
   geom_point(aes(timestamp, 100 * recode(state, S = 0, W = 1), 
                  color = state), shape = 1) +
   labs(x = "", y = "(scaled) activity") +
+  scale_x_datetime(date_labels = "%H:%M") +
   guides(color = FALSE)
 ```
 
@@ -247,7 +253,7 @@ fragmentation_index
 sleep_fragmentation_index
  : Sleep fragmentation index – The sum of the movement and fragmentation indices.
 
-```{r fig.width = 7, fig.height = 4, fig.cap = "The Tudor-Locke algorithm detects sleep periods from asleep/awake status indicators per epoch. These are highlighted as gray rectangles."}
+```{r fig.cap = "The Tudor-Locke algorithm detects sleep periods from asleep/awake status indicators per epoch. These are highlighted as gray rectangles."}
 # Construct polygons to represent each sleep period visually
 ymax <- max(agdb_60s$axis1)
 ymin <- 0
@@ -261,6 +267,7 @@ sleep_periods <- data_frame(id = id, x = x, y = y)
 ggplot(sleep_periods, aes(x, y)) + 
   geom_polygon(aes(group = id), fill = "lightgray") +
   geom_line(data = agdb_60s, aes(timestamp, axis1)) +
-  labs(x = "", y = "activity")
+  labs(x = "", y = "activity") +
+  scale_x_datetime(date_labels = "%H:%M")
 ```
 

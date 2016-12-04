@@ -1,8 +1,6 @@
 #' Apply the Sadeh algorithm
 #'
 #' The Sadeh sleep scoring algorithm is primarily used for younger adolescents as the supporting research was performed on children and young adults.
-#' @import dplyr
-#' @importFrom RcppRoll roll_mean roll_sd roll_sum
 #' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 sec.
 #' @return A \code{tibble} (\code{tbl}) of activity data. A new column \code{state} indicates whether each 60s epoch is scored as asleep (S) or awake (W).
 #' @details
@@ -40,18 +38,7 @@
 
 apply_sadeh <- function(agdb) {
 
-  stopifnot(inherits(agdb, "tbl_agd"))
-  if (attr(agdb, "epochlength") != 60)
-    stop("Epochs should have length 60s to apply Sadeh. ",
-         "Epochs can be aggregated with `collapse_epochs`.")
-  if (missing_epochs(agdb))
-    stop("Missing timestamps. ",
-         "Epochs should be evenly spaced from ",
-         "first(timestamp) to last(timestamp).")
-  if (anyNA(agdb$axis1))
-    stop("Missing axis1 counts. ",
-         "These can be imputed with `impute_na_epochs`.")
-
+  check_args_sleep_algorithm(agdb, "Sadeh")
   attr(agdb, "sleep_algorithm") <- "Sadeh"
   agdb %>% do(apply_sadeh_(.))
 }

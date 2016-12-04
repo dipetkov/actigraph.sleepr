@@ -1,16 +1,13 @@
 #' Apply the Tudor-Locke algorithm
 #'
 #' The Tudor-Locke algorithm detects periods of time in bed and, for each period, computes sleep quality metrics such as total minutes in bed, total sleep time, number and average length of awakenings, movement and fragmentation index.
-#' @import dplyr
-#' @importFrom zoo na.locf
-#' @importFrom lubridate duration
 #' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 sec. Each epoch should be scored as asleep (S) or awake (W), using the Sadeh, the Cole-Kripke or a custom algorithm.
 #' @param n_bedtime_start Bedtime definition, in minutes. The default is 5.
 #' @param n_wake_time_end Wake time definition, in minutes. The default is 10.
 #' @param min_sleep_period Min sleep period length, in minutes. The default is 160.
 #' @param max_sleep_period Max sleep period length, in minutes. The default is 1440 (24 hours).
 #' @param min_nonzero_epochs Min number of epochs with non-zero activity. The default is 0.
-#' @return A summary \code{tibble} of the detected sleep periods. If the activity data is grouped, then sleep periods are detected seprately for each group.
+#' @return A summary \code{tibble} of the detected sleep periods. If the activity data is grouped, then sleep periods are detected separately for each group.
 #' \describe{
 #'   \item{in_bed_timestamp}{The first minute of the bedtime.}
 #'   \item{out_bed_timestamp}{The first minute of wake time.}
@@ -71,20 +68,7 @@ apply_tudor_locke <- function(agdb,
                               max_sleep_period = 1440,
                               min_nonzero_epochs = 0) {
 
-  stopifnot(inherits(agdb, "tbl_agd"))
-  if (attr(agdb, "epochlength") != 60)
-    stop("Epochs should have length 60s to apply Tudor-Locke. ",
-         "Epochs can be aggregated with `collapse_epochs`.")
-  if (missing_epochs(agdb))
-    stop("Missing timestamps. ",
-         "Epochs should be evenly spaced from ",
-         "first(timestamp) to last(timestamp).")
-  if (!exists("state", agdb))
-    stop("Missing asleep/awake (S/W) indicator column. ",
-         "S/W states can be inferred with `apply_sadeh` ",
-         "or `apply_cole_kripke.`")
-  if (anyNA(agdb$state))
-    stop("Missing asleep/awake values.")
+  check_args_period_algorithm(agdb, "Tudor-Locke")
 
   # TODO: Some parameter combinations might not make sense.
   # For example, I expect that:
