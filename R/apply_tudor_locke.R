@@ -111,8 +111,8 @@ apply_tudor_locke_ <- function(data,
   #
   # The `group_by` detects uninteruppted runs of asleep/awake epochs.
   # For example:
-  # state is c(1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0)
-  # group is c(1, 1, 2, 3, 3, 3, 4, 4, 4, 5, 5, 6)
+  # state is c( W,  W,  S,  W,  W,  W,  S,  S,  S,  W,  S,  W)
+  # group is c( 1,  1,  2,  3,  3,  3,  4,  4,  4,  5,  6,  7)
   #
   # The `summarise` computes a few statistics necessary to compute the final
   # sleep quality metrics that we are interested in.
@@ -122,21 +122,18 @@ apply_tudor_locke_ <- function(data,
   # in the next round of `group_by`, `summarise`, `mutate`.
   #
   # For example, suppose that runs of just one epoch are too short.
-  # state is c(1, 1, NA, 1, 1, 1, 0, 0, 0, 1, 1, NA)
+  # state is c( W,  W, NA,  W,  W,  W,  S,  S,  S, NA, NA, NA)
   # Fill in the NAs with the most recent non-NA state.
-  # state is c(1, 1,  1, 1, 1, 1, 0, 0, 0, 1, 1,  1)
-  # group is c(1, 1,  1, 1, 1, 1, 2, 2, 2, 3, 3,  3)
+  # state is c( W,  W,  W,  W,  W,  W,  S,  S,  S,  S,  S,  S)
+  # group is c( 1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2,  2)
+  #
+  # Note that we don't always end up flipping short S's to W's and
+  # short W's to S's. That's why we first set short runs to NA and
+  # then impute them with na.locf.
   #
   # There are also a bunch of book-keeping `mutate`s to calculate
   # several measures of sleep quality for each sleep period.
   # This `mutate`s don't involve the `state`.
-
-  # No need to install and import the data.table package
-  # just to use its rleid function
-  rleid <- function(x) {
-    r <- rle(x)
-    rep(seq_along(r$lengths), r$lengths)
-  }
 
   data %>%
     # First round of `group_by`, `summarise`, `mutate` operations
@@ -203,4 +200,11 @@ apply_tudor_locke_ <- function(data,
            sleep_fragmentation_index) %>%
     mutate_each(funs(as.integer), latency, total_counts,
                 time_in_bed, time_asleep, time_awake, awakenings)
+}
+
+# No need to install and import the data.table package
+# just to use its rleid function
+rleid <- function(x) {
+  r <- rle(x)
+  rep(seq_along(r$lengths), r$lengths)
 }
