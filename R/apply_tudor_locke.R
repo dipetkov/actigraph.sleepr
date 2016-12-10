@@ -1,7 +1,7 @@
 #' Apply the Tudor-Locke algorithm
 #'
 #' The Tudor-Locke algorithm detects periods of time in bed and, for each period, computes sleep quality metrics such as total minutes in bed, total sleep time, number and average length of awakenings, movement and fragmentation index.
-#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 sec. Each epoch should be scored as asleep (S) or awake (W), using the Sadeh, the Cole-Kripke or a custom algorithm.
+#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 seconds. Each epoch should be scored as asleep (S) or awake (W), using the Sadeh, the Cole-Kripke or a custom algorithm.
 #' @param n_bedtime_start Bedtime definition, in minutes. The default is 5.
 #' @param n_wake_time_end Wake time definition, in minutes. The default is 10.
 #' @param min_sleep_period Min sleep period length, in minutes. The default is 160.
@@ -68,7 +68,7 @@ apply_tudor_locke <- function(agdb,
                               max_sleep_period = 1440,
                               min_nonzero_epochs = 0) {
 
-  check_args_period_algorithm(agdb, "Tudor-Locke")
+  check_args_sleep_periods(agdb, "Tudor-Locke")
 
   # TODO: Some parameter combinations might not make sense.
   # For example, I expect that:
@@ -88,7 +88,7 @@ apply_tudor_locke <- function(agdb,
   attr(sleep, "max_sleep_period") <- max_sleep_period
   attr(sleep, "min_nonzero_epochs") <- min_nonzero_epochs
 
-  structure(sleep, class = c("tbl_sleep", "tbl_df", "tbl", "data.frame"))
+  structure(sleep, class = c("tbl_period", "tbl_df", "tbl", "data.frame"))
 }
 
 apply_tudor_locke_ <- function(data,

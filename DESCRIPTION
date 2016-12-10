@@ -35,4 +35,5 @@ Suggests:
 Collate: "actigraph.sleepr-package.R" "tbl_agd.R" "read_agd.R"
   "check_arguments.R" "impute_epochs.R" "collapse_epochs.R"
   "apply_sadeh.R" "apply_cole_kripke.R" "apply_tudor_locke.R"
+  "apply_choi.R"
 VignetteBuilder: knitr

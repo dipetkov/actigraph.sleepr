@@ -1,7 +1,7 @@
 #' Apply the Sadeh algorithm
 #'
 #' The Sadeh sleep scoring algorithm is primarily used for younger adolescents as the supporting research was performed on children and young adults.
-#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 sec.
+#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 seconds.
 #' @return A \code{tibble} (\code{tbl}) of activity data. A new column \code{state} indicates whether each 60s epoch is scored as asleep (S) or awake (W).
 #' @details
 #' The Sadeh algorithm requires that the activity data is in 60s epochs and uses an 11-minute window that includes the five previous and five future epochs. This function implements the algorithm as described in the ActiGraph user manual.
@@ -38,7 +38,7 @@
 
 apply_sadeh <- function(agdb) {
 
-  check_args_sleep_algorithm(agdb, "Sadeh")
+  check_args_sleep_scores(agdb, "Sadeh")
   attr(agdb, "sleep_algorithm") <- "Sadeh"
   agdb %>% do(apply_sadeh_(.))
 }

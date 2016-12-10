@@ -1,7 +1,7 @@
 #' Apply the Cole-Kripke algorithm
 #'
 #' The Cole-Kripke sleep scoring algorithm is primarily used for adult populations as the supporting research was performed on subjects ranging from 35 to 65 years of age.
-#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 sec.
+#' @inheritParams apply_sadeh
 #' @return A \code{tibble} (\code{tbl}) of activity data. A new column \code{state} indicates whether each 60s epoch is scored as asleep (S) or awake (W).
 #' @details
 #' The Cole-Kripke algorithm requires that the activity data is in 60s epochs and uses a 7-minute window that includes the four previous and two future epochs. This function implements the algorithm as described in the ActiGraph user manual.
@@ -39,7 +39,7 @@
 
 apply_cole_kripke <- function(agdb) {
 
-  check_args_sleep_algorithm(agdb, "Cole-Kripke")
+  check_args_sleep_scores(agdb, "Cole-Kripke")
   attr(agdb, "sleep_algorithm") <- "Cole-Kripke"
   agdb %>% do(apply_cole_kripke_(.))
 }

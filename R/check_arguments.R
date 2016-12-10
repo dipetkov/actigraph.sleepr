@@ -22,17 +22,38 @@ check_no_missing_state <- function(agdb) {
   if (anyNA(agdb$state))
     stop("Missing asleep/awake values.")
 }
-check_args_sleep_algorithm <- function(agdb, algorithm) {
+check_has_variable <- function(agdb, var) {
+  if (!exists(var, where = agdb))
+    stop("tbl_agd does not have variable ", var)
+}
+check_args_sleep_scores <- function(agdb, algorithm) {
   stopifnot(inherits(agdb, "tbl_agd"))
   check_epochlen_is_60(agdb, algorithm)
   check_no_missing_timestamps(agdb)
   check_no_missing_counts(agdb, "axis1")
 }
-check_args_period_algorithm <- function(agdb, algorithm) {
+check_args_sleep_periods <- function(agdb, algorithm) {
   stopifnot(inherits(agdb, "tbl_agd"))
   check_epochlen_is_60(agdb, algorithm)
   check_no_missing_timestamps(agdb)
   check_no_missing_state(agdb)
+}
+check_args_nonwear_periods <- function(agdb, algorithm,
+                                       use_magnitude) {
+  stopifnot(inherits(agdb, "tbl_agd"))
+  check_epochlen_is_60(agdb, algorithm)
+  check_no_missing_timestamps(agdb)
+  check_no_missing_counts(agdb, "axis1")
+  if (use_magnitude) {
+    check_no_missing_counts(agdb, "axis2")
+    check_no_missing_counts(agdb, "axis3")
+  }
+}
+check_args_filter <- function(agdb, var) {
+  stopifnot(inherits(agdb, "tbl_agd"))
+  check_has_variable(agdb, var)
+  check_no_missing_timestamps(agdb)
+  check_no_missing_counts(agdb, var)
 }
 check_args_collapse_method <- function(agdb, epoch_len_out) {
   stopifnot(inherits(agdb, "tbl_agd"))

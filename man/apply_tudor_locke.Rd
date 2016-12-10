@@ -8,7 +8,7 @@ apply_tudor_locke(agdb, n_bedtime_start = 5, n_wake_time_end = 10,
   min_sleep_period = 160, max_sleep_period = 1440, min_nonzero_epochs = 0)
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 sec. Each epoch should be scored as asleep (S) or awake (W), using the Sadeh, the Cole-Kripke or a custom algorithm.}
+\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 seconds. Each epoch should be scored as asleep (S) or awake (W), using the Sadeh, the Cole-Kripke or a custom algorithm.}
 
 \item{n_bedtime_start}{Bedtime definition, in minutes. The default is 5.}
 

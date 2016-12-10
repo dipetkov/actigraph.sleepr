@@ -52,7 +52,6 @@ test_that("group_by works as expected on tbl_agd with time gap", {
   expect_false(has_missing_epochs(agdb))
 })
 
-
 context("Collapse to 60s epochs")
 test_that("collapse_epochs returns same result as ActiLife 6", {
   agd_file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
