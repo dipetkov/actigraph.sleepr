@@ -1,4 +1,7 @@
 
+library("actigraph.sleepr")
+library("dplyr")
+
 context("Sleep scoring algorithms")
 test_that("apply_sadeh/apply_cole_kripke return same result as ActiLife 6", {
   agd_file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec60sec.agd",

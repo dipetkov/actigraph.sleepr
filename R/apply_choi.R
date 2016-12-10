@@ -2,10 +2,9 @@
 #'
 #' The Choi algorithm detects periods of non-wear in activity data from an ActiGraph device. Such intervals are likely to represent invalid data and therefore should be excluded from downstream analysis.
 #' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 seconds.
+#' @inheritParams apply_troiano
 #' @param min_period_len Minimum number of consecutive "zero" epochs to start a non-wear period. The default is 90.
 #' @param min_window_len The minimum number of consecutive "zero" epochs immediately preceding and following a spike of artifactual movement. The default is 30.
-#' @param spike_tolerance Also known as artifactual movement interval. At most \code{spike_tolerance} "nonzero" epochs can occur in sequence during a non-wear period without interrupting it. The default is 2.
-#' @param use_magnitude Logical. If true, the magnitude of the vector (axis1, axis2, axis3) is used to measure activity; otherwise the axis1 value is used. The default is FALSE.
 #' @details
 #' The Choi algorithm extends the Troiano algorithm by requiring that short spikes of artifactual movement during a non-wear period are preceded and followed by \code{min_window_len} consecutive "zero" epochs.
 #'
@@ -13,7 +12,7 @@
 #' @return A summary \code{tibble} of the detected non-wear periods. If the activity data is grouped, then non-wear periods are detected separately for each group.
 #' @references L Choi, Z Liu, CE Matthews and MS Buchowski. Validation of accelerometer wear and nonwear time classification algorithm. \emph{Medicine & Science in Sports & Exercise}, 43(2):357–364, 2011.
 #' @references ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
-#' @seealso \code{\link{collapse_epochs}}
+#' @seealso \code{\link{apply_troiano}}, \code{\link{collapse_epochs}}
 #' @examples
 #' file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
 #'                     package = "actigraph.sleepr")
@@ -49,15 +48,13 @@ apply_choi_ <- function(data,
                         min_window_len,
                         spike_tolerance,
                         use_magnitude) {
-
   data %>%
     mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2),
            count = if (use_magnitude) magnitude else axis1,
            state = ifelse(count == 0, "N", "W")) %>%
     group_by(rleid = rleid(state)) %>%
     summarise(state = first(state),
-              start_timestamp = first(timestamp),
-              end_timestamp = last(timestamp),
+              timestamp = first(timestamp),
               length = n()) %>%
     # Let (spike, zero, zero, spike) -> (spike of length 4)
     # as long as (zero, zero) is shorter than spike_tolerance
@@ -65,8 +62,7 @@ apply_choi_ <- function(data,
                           "W", state)) %>%
     group_by(rleid = rleid(state)) %>%
     summarise(state = first(state),
-              start_timestamp = first(start_timestamp),
-              end_timestamp = last(end_timestamp),
+              timestamp = first(timestamp),
               length = sum(length)) %>%
     # Ignore artifactual movement intervals
     mutate(state =
@@ -76,11 +72,11 @@ apply_choi_ <- function(data,
                     "N", state)) %>%
     group_by(rleid = rleid(state)) %>%
     summarise(state = first(state),
-              start_timestamp = first(start_timestamp),
-              end_timestamp =
-                last(end_timestamp) + duration(1, units = "mins"),
+              timestamp = first(timestamp),
               length = sum(length)) %>%
     filter(state == "N",
            length >= min_period_len) %>%
+    mutate(end_timestamp = timestamp + duration(length, units = "mins")) %>%
+    rename(start_timestamp = timestamp) %>%
     select(start_timestamp, end_timestamp, length)
 }

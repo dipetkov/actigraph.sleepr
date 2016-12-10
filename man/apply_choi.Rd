@@ -42,6 +42,6 @@ L Choi, Z Liu, CE Matthews and MS Buchowski. Validation of accelerometer wear an
 ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
 }
 \seealso{
-\code{\link{collapse_epochs}}
+\code{\link{apply_troiano}}, \code{\link{collapse_epochs}}
 }
 
