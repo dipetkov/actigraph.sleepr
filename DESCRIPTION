@@ -17,6 +17,7 @@ RoxygenNote: 5.0.1
 Depends:
   R (>= 3.2.4)
 Imports:
+  Rcpp,
   RcppRoll,
   RSQLite,
   dplyr,
@@ -33,3 +34,4 @@ Suggests:
   testthat,
   tools
 VignetteBuilder: knitr
+LinkingTo: Rcpp

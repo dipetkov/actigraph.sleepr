@@ -13,33 +13,34 @@ test_that("apply_troiano returns a tbl_period", {
 })
 test_that("apply_troiano return same result as ActiLife 6", {
   dataset <- "GT3XPlus-RawData-Day01"
-  endat_nnz <- "seq"
-  agd_file <- system.file("extdata", paste0(dataset, "-10sec60sec.agd"),
-                          package = "actigraph.sleepr")
-  csv_file <- system.file("extdata", paste0(dataset, "-Troiano-", endat_nnz,
-                                            "-periods.csv"),
-                          package = "actigraph.sleepr")
-  for (algorithm in c("Troiano Default",
-                      "Troiano Custom1",
-                      "Troiano Custom2")) {
-    actilife <- read_csv(csv_file) %>%
-      filter(nonwear_algorithm == algorithm)
-    params <- actilife %>% filter(row_number() == 1)
-    actilife <- actilife %>% filter( wear == FALSE)
-    agdb_10s <- read_agd(agd_file)
-    agdb_60s <- collapse_epochs(agdb_10s, 60)
-    agdb_nonwear <-
-      apply_troiano(agdb_60s,
-                    min_period_len = params$min_period_len,
-                    spike_tolerance = params$spike_tolerance,
-                    spike_stoplevel = params$spike_stoplevel,
-                    endat_nnz_seq = params$endat_nnz_seq)
-    common_vars <- intersect(colnames(agdb_nonwear),
-                             colnames(actilife))
-    expect_equal(common_vars, c("start_timestamp", "end_timestamp",
-                                "length"))
-    for (var in common_vars)
-      expect_equal(agdb_nonwear[[var]], actilife[[var]])
+  for (method in c("seq", "nonseq")) {
+    agd_file <- system.file("extdata", paste0(dataset, "-10sec60sec.agd"),
+                            package = "actigraph.sleepr")
+    csv_file <- system.file("extdata", paste0(dataset, "-Troiano-", method,
+                                             "-periods.csv"),
+                            package = "actigraph.sleepr")
+    for (algorithm in c("Troiano Default",
+                        "Troiano Custom1",
+                        "Troiano Custom2")) {
+      actilife <- read_csv(csv_file) %>%
+        filter(nonwear_algorithm == algorithm)
+      params <- actilife %>% filter(row_number() == 1)
+      actilife <- actilife %>% filter( wear == FALSE)
+      agdb_10s <- read_agd(agd_file)
+      agdb_60s <- collapse_epochs(agdb_10s, 60)
+      agdb_nonwear <-
+        apply_troiano(agdb_60s,
+                      min_period_len = params$min_period_len,
+                      spike_tolerance = params$spike_tolerance,
+                      spike_stoplevel = params$spike_stoplevel,
+                      endat_nnz_seq = params$endat_nnz_seq)
+      common_vars <- intersect(colnames(agdb_nonwear),
+                               colnames(actilife))
+      expect_equal(common_vars, c("start_timestamp", "end_timestamp",
+                                  "length"))
+      for (var in common_vars)
+        expect_equal(agdb_nonwear[[var]], actilife[[var]])
+    }
   }
 })
 test_that("apply_choi return same result as ActiLife 6", {

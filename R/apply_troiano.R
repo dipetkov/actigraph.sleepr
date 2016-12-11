@@ -35,14 +35,21 @@ apply_troiano <- function(agdb,
                           endat_nnz_seq = TRUE) {
 
   check_args_nonwear_periods(agdb, "Troiano", use_magnitude)
-  stopifnot(endat_nnz_seq == TRUE)
 
-  nonwear <- agdb %>%
-    do(apply_troiano_seq_(., activity_threshold,
-                          min_period_len, max_nonzero_count,
-                          spike_tolerance,
-                          spike_stoplevel,
-                          use_magnitude))
+  if (endat_nnz_seq)
+    nonwear <- agdb %>%
+      do(apply_troiano_seq_(., activity_threshold,
+                            min_period_len, max_nonzero_count,
+                            spike_tolerance,
+                            spike_stoplevel,
+                            use_magnitude))
+  else
+    nonwear <- agdb %>%
+      do(apply_troiano_nonseq_(., activity_threshold,
+                               min_period_len, max_nonzero_count,
+                               spike_tolerance,
+                               spike_stoplevel,
+                               use_magnitude))
 
   attr(nonwear, "nonwear_algorithm") <- "Troiano"
   attr(nonwear, "min_period_len") <- min_period_len
@@ -89,4 +96,35 @@ apply_troiano_seq_ <- function(data,
     mutate(end_timestamp = timestamp + duration(length, units = "mins")) %>%
     rename(start_timestamp = timestamp) %>%
     select(start_timestamp, end_timestamp, length)
+}
+
+apply_troiano_nonseq_ <- function(data,
+                                  activity_threshold,
+                                  min_period_len, max_nonzero_count,
+                                  spike_tolerance,
+                                  spike_stoplevel,
+                                  use_magnitude) {
+  x <- data %>%
+    mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2),
+           count = if (use_magnitude) magnitude else axis1,
+           count = ifelse(count > max_nonzero_count, 0, count),
+           length = wle(count, activity_threshold,
+                        spike_tolerance, spike_stoplevel)) %>%
+    # Don't combine these filter conditions in one statement as
+    # filter(condition1, condition2) simply filters out *all* rows
+    filter(length >= min_period_len) %>%
+    filter(timestamp - lag(timestamp, default = 0) > 1) %>%
+    mutate(end_timestamp = timestamp + duration(length, units = "mins")) %>%
+    rename(start_timestamp = timestamp) %>%
+    select(start_timestamp, end_timestamp, length)
+  # Create empty data frame with the same column specification as x
+  y <- x %>% filter(row_number() < 1)
+  # Remove periods which overlap with previous periods
+  while (nrow(x)) {
+    z <- x %>% filter(row_number() == 1)
+    x <- x %>% filter(start_timestamp > z$start_timestamp +
+                        duration(z$length, units = "mins"))
+    y <- bind_rows(y, z)
+  }
+  y
 }
