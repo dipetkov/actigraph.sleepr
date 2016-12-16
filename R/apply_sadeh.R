@@ -56,7 +56,7 @@ apply_sadeh_ <- function(data) {
   }
   roll_nats <- function(x) {
     zeros <- rep(0, half_window)
-    y <- ifelse(x >= 50 & x < 100, 1, 0)
+    y <- if_else(x >= 50 & x < 100, 1, 0)
     roll_sum(c(zeros, y, zeros), n = 2 * half_window + 1, partial = FALSE)
   }
 
@@ -67,5 +67,5 @@ apply_sadeh_ <- function(data) {
                     - 1.08 * roll_nats(count)
                     - 0.056 * roll_std(count)
                     - 0.703 * log(count + 1)),
-           state = ifelse(state > -4, "S", "W"))
+           state = if_else(state > -4, "S", "W"))
 }

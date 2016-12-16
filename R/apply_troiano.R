@@ -60,6 +60,10 @@ apply_troiano <- function(agdb,
   attr(nonwear, "use_magnitude") <- use_magnitude
   attr(nonwear, "endat_nnz_seq") <- endat_nnz_seq
 
+  # TODO: I am wondering whether it would not be better to add
+  # wear/non-wear labels to each epoch as well as sleep/no sleep?
+  # Though then I cannot add the parameter settings is such
+  # convenient way. Can I have an attribute which is a param list?
   structure(nonwear, class = c("tbl_period", "tbl_df", "tbl", "data.frame"))
 }
 
@@ -72,19 +76,18 @@ apply_troiano_seq_ <- function(data,
   data %>%
     mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2),
            count = if (use_magnitude) magnitude else axis1,
-           state = ifelse(count <= activity_threshold |
-                            count > max_nonzero_count, "N", "W"),
-           state = ifelse(count > spike_stoplevel, "S", state)) %>%
+           state = if_else(count <= activity_threshold |
+                             count > max_nonzero_count, "N", "W"),
+           state = if_else(count > spike_stoplevel, "S", state)) %>%
     group_by(rleid = rleid(state)) %>%
     summarise(state = first(state),
               timestamp = first(timestamp),
               length = n()) %>%
-    mutate(state = ifelse(state == "W" &
-                            lead(state, default = "") == "N" &
-                            length <= spike_tolerance,
-                          NA, state),
+    mutate(state = if_else(state == "W" &
+                             lead(state, default = "") == "N" &
+                             length <= spike_tolerance, NA_character_, state),
            # Since `na.locf` can't impute leading NAs, fill in those with "W"
-           state = ifelse(row_number() == 1 & is.na(state), "W", state),
+           state = if_else(row_number() == 1 & is.na(state), "W", state),
            # Fill in NAs with the most recent zero/nonzero state
            state = na.locf(state)) %>%
     group_by(rleid = rleid(state)) %>%
@@ -106,8 +109,8 @@ apply_troiano_nonseq_ <- function(data,
                                   use_magnitude) {
   x <- data %>%
     mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2),
-           count = if (use_magnitude) magnitude else axis1,
-           count = ifelse(count > max_nonzero_count, 0, count),
+           count = if (use_magnitude) magnitude else as.numeric(axis1),
+           count = if_else(count > max_nonzero_count, 0, count),
            length = wle(count, activity_threshold,
                         spike_tolerance, spike_stoplevel)) %>%
     # Don't combine these filter conditions in one statement as
@@ -120,6 +123,8 @@ apply_troiano_nonseq_ <- function(data,
   # Create empty data frame with the same column specification as x
   y <- x %>% filter(row_number() < 1)
   # Remove periods which overlap with previous periods
+  # TODO: Could find this out by looking at the number of periods
+  # which cover a particular timestamp
   while (nrow(x)) {
     z <- x %>% filter(row_number() == 1)
     x <- x %>% filter(start_timestamp > z$start_timestamp +

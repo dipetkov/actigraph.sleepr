@@ -55,5 +55,5 @@ apply_cole_kripke_ <- function(data) {
                              230 * count +
                              74 * lead(count, 1, default = 0) +
                              67 * lead(count, 2, default = 0)),
-           state = ifelse(state < 1, "S", "W"))
+           state = if_else(state < 1, "S", "W"))
 }

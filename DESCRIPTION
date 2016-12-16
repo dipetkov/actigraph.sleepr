@@ -1,12 +1,13 @@
 Package: actigraph.sleepr
 Type: Package
-Title: Sleep Detection from ActiGraph Data using Standard Algorithms
+Title: Detect Periods of Sleep and Non-Wear from ActiGraph Data
 Version: 0.1.0
 Author: Desislava Petkova
 Maintainer: Desislava Petkova <desislavka@gmail.com>
-Description: Reads AGD files exported from ActiGraph devices; 
-    implements the Sadeh and Cole-Kripke algorithms for detecting asleep/awake state
-    and the Tudor-Locke algorithm to detect sleep periods from asleep/awake states.
+Description: Reads *.agd files exported from ActiGraph devices; 
+  implements the Troiano and Choi algorithms for detecting periods on non-wear;
+  implements the Sadeh and Cole-Kripke algorithms for detecting asleep/awake state
+  and the Tudor-Locke algorithm to detect sleep periods from asleep/awake states.
 URL: http://github.com/dipetkov/actigraph.sleepr
 BugReports: http://github.com/dipetkov/actigraph.sleepr/issues
 License: GPL (>= 2)
@@ -20,6 +21,7 @@ Imports:
   Rcpp,
   RcppRoll,
   RSQLite,
+  data.table,
   dplyr,
   lazyeval,
   lubridate,

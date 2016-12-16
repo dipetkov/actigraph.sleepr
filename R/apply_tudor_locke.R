@@ -139,8 +139,7 @@ apply_tudor_locke_ <- function(data,
     # First round of `group_by`, `summarise`, `mutate` operations
     # Return the stop/end indices for runs of repeated value
     group_by(rleid = rleid(state)) %>%
-    summarise(in_bed_timestamp = first(timestamp),
-              out_bed_timestamp = last(timestamp),
+    summarise(timestamp = first(timestamp),
               state = first(state),
               time_in_bed = n(),                 # number of epochs
               nonzero_epochs = sum(axis1 > 0), # number of epochs with activity
@@ -148,22 +147,23 @@ apply_tudor_locke_ <- function(data,
     mutate(awakenings = (state == "W"),
            sleep = (state == "S"),
            sleep_1min = (state == "S" & time_in_bed == 1),
-           time_asleep = ifelse(state == "W" & time_in_bed < n_wake_time_end,
-                                0, time_in_bed),
+           time_asleep = if_else(state == "W" & time_in_bed < n_wake_time_end,
+                                 0L, time_in_bed),
            # Set the state of short runs to NA
-           state = ifelse( (state == "W" & time_in_bed < n_wake_time_end) |
-                             (state == "S" & time_in_bed < n_bedtime_start),
-                           NA, state),
+           state = if_else( (state == "W" & time_in_bed < n_wake_time_end) |
+                              (state == "S" & time_in_bed < n_bedtime_start),
+                            NA_character_, state),
            # A special case that I am not sure how to handle:
            # Leading NAs can't be filled in with `na.locf`.
            # To be conservative, I will fill in such NAs with "W".
-           state = ifelse(row_number() == 1 & is.na(state), "W", state),
+           state = if_else(row_number() == 1 & is.na(state), "W", state),
            # Fill in NAs with the most recent sleep/awake state
+           # TODO: Check that `na.locf` works as expected
+           # when `state` is a character vector
            state = na.locf(state)) %>%
     # Second round of `group_by`, `summarise`, `mutate` operations
     group_by(rleid = rleid(state)) %>%
-    summarise(in_bed_timestamp = first(in_bed_timestamp),
-              out_bed_timestamp = last(out_bed_timestamp),
+    summarise(timestamp = first(timestamp),
               state = first(state),
               total_counts = sum(total_counts, na.rm = TRUE),
               time_in_bed = sum(time_in_bed),
@@ -172,39 +172,35 @@ apply_tudor_locke_ <- function(data,
               awakenings = sum(awakenings),
               sleep = sum(sleep),
               sleep_1min = sum(sleep_1min)) %>%
-    mutate(fragmentation_index = ifelse(sleep > 0, 100 * sleep_1min / sleep, 0),
+    mutate(fragmentation_index =
+             if_else(sleep > 0, 100 * sleep_1min / sleep, 0),
            movement_index = 100 * nonzero_epochs / time_in_bed,
            # Set the state of short sleep runs to "W";
            # no need to set to NA and then fill in the NAs
            # as here we flip only "S" states (S -> W)
-           state = ifelse(state == "S" & time_in_bed < min_sleep_period,
-                          "W", state)) %>%
+           state = if_else(state == "S" & time_in_bed < min_sleep_period,
+                           "W", state)) %>%
     # Filter out wake (W) periods as well assleep periods that
     # fail the min_nonzero_epochs and max_sleep_period criteria
     filter(state == "S",
            # Deal with edge case to reproduce ActiLife results: end <= end_time
            nonzero_epochs >= min_nonzero_epochs,
            time_in_bed <= max_sleep_period) %>%
-    # That's it. The rest are trivial manipulations to compute and
-    # rename various sleep quality metrics.
-    mutate(out_bed_timestamp = out_bed_timestamp + duration(1, units = "min"),
+    # That's it. The rest are trivial manipulations to compute
+    # various sleep quality metrics.
+    mutate(out_bed_timestamp =
+             timestamp + duration(time_in_bed, units = "mins"),
            sleep_fragmentation_index = movement_index + fragmentation_index,
            time_awake = time_in_bed - time_asleep,
-           ave_awakening = ifelse(awakenings > 0, time_awake / awakenings, 0),
+           ave_awakening = if_else(awakenings > 0, time_awake / awakenings, 0),
            efficiency = 100 * time_asleep / time_in_bed,
            # latency is the difference between in bed and onset times
-           onset_timestamp = in_bed_timestamp, latency = 0) %>%
+           onset_timestamp = timestamp, latency = 0) %>%
+    rename(in_bed_timestamp = timestamp) %>%
     select(in_bed_timestamp, out_bed_timestamp, onset_timestamp, latency,
            total_counts, efficiency, time_in_bed, time_asleep, time_awake,
            awakenings, ave_awakening, movement_index, fragmentation_index,
            sleep_fragmentation_index) %>%
     mutate_each(funs(as.integer), latency, total_counts,
                 time_in_bed, time_asleep, time_awake, awakenings)
-}
-
-# No need to install and import the data.table package
-# just to use its rleid function
-rleid <- function(x) {
-  r <- rle(x)
-  rep(seq_along(r$lengths), r$lengths)
 }

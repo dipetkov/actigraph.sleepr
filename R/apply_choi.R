@@ -51,25 +51,25 @@ apply_choi_ <- function(data,
   data %>%
     mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2),
            count = if (use_magnitude) magnitude else axis1,
-           state = ifelse(count == 0, "N", "W")) %>%
+           state = if_else(count == 0, "N", "W")) %>%
     group_by(rleid = rleid(state)) %>%
     summarise(state = first(state),
               timestamp = first(timestamp),
               length = n()) %>%
     # Let (spike, zero, zero, spike) -> (spike of length 4)
     # as long as (zero, zero) is shorter than spike_tolerance
-    mutate(state = ifelse(state == "N" & length < spike_tolerance,
-                          "W", state)) %>%
+    mutate(state = if_else(state == "N" & length < spike_tolerance,
+                           "W", state)) %>%
     group_by(rleid = rleid(state)) %>%
     summarise(state = first(state),
               timestamp = first(timestamp),
               length = sum(length)) %>%
     # Ignore artifactual movement intervals
     mutate(state =
-             ifelse(state == "W" & length <= spike_tolerance &
-                      lead(length, default = 0) >= min_window_len &
-                      lag(length, default = 0) >= min_window_len,
-                    "N", state)) %>%
+             if_else(state == "W" & length <= spike_tolerance &
+                       lead(length, default = 0) >= min_window_len &
+                       lag(length, default = 0) >= min_window_len,
+                     "N", state)) %>%
     group_by(rleid = rleid(state)) %>%
     summarise(state = first(state),
               timestamp = first(timestamp),

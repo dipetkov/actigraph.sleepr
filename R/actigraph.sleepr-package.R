@@ -10,11 +10,12 @@
 #' @import dplyr
 #' @import tidyr
 #' @import lazyeval
-#' @importFrom Rcpp sourceCpp
+#' @importFrom data.table rleid
 #' @importFrom zoo na.locf na.trim na.spline
 #' @importFrom RcppRoll roll_mean roll_sd roll_sum
 #' @importFrom lubridate duration ymd_hms
 #' @importFrom stats setNames
+#' @importFrom Rcpp sourceCpp
 NULL
 
 globalVariables(c("ave_awakening", "awakenings", "axis1", "axis2", "axis3",

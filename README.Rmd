@@ -2,15 +2,17 @@
 output:
   md_document:
     variant: markdown_github
+bibliography: actigraph.bib
 ---
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sleepr?branch=master&svg=true)](https://ci.appveyor.com/project/dipetkov/actigraph.sleepr)
 [![Travis-CI Build Status](https://travis-ci.org/dipetkov/actigraph.sleepr.svg?branch=master)](https://travis-ci.org/dipetkov/actigraph.sleepr)
-[![codecov](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/dipetkov/actigraph.sleepr)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/actigraph.sleepr)](https://cran.r-project.org/package=actigraph.sleepr)
 
 [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.2.4-6666ff.svg)](https://cran.r-project.org/)
 [![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](/commits/master)
+[![codecov](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/dipetkov/actigraph.sleepr)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -22,7 +24,7 @@ knitr::opts_chunk$set(collapse = TRUE,
                       fig.path = "README-")
 ```
 
-The `actigraph.sleepr` package implements functions to read AGD files and to apply three standard sleep algorithms: Sadeh, Cole-Kripke and Tudor-Locke.
+The `actigraph.sleepr` package implements functions to read AGD files and to apply three standard sleep algorithms: Sadeh [@Sadeh:1994aa], Cole-Kripke [@Cole:1992aa] and Tudor-Locke [@Tudor-Locke:2014aa].
 
 ### Installation
 
@@ -102,8 +104,7 @@ agdb_sleep
 
 ### References
 
-A Sadeh, KM Sharkey and MA Carskadon. Activity based sleep-wake identification: An empirical test of methodological issues. *Sleep*, 17(3):201–207, 1994.
-
-RJ Cole, DF Kripke, W Gruen, DJ Mullaney and JC Gillin. Automatic sleep/wake identification from wrist activity. *Sleep*, 15(5):461–469, 1992.
-
-C Tudor-Locke, TV Barreira, JM Schuna Jr, EF Mire and PT Katzmarzyk. Fully automated waist-worn accelerometer algorithm for detecting children's sleep-period time separate from 24-h physical activity or sedentary behaviors. *Applied Physiology*, Nutrition, and Metabolism, 39(1):53–57, 2014.
+---
+nocite: | 
+  @Troiano:2008aa, @Choi:2011aa, @Tudor-Locke:2014aa, @Cole:1992aa, @Sadeh:1994aa
+...

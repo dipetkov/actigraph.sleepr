@@ -4,3 +4,4 @@
 ^appveyor\.yml$
 ^\.travis\.yml$
 ^.lintr$
+actigraph\.bib$

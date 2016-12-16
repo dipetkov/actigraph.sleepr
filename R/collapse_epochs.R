@@ -40,7 +40,7 @@ collapse_epochs <- function(agdb, epoch_len_out,
 collapse_epochs_ <- function(data, collapse_factor, use_incomplete) {
 
   na_incomplete <- function(x, n) {
-    if (use_incomplete) x else ifelse(n == collapse_factor, x, NA)
+    if (use_incomplete) x else if_else(n == collapse_factor, x, NA_integer_)
   }
   truncate_seconds <- function(x) {
     # `trunc` truncates the timestamps up to seconds but returns POSIXlt
