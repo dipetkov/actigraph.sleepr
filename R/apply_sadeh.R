@@ -2,7 +2,7 @@
 #'
 #' The Sadeh sleep scoring algorithm is primarily used for younger adolescents as the supporting research was performed on children and young adults.
 #' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 seconds.
-#' @return A \code{tibble} (\code{tbl}) of activity data. A new column \code{state} indicates whether each 60s epoch is scored as asleep (S) or awake (W).
+#' @return A \code{tibble} (\code{tbl}) of activity data. A new column \code{sleep} indicates whether each 60s epoch is scored as asleep (0) or awake (1).
 #' @details
 #' The Sadeh algorithm requires that the activity data is in 60s epochs and uses an 11-minute window that includes the five previous and five future epochs. This function implements the algorithm as described in the ActiGraph user manual.
 #'
@@ -23,7 +23,7 @@
 #'
 #' The time series of activity counts is padded with zeros as necessary, at the beginning and at the end, to compute the three functions AVG, SD, NATS within a rolling window.
 #'
-#' Finally, the state is awake (W) if the sleep index SI is greater than -4; otherwise the state is asleep (S).
+#' Finally, the sleep state is awake (1) if the sleep index SI is greater than -4; otherwise the sleep state is asleep (0).
 #'
 #' @references A Sadeh, KM Sharkey and MA Carskadon. Activity based sleep-wake identification: An empirical test of methodological issues. \emph{Sleep}, 17(3):201–207, 1994.
 #' @references ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
@@ -33,7 +33,7 @@
 #'                     package = "actigraph.sleepr")
 #' agdb_10s <- read_agd(file)
 #' agdb_60s <- collapse_epochs(agdb_10s, 60)
-#' agdb_60s_scored <- apply_sadeh(agdb_60s)
+#' agdb_scored <- apply_sadeh(agdb_60s)
 #' @export
 
 apply_sadeh <- function(agdb) {
@@ -62,10 +62,10 @@ apply_sadeh_ <- function(data) {
 
   data %>%
     mutate(count = pmin(axis1, 300),
-           state = (7.601
+           sleep = (7.601
                     - 0.065 * roll_avg(count)
                     - 1.08 * roll_nats(count)
                     - 0.056 * roll_std(count)
                     - 0.703 * log(count + 1)),
-           state = if_else(state > -4, "S", "W"))
+           sleep = if_else(sleep > -4, 0L, 1L))
 }

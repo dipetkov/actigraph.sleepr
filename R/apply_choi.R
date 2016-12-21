@@ -18,7 +18,7 @@
 #'                     package = "actigraph.sleepr")
 #' agdb_10s <- read_agd(file)
 #' agdb_60s <- collapse_epochs(agdb_10s, 60)
-#' agdb_60s_nonwear <- apply_choi(agdb_60s)
+#' periods_nonwear <- apply_choi(agdb_60s)
 #' @export
 
 apply_choi <- function(agdb,
@@ -33,14 +33,19 @@ apply_choi <- function(agdb,
   nonwear <- agdb %>%
     do(apply_choi_(., min_period_len, min_window_len,
                    spike_tolerance, use_magnitude))
+  nonwear <-
+    structure(nonwear,
+              class = c("tbl_period", "tbl_df", "tbl", "data.frame"),
+              nonwear_algorithm = "Choi",
+              min_period_len = min_period_len,
+              min_window_len = min_window_len,
+              spike_tolerance = spike_tolerance,
+              use_magnitude = use_magnitude)
 
-  attr(nonwear, "nonwear_algorithm") <- "Choi"
-  attr(nonwear, "min_period_len") <- min_period_len
-  attr(nonwear, "min_window_len") <- min_window_len
-  attr(nonwear, "spike_tolerance") <- spike_tolerance
-  attr(nonwear, "use_magnitude") <- use_magnitude
+  if (is.grouped_df(agdb))
+    nonwear <- nonwear %>% group_by_(as.character(attr(agdb, "vars")))
 
-  structure(nonwear, class = c("tbl_period", "tbl_df", "tbl", "data.frame"))
+  nonwear
 }
 
 apply_choi_ <- function(data,
@@ -51,30 +56,30 @@ apply_choi_ <- function(data,
   data %>%
     mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2),
            count = if (use_magnitude) magnitude else axis1,
-           state = if_else(count == 0, "N", "W")) %>%
-    group_by(rleid = rleid(state)) %>%
-    summarise(state = first(state),
+           wear = if_else(count == 0, 0L, 1L)) %>%
+    group_by(rleid = rleid(wear)) %>%
+    summarise(wear = first(wear),
               timestamp = first(timestamp),
               length = n()) %>%
     # Let (spike, zero, zero, spike) -> (spike of length 4)
     # as long as (zero, zero) is shorter than spike_tolerance
-    mutate(state = if_else(state == "N" & length < spike_tolerance,
-                           "W", state)) %>%
-    group_by(rleid = rleid(state)) %>%
-    summarise(state = first(state),
+    mutate(wear = if_else(wear == 0L & length < spike_tolerance,
+                          1L, wear)) %>%
+    group_by(rleid = rleid(wear)) %>%
+    summarise(wear = first(wear),
               timestamp = first(timestamp),
               length = sum(length)) %>%
     # Ignore artifactual movement intervals
-    mutate(state =
-             if_else(state == "W" & length <= spike_tolerance &
-                       lead(length, default = 0) >= min_window_len &
-                       lag(length, default = 0) >= min_window_len,
-                     "N", state)) %>%
-    group_by(rleid = rleid(state)) %>%
-    summarise(state = first(state),
+    mutate(wear =
+             if_else(wear == 1L & length <= spike_tolerance &
+                       lead(length, default = 0L) >= min_window_len &
+                       lag(length, default = 0L) >= min_window_len,
+                     0L, wear)) %>%
+    group_by(rleid = rleid(wear)) %>%
+    summarise(wear = first(wear),
               timestamp = first(timestamp),
               length = sum(length)) %>%
-    filter(state == "N",
+    filter(wear == 0L,
            length >= min_period_len) %>%
     mutate(end_timestamp = timestamp + duration(length, units = "mins")) %>%
     rename(start_timestamp = timestamp) %>%

@@ -41,7 +41,7 @@ file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
                     package = "actigraph.sleepr")
 agdb_10s <- read_agd(file)
 agdb_60s <- collapse_epochs(agdb_10s, 60)
-agdb_60s_nonwear <- apply_troiano(agdb_60s)
+periods_nonwear <- apply_troiano(agdb_60s)
 }
 \references{
 RP Troiano, D Berrigan, KW Dodd, LC Mâsse, T Tilert and M McDowell. Physical activity in the united states measured by accelerometer. \emph{Medicine & Science in Sports & Exercise}, 40(1):181–188, 2008.

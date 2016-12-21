@@ -15,11 +15,11 @@ check_no_missing_counts <- function(agdb, var) {
          "These can be imputed with `impute_epochs`.")
 }
 check_no_missing_state <- function(agdb) {
-  if (!exists("state", agdb))
-    stop("Missing asleep/awake (S/W) indicator column. ",
-         "S/W states can be inferred with `apply_sadeh` ",
+  if (!exists("sleep", agdb))
+    stop("Missing asleep/awake (0/1) indicator column. ",
+         "These states can be inferred with `apply_sadeh` ",
          "or `apply_cole_kripke.`")
-  if (anyNA(agdb$state))
+  if (anyNA(agdb$sleep))
     stop("Missing asleep/awake values.")
 }
 check_has_variable <- function(agdb, var) {

@@ -1,7 +1,7 @@
 #' Apply the Tudor-Locke algorithm
 #'
 #' The Tudor-Locke algorithm detects periods of time in bed and, for each period, computes sleep quality metrics such as total minutes in bed, total sleep time, number and average length of awakenings, movement and fragmentation index.
-#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 seconds. Each epoch should be scored as asleep (S) or awake (W), using the Sadeh, the Cole-Kripke or a custom algorithm.
+#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 seconds. Each epoch should be scored as asleep (0) or awake (1), using the Sadeh, the Cole-Kripke or a custom algorithm.
 #' @param n_bedtime_start Bedtime definition, in minutes. The default is 5.
 #' @param n_wake_time_end Wake time definition, in minutes. The default is 10.
 #' @param min_sleep_period Min sleep period length, in minutes. The default is 160.
@@ -22,12 +22,12 @@
 #'   \item{ave_awakening}{The average length, in minutes, of all awakening episodes.}
 #'   \item{movement_index}{Proportion of awake time out of the total time in bed, in percentages.}
 #'   \item{fragmentation_index}{Proportion of one-minute sleep bouts out of the number of sleep bouts of any length, in percentages.}
-#'   \item{sleep_fragmentation_index}{Sleep fragmentation index – The sum of the movement and fragmentation indices.}
+#'   \item{sleep_fragmentation_index}{The sum of the movement and fragmentation indices.}
 #' }
 #' @details
-#' Once each one-minute epoch is labeled as asleep (S) or awake (W), we can use the Tudor-Locke algorithm to detect periods of \emph{bedtime} and \emph{sleep time}. By definition, sleep time < bedtime since one can be in bed and not sleeping.
+#' Once each one-minute epoch is labeled as asleep (0) or awake (1), we can use the Tudor-Locke algorithm to detect periods of \emph{bedtime} and \emph{sleep time}. By definition, sleep time < bedtime since one can be in bed and not sleeping.
 #'
-#' Bedtime is (the first minute of) \code{n_bedtime_start} consecutive epochs/minutes labeled S. Similarly, wake time is (the first minute of) of \code{n_wake_time_end} consecutive epochs/minutes labeled W, after a period of sleep. The time block between bedtime and wake time is one sleep period, if the time elapsed is at least \code{min_sleep_period} minutes. There can be multiple sleep periods in 24 hours but a sleep period cannot be longer than \code{max_sleep_period} minutes.
+#' Bedtime is (the first minute of) \code{n_bedtime_start} consecutive epochs/minutes labeled asleep (0). Similarly, wake time is (the first minute of) of \code{n_wake_time_end} consecutive epochs/minutes labeled awake (1), after a period of sleep. The block of time between bedtime and wake time is one sleep period, if the time elapsed is at least \code{min_sleep_period} minutes. There can be multiple sleep periods in 24 hours but a sleep period cannot be longer than \code{max_sleep_period} minutes.
 #'
 #' For each sleep period, the algorithm calculates several measures of sleep quality such as time asleep and time awake, number and average length of awakenings, and movement and fragmentation indices.
 #' @references C Tudor-Locke, TV Barreira, JM Schuna Jr, EF Mire and PT Katzmarzyk. Fully automated waist-worn accelerometer algorithm for detecting children's sleep-period time separate from 24-h physical activity or sedentary behaviors. \emph{Applied Physiology}, Nutrition, and Metabolism, 39(1):53–57, 2014.
@@ -46,9 +46,9 @@
 #'
 #' # Detect sleep periods using Sadeh as the sleep/awake algorithm
 #' # and Tudor-Locke as the sleep period algorithm
-#' agdb_60s_scored <- apply_sadeh(agdb_60s)
-#' agdb_60s_sleep <- apply_tudor_locke(agdb_60s_scored, min_sleep_period = 60)
-#' agdb_60s_sleep
+#' agdb_scored <- apply_sadeh(agdb_60s)
+#' periods_sleep <- apply_tudor_locke(agdb_scored, min_sleep_period = 60)
+#' periods_sleep
 #'
 #' # Group and summarize by an extra varible: hour < 6 or not
 #' # This grouping is chosen not because it is interesting but to split
@@ -56,9 +56,9 @@
 #' agdb_60s <- agdb_60s %>%
 #'   mutate(hour_lt6 = hour(timestamp) < 6) %>%
 #'   group_by(hour_lt6)
-#' agdb_60s_scored <- apply_sadeh(agdb_60s)
-#' agdb_60s_sleep <- apply_tudor_locke(agdb_60s_scored, min_sleep_period = 60)
-#' agdb_60s_sleep
+#' agdb_scored <- apply_sadeh(agdb_60s)
+#' periods_sleep <- apply_tudor_locke(agdb_scored, min_sleep_period = 60)
+#' periods_sleep
 #' @export
 
 apply_tudor_locke <- function(agdb,
@@ -79,30 +79,30 @@ apply_tudor_locke <- function(agdb,
     do(apply_tudor_locke_(., n_bedtime_start, n_wake_time_end,
                           min_sleep_period, max_sleep_period,
                           min_nonzero_epochs))
+  sleep <-
+    structure(sleep,
+              class = c("tbl_period", "tbl_df", "tbl", "data.frame"),
+              sleep_algorithm = attr(agdb, "sleep_algorithm"),
+              period_algorithm = "Tudor-Locke",
+              n_bedtime_start = n_bedtime_start,
+              n_wake_time_end = n_wake_time_end,
+              min_sleep_period = min_sleep_period,
+              max_sleep_period = max_sleep_period,
+              min_nonzero_epochs = min_nonzero_epochs)
 
-  attr(sleep, "sleep_algorithm") <- attr(agdb, "sleep_algorithm")
-  attr(sleep, "period_algorithm") <- "Tudor-Locke"
-  attr(sleep, "n_bedtime_start") <- n_bedtime_start
-  attr(sleep, "n_wake_time_end") <- n_wake_time_end
-  attr(sleep, "min_sleep_period") <- min_sleep_period
-  attr(sleep, "max_sleep_period") <- max_sleep_period
-  attr(sleep, "min_nonzero_epochs") <- min_nonzero_epochs
+  if (is.grouped_df(agdb))
+    sleep <- sleep %>% group_by_(as.character(attr(agdb, "vars")))
 
-  structure(sleep, class = c("tbl_period", "tbl_df", "tbl", "data.frame"))
+  sleep
 }
 
+expand_timestamp <- function(timestamp, len) {
+  list(timestamp + duration(seq_len(len) - 1, units = "mins"))
+}
 apply_tudor_locke_ <- function(data,
                                n_bedtime_start, n_wake_time_end,
                                min_sleep_period, max_sleep_period,
                                min_nonzero_epochs) {
-
-  # It seems that a sleep period must be followed by a sequence of n W's
-  # where n = n_wake_time_end, *even at the end of the time series*.
-  # This means that ActiLife filters out a sleep period, which ends when
-  # the time series ends. On the other hand, a sleep period is allowed
-  # to start when the time series starts. Makes sense?
-  end_time <- last(data$timestamp) -
-    duration(n_wake_time_end, units = "min")
 
   # The computation is not hard but the code looks intimidating,
   # so I'll summarize the logic here.
@@ -130,60 +130,53 @@ apply_tudor_locke_ <- function(data,
   # Note that we don't always end up flipping short S's to W's and
   # short W's to S's. That's why we first set short runs to NA and
   # then impute them with na.locf.
-  #
-  # There are also a bunch of book-keeping `mutate`s to calculate
-  # several measures of sleep quality for each sleep period.
-  # This `mutate`s don't involve the `state`.
 
   data %>%
     # First round of `group_by`, `summarise`, `mutate` operations
     # Return the stop/end indices for runs of repeated value
-    group_by(rleid = rleid(state)) %>%
+    group_by(rleid = rleid(sleep)) %>%
     summarise(timestamp = first(timestamp),
-              state = first(state),
+              sleep = first(sleep),
               time_in_bed = n(),                 # number of epochs
               nonzero_epochs = sum(axis1 > 0), # number of epochs with activity
               total_counts = sum(axis1)) %>%   # total activity
-    mutate(awakenings = (state == "W"),
-           sleep = (state == "S"),
-           sleep_1min = (state == "S" & time_in_bed == 1),
-           time_asleep = if_else(state == "W" & time_in_bed < n_wake_time_end,
+    mutate(awakenings = (sleep == 1),
+           dozings = (sleep == 0),
+           dozings_1min = (sleep == 0 & time_in_bed == 1),
+           time_asleep = if_else(sleep == 1 & time_in_bed < n_wake_time_end,
                                  0L, time_in_bed),
            # Set the state of short runs to NA
-           state = if_else( (state == "W" & time_in_bed < n_wake_time_end) |
-                              (state == "S" & time_in_bed < n_bedtime_start),
-                            NA_character_, state),
+           sleep = if_else( (sleep == 1 & time_in_bed < n_wake_time_end) |
+                              (sleep == 0 & time_in_bed < n_bedtime_start),
+                            NA_integer_, sleep),
            # A special case that I am not sure how to handle:
            # Leading NAs can't be filled in with `na.locf`.
-           # To be conservative, I will fill in such NAs with "W".
-           state = if_else(row_number() == 1 & is.na(state), "W", state),
+           # To be conservative, I will fill in such NAs with 1 (awake).
+           sleep = if_else(row_number() == 1 & is.na(sleep), 1L, sleep),
            # Fill in NAs with the most recent sleep/awake state
-           # TODO: Check that `na.locf` works as expected
-           # when `state` is a character vector
-           state = na.locf(state)) %>%
+           sleep = na.locf(sleep)) %>%
     # Second round of `group_by`, `summarise`, `mutate` operations
-    group_by(rleid = rleid(state)) %>%
+    group_by(rleid = rleid(sleep)) %>%
     summarise(timestamp = first(timestamp),
-              state = first(state),
+              sleep = first(sleep),
               total_counts = sum(total_counts, na.rm = TRUE),
               time_in_bed = sum(time_in_bed),
               time_asleep = sum(time_asleep),
               nonzero_epochs = sum(nonzero_epochs),
               awakenings = sum(awakenings),
-              sleep = sum(sleep),
-              sleep_1min = sum(sleep_1min)) %>%
+              dozings = sum(dozings),
+              dozings_1min = sum(dozings_1min)) %>%
     mutate(fragmentation_index =
-             if_else(sleep > 0, 100 * sleep_1min / sleep, 0),
+             if_else(dozings > 0, 100 * dozings_1min / dozings, 0),
            movement_index = 100 * nonzero_epochs / time_in_bed,
-           # Set the state of short sleep runs to "W";
+           # Set the state of short sleep runs to awake;
            # no need to set to NA and then fill in the NAs
-           # as here we flip only "S" states (S -> W)
-           state = if_else(state == "S" & time_in_bed < min_sleep_period,
-                           "W", state)) %>%
-    # Filter out wake (W) periods as well assleep periods that
+           # as here we flip only asleep states to awake
+           sleep = if_else(sleep == 0 & time_in_bed < min_sleep_period,
+                           1L, sleep)) %>%
+    # Filter out wake (W) periods as well as sleep periods that
     # fail the min_nonzero_epochs and max_sleep_period criteria
-    filter(state == "S",
-           # Deal with edge case to reproduce ActiLife results: end <= end_time
+    filter(sleep == 0,
            nonzero_epochs >= min_nonzero_epochs,
            time_in_bed <= max_sleep_period) %>%
     # That's it. The rest are trivial manipulations to compute

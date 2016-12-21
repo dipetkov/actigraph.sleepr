@@ -34,7 +34,7 @@ file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
                     package = "actigraph.sleepr")
 agdb_10s <- read_agd(file)
 agdb_60s <- collapse_epochs(agdb_10s, 60)
-agdb_60s_nonwear <- apply_choi(agdb_60s)
+periods_nonwear <- apply_choi(agdb_60s)
 }
 \references{
 L Choi, Z Liu, CE Matthews and MS Buchowski. Validation of accelerometer wear and nonwear time classification algorithm. \emph{Medicine & Science in Sports & Exercise}, 43(2):357–364, 2011.

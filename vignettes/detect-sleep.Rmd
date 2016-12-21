@@ -1,0 +1,312 @@
+---
+title: "Sleep detection from ActiGraph data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Sleep detection from ActiGraph data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
+                      collapse = TRUE, comment = "#>", out.width = "75%",
+                      fig.asp = 1 / 1.6, fig.width = 5, dpi = 600,
+                      fig.retina = NULL)
+pckg <- c("actigraph.sleepr", "dplyr", "tidyr", "lubridate", "ggplot2")
+inst <- suppressMessages(lapply(pckg, library, character.only = TRUE))
+theme_set(theme_light())
+```
+
+The `actigraph.sleepr` package implements three sleep scoring/detection algorithms: Sadeh (Sadeh, Sharkey, and Carskadon 1994), Cole-Kripke (Cole et al. 1992) and Tudor-Locke (Tudor-Locke et al. 2014). For illustration, let's use GT3X+ / ActiSleep+ sample data taken from ActiGraph's [online documentation](https://actigraph.desk.com).
+
+```{r }
+file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
+                        package = "actigraph.sleepr")
+```
+
+### Read AGD file(s)
+
+An AGD file is an SQLite database file exported by an ActiGraph device, which contains five tables: settings, data, sleep, awakenings and filters. The sleep and awakenings tables are empty unless the ActiLife tool has been used to analyze the activity counts to detect sleep. See the [ActiLife 6 User manual](http://actigraphcorp.com/support/manuals/actilife-6-manual/).
+
+We can load all five tables as a list using the `read_agd_raw` function.
+
+```{r }
+# UTC (Coordinated Universal Time) is the default time zone
+agdb_10s_raw <- read_agd_raw(file_10s, tz = "UTC")
+names(agdb_10s_raw)
+```
+
+Alternatively, we can use the `read_agd` function to process the raw activity measurements into a more convenient format: a tibble (data frame) of timestamped activity counts, whose attributes are the device settings.
+
+```{r }
+agdb_10s <- read_agd(file_10s, tz = "UTC")
+str(agdb_10s)
+```
+
+Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select, filter, summarise, group_by, arrange) to manipulate the data. For example, let's compute the magnitude of the three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
+
+```{r }
+agdb_10s <- agdb_10s %>% select(timestamp, starts_with("axis"))
+agdb_10s %>%
+  mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2))
+```
+
+```{r }
+ggplot(agdb_10s, aes(timestamp, axis1)) +
+  geom_line() +
+  labs(x = "", y = "activity", subtitle = 
+         "24 hours of activity data taken at a frequency of 10 seconds") +
+  scale_x_datetime(date_labels = "%H:%M")
+```
+
+### Reintegrate from 10s to 60s epochs
+
+The Sadeh and Cole-Kripke algorithms for converting activity measurements into asleep/awake indicators were developed for 60s epochs. If the data is in smaller epochs, we need to collapse or aggregate the epochs. The example data is in 10s epochs. So we aggregate the epochs from 10s to 60s by adding the counts for the six consecutive 10s epochs that fall into the same 60s epoch.
+
+```{r }
+# Collapse epochs from 10 sec to 60 sec by summing counts
+agdb_60s <- collapse_epochs(agdb_10s, 60)
+agdb_60s
+```
+
+```{r }
+ggplot(agdb_60s, aes(timestamp, axis1)) +
+  geom_line() +
+  labs(x = "", y = "activity", subtitle = 
+         "24 hours of activity data aggregated from 10s to 60s epochs") +
+  scale_x_datetime(date_labels = "%H:%M")
+```
+
+### Process a batch of AGD files
+
+With a few lines of code, we can load each AGD file in a directory, collapse from 10s to 60s and save the integrated activity data.
+
+```{r , eval = FALSE}
+library("readr")
+library("tools")
+
+# Construct a path to the directory which contains the raw AGD files
+path_in <- system.file("extdata", package = "actigraph.sleepr")
+# And a path to the directory to contain the processed CSV files
+path_out <- path.expand("~")
+# Finally, get the list of available AGD files
+filenames <- list.files(path_in, pattern = ".agd", full.names = FALSE)
+basenames <- file_path_sans_ext(filenames)
+
+for (basename in basenames) {
+  file_in <- file.path(path_in, paste0(basename, ".agd"))
+  file_out <- file.path(path_out, paste0(basename, ".csv"))
+  agdb <- read_agd(file_in)
+  agdb <- collapse_epochs(agdb, 60)
+  write_csv(agdb, file_out)
+}
+```
+
+### Score sleep with the Sadeh algorithm
+
+The Sadeh algorithm is primarily used for younger adolescents as the supporting research was performed on children and young adults. It requires 60s epochs and uses an 11-minute window that includes the five previous and five future epochs. The `apply_sadeh` function implements the algorithm as described in the ActiGraph user manual.
+
+```{r }
+agdb_sadeh <- apply_sadeh(agdb_60s)
+```
+
+Here are the details. The Sadeh algorithm uses the y-axis (axis 1) counts; epoch counts over 300 are set to 300. The sleep index (SI) is defined as
+
+```
+SI = 7.601 - (0.065 * AVG) - (1.08 * NATS) - (0.056 * SD) - (0.703 * LG)
+```
+
+where at epoch t:
+
+AVG
+ : the arithmetic mean (average) of the activity counts in an 11-epoch window centered at t;
+ 
+NATS
+ : the number of epochs in this 11-epoch window which have counts >= 50 and < 100;
+ 
+SD:
+ : the standard deviation of the counts in a 6-epoch window that includes t and the five preceding epochs;
+ 
+LG
+ : the natural (base e) logarithm of the activity at epoch t. To avoid taking the log of 0, we add 1 to the count.
+
+The time series of activity counts is padded with zeros as necessary, at the beginning and at the end, to compute the three functions AVG, SD, NATS in a rolling window. Finally, the sleep state is awake (1) if the sleep index SI is greater than -4; otherwise the sleep state is asleep (0).
+
+```{r }
+ggplot(agdb_sadeh, aes(timestamp, axis1)) +
+  geom_line() +
+  geom_point(aes(timestamp, 10000 * sleep, 
+                 color = as.character(sleep)), shape = 1) +
+  labs(x = "", y = "activity", subtitle =
+         "For each epoch, Sadeh infers whether the subject is sleeping or not") +
+  scale_x_datetime(date_labels = "%H:%M") +
+  scale_color_discrete(name = "", labels = c("asleep (0)", "awake (1)"))
+```
+
+### Score sleep with the Cole-Kripke algorithm
+
+The Cole-Kripke algorithm is primarily used for adult populations as the supporting research was performed on subjects ranging from 35 to 65 years of age. Like the Sadeh algorithm, it requires 60s epochs and uses a 7-minute window that includes the four previous and two future epochs. The `apply_cole_kripke` function implements the algorithm as described in the ActiGraph user manual.
+
+```{r }
+agdb_colekripke <- apply_cole_kripke(agdb_60s)
+```
+
+Here are the details. The Cole-Kripke algorithm uses the y-axis (axis 1) counts; first epoch counts are divided by 100 and afterwards any scaled counts over 300 are set to 300. The sleep index (SI) is defined as
+
+```
+.001 * (106 * Epoch_prev4 + 54 * Epoch_prev3 + 58 * Epoch_prev2 + 76 * Epoch_prev1 +
+        230 * Epoch +
+         74 * Epoch_next1 + 67 * Epoch_next1)
+```
+
+where  at epoch t:
+
+Epoch_prev(i)
+ : the scaled activity count i epochs before t;
+ 
+Epoch_next(i)
+ : the scaled activity count i epochs after t.
+
+The time series of activity counts is padded with zeros as necessary, at the beginning and at the end. Finally, the sleep state is awake (1) if the sleep index SI is less than 1; otherwise the sleep state is asleep (0).
+
+```{r }
+ggplot(agdb_colekripke, aes(timestamp, count)) +
+  geom_line() +
+  geom_point(aes(timestamp, 100 * sleep, 
+                 color = as.character(sleep)), shape = 1) +
+  labs(x = "", y = "activity (scaled by 0.01)", subtitle =
+         "Like Sadeh, Cole-Kripke infers whether the subject is sleeping or not") +
+  scale_x_datetime(date_labels = "%H:%M") +
+  scale_color_discrete(name = "", labels = c("asleep (0)", "awake (1)"))
+```
+
+What is the agreement between the Sadeh and Cole-Kripke asleep/awake algorithms, on the example dataset?
+
+```{r }
+table(agdb_sadeh$sleep, agdb_colekripke$sleep)
+```
+
+### Apply the Tudor-Locke algorithm
+
+Once each one-minute epoch is labeled as asleep (0) or awake (1), we can use the Tudor-Locke algorithm to detect periods of time in bed and, for each period, to compute sleep quality metrics such as total minutes in bed, total sleep time, number and average length of awakenings, movement and fragmentation indices
+
+The Tudor-Locke algorithm has several parameters:
+
+n_bedtime_start	
+ : Bedtime definition, in minutes. The default is 5.
+
+n_wake_time_end	
+ : Wake time definition, in minutes. The default is 10.
+
+min_sleep_period	
+ : Min sleep period length, in minutes. The default is 160.
+
+max_sleep_period	
+ : Max sleep period length, in minutes. The default is 1440 (24 hours).
+
+min_nonzero_epochs	
+ : Min number of epochs with non-zero activity. The default is 0.
+
+Bedtime is (the first minute of) `n_bedtime_start` consecutive epochs/minutes labeled 0. Similarly, wake time is (the first minute of) of `n_wake_time_end` consecutive epochs/minutes labeled 1, after a period of sleep. The block of time between bedtime and wake time is one sleep period, if the time elapsed is at least `min_sleep_period minutes`. There can be multiple sleep periods in 24 hours but a sleep period cannot be longer than `max_sleep_period` minutes.
+
+```{r }
+periods_sleep <- apply_tudor_locke(agdb_sadeh)
+periods_sleep
+```
+
+For each sleep period, the Tudor-Locke algorithm computes several sleep quality measures:
+
+in_bed_timestamp
+ : The first minute of the bedtime.
+ 
+out_bed_timestamp 
+ : The last minute of wake time.
+
+onset_timestamp
+ : The first minute that the algorithm scores "asleep". By the definition of Tudor-Locke, the sleep onset occurs with the start of bedtime.
+
+latency
+ : The time elapsed between bedtime and sleep onset. By the definition of Tudor-Locke, latency is 0.
+ 
+total_counts
+ : The sum of activity counts for the entire sleep period.
+
+efficiency
+ : The number of sleep minutes divided by the bedtime minutes.
+ 
+time_in_bed
+ : The duration of the sleep period, in minutes.
+
+time_asleep
+ : Total Sleep Time (TST) – The number of minutes scored as "asleep" during the sleep period.
+ 
+time_awake
+ : Wake after Sleep Onset (WASO) – The number of minutes scored as "awake", minus the sleep latency, during the sleep period.
+
+awakenings
+ : The number of awakening episodes.
+
+ave_awakening
+ : The average length, in minutes, of all awakening episodes.
+
+movement_index
+ : Proportion of awake time out of the total time in bed, in percentages.
+
+fragmentation_index
+ : Proportion of one-minute sleep bouts out of the number of sleep bouts of any length, in percentages.
+
+sleep_fragmentation_index
+ : The sum of the movement and fragmentation indices.
+
+```{r }
+# Construct polygons to represent each sleep period
+ymax <- max(agdb_60s$axis1)
+ymin <- 0
+p <- nrow(periods_sleep)
+id <- rep(seq(p), times = 4)
+x <- c(rep(periods_sleep$in_bed_timestamp, times = 2),
+       rep(periods_sleep$out_bed_timestamp, times = 2))
+y <- rep(c(ymax, ymin, ymin, ymax), each = p)
+sleep_poly <- data_frame(id = id, timestamp = x, axis1 = y)
+
+ggplot(agdb_60s, aes(timestamp, axis1)) + 
+  geom_line() +
+  geom_polygon(data = sleep_poly, aes(group = id), 
+               fill = "#DDDDDD", alpha = 0.5) +
+   scale_x_datetime(date_labels = "%H:%M") +
+   labs(x = "", y = "activity", subtitle = 
+          paste0("Tudor-Locke detects sleep periods in a sequence of 0s and 1s\n",
+                 "Sleep periods, if any, are highlighted as gray rectangles"))
+```
+
+Let's combine the epoch counts data and the sleep periods data. Then we can easily slice the epochs data by sleep/non-sleep.
+
+```{r }
+# Let's label each epoch with a `period_id`, which indicates the sleep period
+# the epoch falls in. The ids are consecutive integers starting from 1.
+# If the epoch is outside a sleep period, then `period_id` is NA.
+agdb_sleep <- combine_epochs_periods(agdb_sadeh, periods_sleep,
+                                     time_start_var = "in_bed_timestamp", 
+                                     time_len_var = "time_in_bed")
+agdb_sleep
+table(agdb_sleep$period_id)
+
+# Let's label each epch with a `period_id`, which indicates the non-sleep periods
+# the epoch falls in. (Non-sleep periods are the complement to sleep periods.)
+# The ids are consecutive integers starting from 0 and `period_id = 0` means that 
+# no sleep period has occurred yet.
+agdb_nonsleep <- combine_epochs_periods(agdb_sadeh, periods_sleep,
+                                        time_start_var = "in_bed_timestamp", 
+                                        time_len_var = "time_in_bed", 
+                                        rev = TRUE)
+agdb_nonsleep
+table(agdb_nonsleep$period_id)
+```
+
+### References
+
+Sadeh, Avi, Katherine M Sharkey, and Mary A Carskadon. 1994. “Activity Based Sleep-Wake Identification: An Empirical Test of Methodological Issues.” *Sleep* 17 (3): 201–7.
+
+Cole, Roger J, Daniel F Kripke, William Gruen, Daniel J Mullaney, and J Christian Gillin. 1992. “Automatic Sleep/Wake Identification from Wrist Activity.” *Sleep* 15 (5): 461–69.
+
+Tudor-Locke, Catrine, Tiago V. Barreira, John M. Schuna, Emily F. Mire, and Peter T. Katzmarzyk. 2014. “Fully Automated Waist-Worn Accelerometer Algorithm for Detecting Children’s Sleep-Period Time Separate from 24-H Physical Activity or Sedentary Behaviors.” *Applied Physiology, Nutrition, and Metabolism* 39 (1): 53–57.

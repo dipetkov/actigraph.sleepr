@@ -22,7 +22,7 @@
 #'                     package = "actigraph.sleepr")
 #' agdb_10s <- read_agd(file)
 #' agdb_60s <- collapse_epochs(agdb_10s, 60)
-#' agdb_60s_nonwear <- apply_troiano(agdb_60s)
+#' periods_nonwear <- apply_troiano(agdb_60s)
 #' @export
 
 apply_troiano <- function(agdb,
@@ -50,21 +50,26 @@ apply_troiano <- function(agdb,
                                spike_tolerance,
                                spike_stoplevel,
                                use_magnitude))
-
-  attr(nonwear, "nonwear_algorithm") <- "Troiano"
-  attr(nonwear, "min_period_len") <- min_period_len
-  attr(nonwear, "max_nonzero_count") <- max_nonzero_count
-  attr(nonwear, "spike_tolerance") <- spike_tolerance
-  attr(nonwear, "spike_stoplevel") <- spike_stoplevel
-  attr(nonwear, "activity_threshold") <- activity_threshold
-  attr(nonwear, "use_magnitude") <- use_magnitude
-  attr(nonwear, "endat_nnz_seq") <- endat_nnz_seq
-
   # TODO: I am wondering whether it would not be better to add
   # wear/non-wear labels to each epoch as well as sleep/no sleep?
   # Though then I cannot add the parameter settings is such
   # convenient way. Can I have an attribute which is a param list?
-  structure(nonwear, class = c("tbl_period", "tbl_df", "tbl", "data.frame"))
+  nonwear <-
+    structure(nonwear,
+              class = c("tbl_period", "tbl_df", "tbl", "data.frame"),
+              nonwear_algorithm = "Troiano",
+              min_period_len = min_period_len,
+              max_nonzero_count = max_nonzero_count,
+              spike_tolerance = spike_tolerance,
+              spike_stoplevel = spike_stoplevel,
+              activity_threshold = activity_threshold,
+              endat_nnz_seq = endat_nnz_seq,
+              use_magnitude = use_magnitude)
+
+  if (is.grouped_df(agdb))
+    nonwear <- nonwear %>% group_by_(as.character(attr(agdb, "vars")))
+
+  nonwear
 }
 
 apply_troiano_seq_ <- function(data,
@@ -76,25 +81,25 @@ apply_troiano_seq_ <- function(data,
   data %>%
     mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2),
            count = if (use_magnitude) magnitude else axis1,
-           state = if_else(count <= activity_threshold |
-                             count > max_nonzero_count, "N", "W"),
-           state = if_else(count > spike_stoplevel, "S", state)) %>%
-    group_by(rleid = rleid(state)) %>%
-    summarise(state = first(state),
+           wear = if_else(count <= activity_threshold |
+                             count > max_nonzero_count, 0L, 1L),
+           wear = if_else(count > spike_stoplevel, 2L, wear)) %>%
+    group_by(rleid = rleid(wear)) %>%
+    summarise(wear = first(wear),
               timestamp = first(timestamp),
               length = n()) %>%
-    mutate(state = if_else(state == "W" &
-                             lead(state, default = "") == "N" &
-                             length <= spike_tolerance, NA_character_, state),
-           # Since `na.locf` can't impute leading NAs, fill in those with "W"
-           state = if_else(row_number() == 1 & is.na(state), "W", state),
-           # Fill in NAs with the most recent zero/nonzero state
-           state = na.locf(state)) %>%
-    group_by(rleid = rleid(state)) %>%
-    summarise(state = first(state),
+    mutate(wear = if_else(wear == 1L &
+                             lead(wear, default = 1L) == 0L &
+                             length <= spike_tolerance, NA_integer_, wear),
+           # Since `na.locf` can't impute leading NAs, fill in those with 1s
+           wear = if_else(row_number() == 1 & is.na(wear), 1L, wear),
+           # Fill in NAs with the most recent zero/nonzero wear state
+           wear = na.locf(wear)) %>%
+    group_by(rleid = rleid(wear)) %>%
+    summarise(wear = first(wear),
               timestamp = first(timestamp),
               length = sum(length)) %>%
-    filter(state == "N",
+    filter(wear == 0L,
            length >= min_period_len) %>%
     mutate(end_timestamp = timestamp + duration(length, units = "mins")) %>%
     rename(start_timestamp = timestamp) %>%

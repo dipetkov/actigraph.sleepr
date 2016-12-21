@@ -8,7 +8,7 @@ apply_tudor_locke(agdb, n_bedtime_start = 5, n_wake_time_end = 10,
   min_sleep_period = 160, max_sleep_period = 1440, min_nonzero_epochs = 0)
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 seconds. Each epoch should be scored as asleep (S) or awake (W), using the Sadeh, the Cole-Kripke or a custom algorithm.}
+\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 seconds. Each epoch should be scored as asleep (0) or awake (1), using the Sadeh, the Cole-Kripke or a custom algorithm.}
 
 \item{n_bedtime_start}{Bedtime definition, in minutes. The default is 5.}
 
@@ -36,16 +36,16 @@ A summary \code{tibble} of the detected sleep periods. If the activity data is g
   \item{ave_awakening}{The average length, in minutes, of all awakening episodes.}
   \item{movement_index}{Proportion of awake time out of the total time in bed, in percentages.}
   \item{fragmentation_index}{Proportion of one-minute sleep bouts out of the number of sleep bouts of any length, in percentages.}
-  \item{sleep_fragmentation_index}{Sleep fragmentation index – The sum of the movement and fragmentation indices.}
+  \item{sleep_fragmentation_index}{The sum of the movement and fragmentation indices.}
 }
 }
 \description{
 The Tudor-Locke algorithm detects periods of time in bed and, for each period, computes sleep quality metrics such as total minutes in bed, total sleep time, number and average length of awakenings, movement and fragmentation index.
 }
 \details{
-Once each one-minute epoch is labeled as asleep (S) or awake (W), we can use the Tudor-Locke algorithm to detect periods of \emph{bedtime} and \emph{sleep time}. By definition, sleep time < bedtime since one can be in bed and not sleeping.
+Once each one-minute epoch is labeled as asleep (0) or awake (1), we can use the Tudor-Locke algorithm to detect periods of \emph{bedtime} and \emph{sleep time}. By definition, sleep time < bedtime since one can be in bed and not sleeping.
 
-Bedtime is (the first minute of) \code{n_bedtime_start} consecutive epochs/minutes labeled S. Similarly, wake time is (the first minute of) of \code{n_wake_time_end} consecutive epochs/minutes labeled W, after a period of sleep. The time block between bedtime and wake time is one sleep period, if the time elapsed is at least \code{min_sleep_period} minutes. There can be multiple sleep periods in 24 hours but a sleep period cannot be longer than \code{max_sleep_period} minutes.
+Bedtime is (the first minute of) \code{n_bedtime_start} consecutive epochs/minutes labeled asleep (0). Similarly, wake time is (the first minute of) of \code{n_wake_time_end} consecutive epochs/minutes labeled awake (1), after a period of sleep. The block of time between bedtime and wake time is one sleep period, if the time elapsed is at least \code{min_sleep_period} minutes. There can be multiple sleep periods in 24 hours but a sleep period cannot be longer than \code{max_sleep_period} minutes.
 
 For each sleep period, the algorithm calculates several measures of sleep quality such as time asleep and time awake, number and average length of awakenings, and movement and fragmentation indices.
 }
@@ -62,9 +62,9 @@ agdb_60s <- collapse_epochs(agdb_10s, 60) \%>\%
 
 # Detect sleep periods using Sadeh as the sleep/awake algorithm
 # and Tudor-Locke as the sleep period algorithm
-agdb_60s_scored <- apply_sadeh(agdb_60s)
-agdb_60s_sleep <- apply_tudor_locke(agdb_60s_scored, min_sleep_period = 60)
-agdb_60s_sleep
+agdb_scored <- apply_sadeh(agdb_60s)
+periods_sleep <- apply_tudor_locke(agdb_scored, min_sleep_period = 60)
+periods_sleep
 
 # Group and summarize by an extra varible: hour < 6 or not
 # This grouping is chosen not because it is interesting but to split
@@ -72,9 +72,9 @@ agdb_60s_sleep
 agdb_60s <- agdb_60s \%>\%
   mutate(hour_lt6 = hour(timestamp) < 6) \%>\%
   group_by(hour_lt6)
-agdb_60s_scored <- apply_sadeh(agdb_60s)
-agdb_60s_sleep <- apply_tudor_locke(agdb_60s_scored, min_sleep_period = 60)
-agdb_60s_sleep
+agdb_scored <- apply_sadeh(agdb_60s)
+periods_sleep <- apply_tudor_locke(agdb_scored, min_sleep_period = 60)
+periods_sleep
 }
 \references{
 C Tudor-Locke, TV Barreira, JM Schuna Jr, EF Mire and PT Katzmarzyk. Fully automated waist-worn accelerometer algorithm for detecting children's sleep-period time separate from 24-h physical activity or sedentary behaviors. \emph{Applied Physiology}, Nutrition, and Metabolism, 39(1):53–57, 2014.

@@ -1,0 +1,93 @@
+---
+title: "Non-wear detection from ActiGraph data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Non-wear detection from ActiGraph data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
+                      collapse = TRUE, comment = "#>", out.width = "75%",
+                      fig.asp = 1 / 1.6, fig.width = 5, dpi = 600,
+                      fig.retina = NULL)
+pckg <- c("actigraph.sleepr", "dplyr", "lubridate", "ggplot2")
+inst <- suppressMessages(lapply(pckg, library, character.only = TRUE))
+theme_set(theme_light())
+```
+
+The `actigraph.sleepr` package implements two non-wear detection algorithms: Troiano (Troiano et al. 2008) and Choi (Choi et al. 2011). For illustration, let's use GT3X+ / ActiSleep+ sample data taken from ActiGraph's [online documentation](https://actigraph.desk.com). See the [sleep vignette](detect-sleep.html) for details on reading AGD files and collapsing epochs.
+
+```{r }
+file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
+                        package = "actigraph.sleepr")
+agdb_10s <- read_agd(file_10s)
+agdb_60s <- collapse_epochs(agdb_10s, 60)
+
+# Not really necessary as we only have one day of data
+agdb_60s <- agdb_60s %>%
+  mutate(date = lubridate::as_date(timestamp)) %>%
+  select(date, timestamp, starts_with("axis")) %>%
+  group_by(date)
+```
+
+Long stretches that consist almost entirely of zero counts (zero epochs) suggest that the device wasn't worn at all and therefore should be excluded from downstream analysis.
+
+### Non-wear detection with the Troiano algorithm
+
+The Troiano algorithm for detecting periods of non-wear formalizes a technique used to analyze the 2003-2004 NHANES data; the original SAS source code can be found at http://riskfactor.cancer.gov/tools/nhanes_pam/. The method has some flexibility as a non-wear period can contain a few nonzero epochs of artifactual movement (spikes).
+
+activity_threshold
+ : Highest activity level to be considered "zero"; an epoch with activity exceeding the threshold is considered a "spike". The default threshold is 0.
+
+use_magnitude
+ : If true, the magnitude of the vector (axis1, axis2, axis3) is used to measure activity; otherwise the axis1 value is used. The default is FALSE.
+
+min_period_len
+ : Minimum number of consecutive zero epoch to start a non-wear period. The default is 60.
+
+max_nonzero_count
+ : Epochs with activity greater than `max_nonzero_count` are labeled "zero". The default is `Inf`.
+
+spike_tolerance
+ : Also known as artifactual movement interval. At most `spike_tolerance` "nonzero" epochs can occur in sequence during a non-wear period without interrupting it. The default is 2.
+
+spike_stoplevel
+ : An activity spike that exceeds `spike_stoplevel` counts ends a non-wear period, even if the spike tolerance has not been reached. The default is 100.
+
+The Troiano algorithm specifies that a non-wear period starts with `min_length` consecutive epochs/minutes of zero activity and ends with more than `spike_tolerance` epochs/minutes of nonzero activity.
+
+```{r }
+agdb_nonwear <- apply_troiano(agdb_60s)
+agdb_nonwear
+```
+
+Once non-wear periods are detected, we can further screen those intervals. For example, we can ignore non-wear periods that are very short.
+
+```{r }
+agdb_nonwear %>% filter(length >= 90)
+```
+
+Or we can flag 24-hour day as invalid if the device was worn for too short a time.
+
+```{r }
+agdb_nonwear %>%
+  summarise(time_worn = 24 * 60 - sum(length)) %>%
+  filter(time_worn > 16 * 60)
+```
+
+### Non-wear detection with the Choi algorithm
+
+The Choi algorithm extends the Troiano algorithm by requiring that short spikes of artifactual movement during a non-wear period are preceded and followed by \code{min_window_len} consecutive zero epochs.
+
+```{r }
+agdb_nonwear <- apply_choi(agdb_60s)
+agdb_nonwear
+```
+
+### References
+
+Troiano, Richard P, David Berrigan, Kevin W Dodd, Louise C Mâsse, Timothy Tilert, and Margaret McDowell. 2008. “Physical Activity in the United States Measured by Accelerometer.” *Medicine & Science in Sports & Exercise* 40 (1): 181–88.
+
+Choi, Leena, Zhouwen Liu, Charles E. Matthews, and Maciej S. Buchowski. 2011. “Validation of Accelerometer Wear and Nonwear Time Classification Algorithm.” *Medicine & Science in Sports & Exercise* 43 (2): 357–64.

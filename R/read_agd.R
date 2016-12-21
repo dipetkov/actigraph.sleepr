@@ -104,7 +104,7 @@ read_agd_raw <- function(file, tz = "UTC") {
     }
     query <- paste0(query, " * FROM ", table)
     tbl(db, sql(query)) %>%
-      collect() %>%
+      collect(n = Inf) %>%
       select(- one_of(vars)) %>%
       rename_(.dots = setNames(paste0(vars, "_ts"), vars)) %>%
       mutate_each(funs(cast_dttms), one_of(vars))

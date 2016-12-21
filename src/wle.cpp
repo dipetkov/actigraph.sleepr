@@ -22,7 +22,7 @@ IntegerVector wle(NumericVector counts,
    1. (0, 0, 0) -> (1, 0, 0) : If x[i] <= activity, run0s[0]++
    2. (1, 0, 0) -> (0, 1, 0) : If x[i] > activity, shift run0s
                                one place to the right,
-                               padding with 0
+                               padding with 0s
    3. (0, 1, 0) -> (0, 0, 1) : Shift once more
    4. (0, 0, 1) -> (1, 0, 1) : Add 1 to the start of run0s
    5. (1, 0, 1) -> (2, 0, 1) : Increment run0s[0] again
