@@ -12,15 +12,13 @@ read_agd_raw(file, tz = "UTC")
 \item{tz}{Time zone to convert DateTime ticks to POSIX time.}
 }
 \value{
-A list of five tables: settings, data, filters, sleep and awakenings.
+A list of five tables: settings, data, filters, sleep, awakenings and, if available, capsense.
 }
 \description{
-Read ActiGraph sleep watch data from an SQLite database stored in an AGD file. Return a list of five tables: data, sleep, filters, settings, awakenings.
+Read ActiGraph sleep watch data from an SQLite database stored in an AGD file and return a list with (at least) five tables: data, sleep, filters, settings, awakenings. The tables have the schema described in the ActiLife 6 User manual and the timestamps are converted from Unix time format to human-readable POSIXct representation.
 }
 \details{
-These tables have the schema described in the ActiLife 6 User manual -- at least the column names, though not the data types. In particular, the timestamps are converted to human-readable POSIXct representation.
-
- In the SQLite database, timestamps are stored as ticks since 12:00:00 midnight, January 1, 0001. Each tick is one ten-millionth of a second and so ticks are of type INTEGER (long int). R does not have a 64 bit integer type and timestamps overflow. So I divide by 10,000,000 and convert to date/time with \code{STRFTIME}, \emph{before} selecting the these columns from the database.
+Some Actigraph devices contain a capacitive sensor to detect monitor removal when worn against the skin. If that data is available, the return list includes a capsense table as well.
 }
 \examples{
 file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
