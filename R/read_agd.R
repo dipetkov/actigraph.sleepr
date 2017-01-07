@@ -51,8 +51,8 @@ read_agd <- function(file, tz = "UTC") {
     setNames(tolower(names(.))) %>%
     select(settingname, settingvalue) %>%
     spread(settingname, settingvalue) %>%
-    mutate_each(funs(ticks_to_dttm(., tz)), ends_with("time")) %>%
-    mutate_each(funs(as.integer), starts_with("epoch"))
+    mutate_at(vars(ends_with("time")), funs(ticks_to_dttm(., tz))) %>%
+    mutate_at(vars(starts_with("epoch")), funs(as.integer))
 
   tbl_agd(data, settings)
 }
@@ -113,7 +113,7 @@ read_agd_raw <- function(file, tz = "UTC") {
       collect(n = Inf) %>%
       select(- one_of(vars)) %>%
       rename_(.dots = setNames(paste0(vars, "_ts"), vars)) %>%
-      mutate_each(funs(cast_dttms), one_of(vars))
+      mutate_at(vars(one_of(vars)), funs(cast_dttms))
   }
 
   data <- select_dttms("data", "dataTimestamp")

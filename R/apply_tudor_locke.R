@@ -96,9 +96,6 @@ apply_tudor_locke <- function(agdb,
   sleep
 }
 
-expand_timestamp <- function(timestamp, len) {
-  list(timestamp + duration(seq_len(len) - 1, units = "mins"))
-}
 apply_tudor_locke_ <- function(data,
                                n_bedtime_start, n_wake_time_end,
                                min_sleep_period, max_sleep_period,
@@ -182,7 +179,7 @@ apply_tudor_locke_ <- function(data,
     # That's it. The rest are trivial manipulations to compute
     # various sleep quality metrics.
     mutate(out_bed_timestamp =
-             timestamp + duration(time_in_bed, units = "mins"),
+             timestamp + duration(time_in_bed, "mins"),
            sleep_fragmentation_index = movement_index + fragmentation_index,
            time_awake = time_in_bed - time_asleep,
            ave_awakening = if_else(awakenings > 0, time_awake / awakenings, 0),
@@ -194,6 +191,6 @@ apply_tudor_locke_ <- function(data,
            total_counts, efficiency, time_in_bed, time_asleep, time_awake,
            awakenings, ave_awakening, movement_index, fragmentation_index,
            sleep_fragmentation_index) %>%
-    mutate_each(funs(as.integer), latency, total_counts,
-                time_in_bed, time_asleep, time_awake, awakenings)
+    mutate_at(vars(latency, total_counts,time_in_bed, time_asleep,
+                   time_awake, awakenings), funs(as.integer))
 }

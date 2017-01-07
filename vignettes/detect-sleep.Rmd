@@ -214,6 +214,15 @@ periods_sleep <- apply_tudor_locke(agdb_sadeh)
 periods_sleep
 ```
 
+Let's find the awake periods, which are the complement of the sleep periods.
+ 
+```{r }
+periods_awake <- complement_periods(periods_sleep, agdb_sadeh,
+                                    start_var = "in_bed_timestamp", 
+                                    end_var = "out_bed_timestamp")
+periods_awake
+```
+
 For each sleep period, the Tudor-Locke algorithm computes several sleep quality measures:
 
 in_bed_timestamp
@@ -282,25 +291,13 @@ ggplot(agdb_60s, aes(timestamp, axis1)) +
 Let's combine the epoch counts data and the sleep periods data. Then we can easily slice the epochs data by sleep/non-sleep.
 
 ```{r }
-# Let's label each epoch with a `period_id`, which indicates the sleep period
-# the epoch falls in. The ids are consecutive integers starting from 1.
+# Let's label the epochs with a `period_id`, which indicates the sleep period
+# that each epoch falls in. The ids are consecutive integers starting from 1.
 # If the epoch is outside a sleep period, then `period_id` is NA.
 agdb_sleep <- combine_epochs_periods(agdb_sadeh, periods_sleep,
-                                     time_start_var = "in_bed_timestamp", 
-                                     time_len_var = "time_in_bed")
+                                     start_var = "in_bed_timestamp", 
+                                     end_var = "out_bed_timestamp")
 agdb_sleep
-table(agdb_sleep$period_id)
-
-# Let's label each epch with a `period_id`, which indicates the non-sleep periods
-# the epoch falls in. (Non-sleep periods are the complement to sleep periods.)
-# The ids are consecutive integers starting from 0 and `period_id = 0` means that 
-# no sleep period has occurred yet.
-agdb_nonsleep <- combine_epochs_periods(agdb_sadeh, periods_sleep,
-                                        time_start_var = "in_bed_timestamp", 
-                                        time_len_var = "time_in_bed", 
-                                        rev = TRUE)
-agdb_nonsleep
-table(agdb_nonsleep$period_id)
 ```
 
 ### References

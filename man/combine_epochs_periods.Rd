@@ -4,19 +4,16 @@
 \alias{combine_epochs_periods}
 \title{Combine epochs with sleep/nonwear periods}
 \usage{
-combine_epochs_periods(epochs, periods, time_start_var, time_len_var,
-  rev = FALSE)
+combine_epochs_periods(epochs, periods, start_var, end_var)
 }
 \arguments{
 \item{epochs}{A \code{tibble} (\code{tbl}) of activity data with (at least) a timestamp column. The epoch length must be 60 seconds.}
 
 \item{periods}{A summary \code{tibble} of the (sleep or non-wear) periods.}
 
-\item{time_start_var}{The \code{periods} column which specifies when the periods start.}
+\item{start_var}{The \code{periods} column which specifies when the periods start.}
 
-\item{time_len_var}{The \code{periods} column which specifies how long the periods last, in minutes.}
-
-\item{rev}{Logical. If \code{rev = TRUE}, then label the epochs outside of the given periods.}
+\item{end_var}{The \code{periods} column which specifies when the periods end.}
 }
 \value{
 A \code{tibble} of activity data with one additional column, \code{period_id}, which indicates the period each epoch falls into.
@@ -33,8 +30,8 @@ agdb_scored <- apply_sadeh(agdb_60s)
 periods_sleep <- apply_tudor_locke(agdb_scored,
                                    min_sleep_period = 60)
 agdb_sleep <- combine_epochs_periods(agdb_scored, periods_sleep,
-                                     time_start_var = "in_bed_timestamp",
-                                     time_len_var = "time_in_bed")
+                                     start_var = "in_bed_timestamp",
+                                     end_var = "out_bed_timestamp")
 
 # How many sleep periods were detected and what is their duration, in minutes?
 periods_sleep$time_in_bed

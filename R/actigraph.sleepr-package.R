@@ -13,7 +13,7 @@
 #' @importFrom data.table rleid
 #' @importFrom zoo na.locf na.trim na.spline na.fill
 #' @importFrom RcppRoll roll_mean roll_sd roll_sum
-#' @importFrom lubridate duration ymd_hms
+#' @importFrom lubridate duration ymd_hms time_length
 #' @importFrom stats setNames
 #' @importFrom Rcpp sourceCpp
 NULL

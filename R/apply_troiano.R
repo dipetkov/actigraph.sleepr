@@ -101,7 +101,7 @@ apply_troiano_seq_ <- function(data,
               length = sum(length)) %>%
     filter(wear == 0L,
            length >= min_period_len) %>%
-    mutate(end_timestamp = timestamp + duration(length, units = "mins")) %>%
+    mutate(end_timestamp = timestamp + duration(length, "mins")) %>%
     rename(start_timestamp = timestamp) %>%
     select(start_timestamp, end_timestamp, length)
 }
@@ -122,7 +122,7 @@ apply_troiano_nonseq_ <- function(data,
     # filter(condition1, condition2) simply filters out *all* rows
     filter(length >= min_period_len) %>%
     filter(timestamp - lag(timestamp, default = 0) > 1) %>%
-    mutate(end_timestamp = timestamp + duration(length, units = "mins")) %>%
+    mutate(end_timestamp = timestamp + duration(length, "mins")) %>%
     rename(start_timestamp = timestamp) %>%
     select(start_timestamp, end_timestamp, length)
   # Create empty data frame with the same column specification as x
@@ -133,7 +133,7 @@ apply_troiano_nonseq_ <- function(data,
   while (nrow(x)) {
     z <- x %>% filter(row_number() == 1)
     x <- x %>% filter(start_timestamp > z$start_timestamp +
-                        duration(z$length, units = "mins"))
+                        duration(z$length, "mins"))
     y <- bind_rows(y, z)
   }
   y

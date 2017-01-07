@@ -58,7 +58,7 @@ collapse_epochs_ <- function(data, collapse_factor, use_incomplete) {
   data %>%
     mutate(timestamp = truncate_seconds(timestamp), n = 1L) %>%
     group_by(timestamp) %>%
-    summarise_each(funs(sum), one_of(c(vars, "n"))) %>%
-    mutate_each(funs(na_incomplete(., n)), - timestamp, - n) %>%
+    summarise_at(vars(one_of(c(vars, "n"))), funs(sum)) %>%
+    mutate_at(vars(- timestamp, - n), funs(na_incomplete(., n))) %>%
     select(- n)
 }

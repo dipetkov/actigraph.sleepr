@@ -81,7 +81,7 @@ apply_choi_ <- function(data,
               length = sum(length)) %>%
     filter(wear == 0L,
            length >= min_period_len) %>%
-    mutate(end_timestamp = timestamp + duration(length, units = "mins")) %>%
+    mutate(end_timestamp = timestamp + duration(length, "mins")) %>%
     rename(start_timestamp = timestamp) %>%
     select(start_timestamp, end_timestamp, length)
 }
