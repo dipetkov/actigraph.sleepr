@@ -5,3 +5,7 @@ wle <- function(counts, activity_threshold, spike_tolerance, spike_stoplevel) {
     .Call('actigraph_sleepr_wle', PACKAGE = 'actigraph.sleepr', counts, activity_threshold, spike_tolerance, spike_stoplevel)
 }
 
+overlap <- function(start, end) {
+    .Call('actigraph_sleepr_overlap', PACKAGE = 'actigraph.sleepr', start, end)
+}
+

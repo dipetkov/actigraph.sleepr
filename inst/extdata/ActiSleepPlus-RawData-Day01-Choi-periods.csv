@@ -1,4 +1,4 @@
-start_timestamp,end_timestamp,wear,length,nonwear_algorithm,min_period_len,min_window_len,spike_tolerance,use_magnitude
+period_start,period_end,wear,length,nonwear_algorithm,min_period_len,min_window_len,spike_tolerance,use_magnitude
 2012-04-04T13:29:00Z,2012-04-05T13:29:00Z,TRUE,1440,Choi Default,60,30,2,FALSE
 2012-04-04T13:29:00Z,2012-04-05T03:03:00Z,TRUE,814,Choi Custom1,45,10,4,FALSE
 2012-04-05T03:03:00Z,2012-04-05T03:59:00Z,FALSE,56,Choi Custom1,45,10,4,FALSE

@@ -19,33 +19,43 @@ complement_periods <- function(periods, epochs, start_var, end_var) {
   stopifnot(exists("timestamp", where = epochs))
   stopifnot(exists(start_var, where = periods))
   stopifnot(exists(end_var, where = periods))
-  epochs %>%
-    left_join(expand_periods(periods, start_var, end_var),
-              by = "timestamp") %>%
-    mutate(rev_id = data.table::rleid(is.na(period_id))) %>%
+
+  join_vars <- "timestamp"
+  if (is.grouped_df(epochs))
+    join_vars <- c(join_vars, as.character(groups(epochs)))
+
+  complement <- expand_periods(periods, start_var, end_var) %>%
+    right_join(epochs, by = join_vars) %>%
+    mutate(rev_id = rleid(is.na(period_id))) %>%
     filter(is.na(period_id)) %>%
-    mutate(period_id = data.table::rleid(rev_id)) %>%
-    group_by(period_id) %>%
-    summarise_(.dots = setNames(list(interp(~ first(timestamp)),
-                                     interp(~ last(timestamp))),
-                                c(start_var, end_var)))
-}
+    # Even if the epochs are grouped, the grouping gets lost now,
+    # which is appropriate since we don't know if the grouping
+    # applies to the complement of the periods
+    group_by(rev_id) %>%
+    summarise(period_start = first(timestamp),
+              period_end = last(timestamp),
+              length = n()) %>%
+    ungroup() %>%
+    select(period_start, period_end, length)
 
-expand_timestamp <- function(start, end, units = c("min", "mins")) {
-  match.arg(units)
-  start + duration(seq(0, time_length(end - start, "mins")), "mins")
+  class(complement) <- c("tbl_period", "tbl_df", "tbl", "data.frame")
+  complement
 }
-
+expand_timestamp <- function(start, end, units = "min") {
+  seq(start, end, by = units)
+}
 expand_periods <- function(periods, start_var, end_var) {
   stopifnot(exists(start_var, where = periods))
   stopifnot(exists(end_var, where = periods))
   periods %>%
+    do(expand_periods_(., start_var, end_var))
+}
+expand_periods_ <- function(periods, start_var, end_var) {
+  periods %>%
     mutate(period_id = row_number()) %>%
-    rowwise() %>%
-    do({
-      data_frame(period_id = .$period_id,
-                 timestamp = expand_timestamp(start = .[[start_var]],
-                                              end = .[[end_var]]))
-    }) %>%
-    ungroup()
+    mutate_(timestamp = interp(~ map2(start, end, expand_timestamp),
+                               start = as.name(start_var),
+                               end = as.name(end_var))) %>%
+    select(period_id, timestamp) %>%
+    unnest()
 }

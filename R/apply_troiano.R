@@ -50,10 +50,6 @@ apply_troiano <- function(agdb,
                                spike_tolerance,
                                spike_stoplevel,
                                use_magnitude))
-  # TODO: I am wondering whether it would not be better to add
-  # wear/non-wear labels to each epoch as well as sleep/no sleep?
-  # Though then I cannot add the parameter settings is such
-  # convenient way. Can I have an attribute which is a param list?
   nonwear <-
     structure(nonwear,
               class = c("tbl_period", "tbl_df", "tbl", "data.frame"),
@@ -67,7 +63,7 @@ apply_troiano <- function(agdb,
               use_magnitude = use_magnitude)
 
   if (is.grouped_df(agdb))
-    nonwear <- nonwear %>% group_by_(as.character(attr(agdb, "vars")))
+    nonwear <- nonwear %>% group_by_(as.character(groups(agdb)))
 
   nonwear
 }
@@ -101,9 +97,9 @@ apply_troiano_seq_ <- function(data,
               length = sum(length)) %>%
     filter(wear == 0L,
            length >= min_period_len) %>%
-    mutate(end_timestamp = timestamp + duration(length, "mins")) %>%
-    rename(start_timestamp = timestamp) %>%
-    select(start_timestamp, end_timestamp, length)
+    rename(period_start = timestamp) %>%
+    mutate(period_end = period_start + duration(length, "mins")) %>%
+    select(period_start, period_end, length)
 }
 
 apply_troiano_nonseq_ <- function(data,
@@ -112,29 +108,19 @@ apply_troiano_nonseq_ <- function(data,
                                   spike_tolerance,
                                   spike_stoplevel,
                                   use_magnitude) {
-  x <- data %>%
+  data %>%
     mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2),
            count = if (use_magnitude) magnitude else as.numeric(axis1),
            count = if_else(count > max_nonzero_count, 0, count),
            length = wle(count, activity_threshold,
                         spike_tolerance, spike_stoplevel)) %>%
-    # Don't combine these filter conditions in one statement as
-    # filter(condition1, condition2) simply filters out *all* rows
     filter(length >= min_period_len) %>%
-    filter(timestamp - lag(timestamp, default = 0) > 1) %>%
-    mutate(end_timestamp = timestamp + duration(length, "mins")) %>%
-    rename(start_timestamp = timestamp) %>%
-    select(start_timestamp, end_timestamp, length)
-  # Create empty data frame with the same column specification as x
-  y <- x %>% filter(row_number() < 1)
-  # Remove periods which overlap with previous periods
-  # TODO: Could find this out by looking at the number of periods
-  # which cover a particular timestamp
-  while (nrow(x)) {
-    z <- x %>% filter(row_number() == 1)
-    x <- x %>% filter(start_timestamp > z$start_timestamp +
-                        duration(z$length, "mins"))
-    y <- bind_rows(y, z)
-  }
-  y
+    rename(period_start = timestamp) %>%
+    select(period_start, length) %>%
+    mutate(period_end = period_start + duration(length, "mins")) %>%
+    mutate(a = time_length(period_start - first(period_start), "min"),
+           b = time_length(period_end - first(period_start), "min")) %>%
+    # Remove periods which overlap with previous periods
+    filter(overlap(a, b)) %>%
+    select(period_start, period_end, length)
 }

@@ -43,7 +43,7 @@ apply_choi <- function(agdb,
               use_magnitude = use_magnitude)
 
   if (is.grouped_df(agdb))
-    nonwear <- nonwear %>% group_by_(as.character(attr(agdb, "vars")))
+    nonwear <- nonwear %>% group_by_(as.character(groups(agdb)))
 
   nonwear
 }
@@ -81,7 +81,7 @@ apply_choi_ <- function(data,
               length = sum(length)) %>%
     filter(wear == 0L,
            length >= min_period_len) %>%
-    mutate(end_timestamp = timestamp + duration(length, "mins")) %>%
-    rename(start_timestamp = timestamp) %>%
-    select(start_timestamp, end_timestamp, length)
+    rename(period_start = timestamp) %>%
+    mutate(period_end = period_start + duration(length, "mins")) %>%
+    select(period_start, period_end, length)
 }

@@ -36,8 +36,7 @@ test_that("apply_troiano return same result as ActiLife 6", {
                       endat_nnz_seq = params$endat_nnz_seq)
       common_vars <- intersect(colnames(agdb_nonwear),
                                colnames(actilife))
-      expect_equal(common_vars, c("start_timestamp", "end_timestamp",
-                                  "length"))
+      expect_equal(common_vars, c("period_start", "period_end", "length"))
       for (var in common_vars)
         expect_equal(agdb_nonwear[[var]], actilife[[var]])
     }
@@ -66,8 +65,7 @@ test_that("apply_choi return same result as ActiLife 6", {
                    spike_tolerance = params$spike_tolerance)
       common_vars <- intersect(colnames(agdb_nonwear),
                                colnames(actilife))
-      expect_equal(common_vars, c("start_timestamp", "end_timestamp",
-                                  "length"))
+      expect_equal(common_vars, c("period_start", "period_end", "length"))
       for (var in common_vars)
         expect_equal(agdb_nonwear[[var]], actilife[[var]])
     }

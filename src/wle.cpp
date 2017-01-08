@@ -8,7 +8,6 @@ IntegerVector wle(NumericVector counts,
                   int activity_threshold,
                   int spike_tolerance,
                   int spike_stoplevel) {
-
   int n_epochs = counts.size();
   IntegerVector lengths(n_epochs);
   /*
@@ -73,4 +72,20 @@ IntegerVector wle(NumericVector counts,
     }
   }
   return(lengths);
+}
+
+// [[Rcpp::export]]
+LogicalVector overlap(IntegerVector start, IntegerVector end) {
+  int n = start.size();
+  int cummax = -1;
+  LogicalVector use(n);
+  for (int i = 0; i < n; i++) {
+    if (start[i] > cummax) {
+      use[i] = true;
+      if (end[i] > cummax) { cummax = end[i]; }
+    } else {
+      use[i] = false;
+    }
+  }
+  return(use);
 }

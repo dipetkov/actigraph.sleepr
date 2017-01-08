@@ -17,7 +17,7 @@ inst <- suppressMessages(lapply(pckg, library, character.only = TRUE))
 theme_set(theme_light())
 ```
 
-The `actigraph.sleepr` package implements three sleep scoring/detection algorithms: Sadeh (Sadeh, Sharkey, and Carskadon 1994), Cole-Kripke (Cole et al. 1992) and Tudor-Locke (Tudor-Locke et al. 2014). For illustration, let's use GT3X+ / ActiSleep+ sample data taken from ActiGraph's [online documentation](https://actigraph.desk.com).
+The `actigraph.sleepr` package implements three sleep detection algorithms: Sadeh (Sadeh, Sharkey, and Carskadon 1994), Cole-Kripke (Cole et al. 1992) and Tudor-Locke (Tudor-Locke et al. 2014). For illustration, let's use GT3X+ / ActiSleep+ sample data taken from ActiGraph's [online documentation](https://actigraph.desk.com).
 
 ```{r }
 file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
@@ -36,7 +36,7 @@ agdb_10s_raw <- read_agd_raw(file_10s, tz = "UTC")
 names(agdb_10s_raw)
 ```
 
-Alternatively, we can use the `read_agd` function to process the raw activity measurements into a more convenient format: a tibble (data frame) of timestamped activity counts, whose attributes are the device settings.
+Alternatively, we can use the `read_agd` function to get the raw activity measurements in a more convenient format: a `dplyr` data frame (a tibble) of timestamped activity counts, whose attributes are the device settings.
 
 ```{r }
 agdb_10s <- read_agd(file_10s, tz = "UTC")
@@ -51,6 +51,10 @@ agdb_10s %>%
   mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2))
 ```
 
+### Reintegrate from 10s to 60s epochs
+
+The Sadeh and Cole-Kripke algorithms for converting activity measurements into asleep/awake indicators were developed for 60s epochs. If the data is in smaller epochs, we need to collapse or aggregate the epochs. The example data is in 10s epochs.
+
 ```{r }
 ggplot(agdb_10s, aes(timestamp, axis1)) +
   geom_line() +
@@ -59,9 +63,7 @@ ggplot(agdb_10s, aes(timestamp, axis1)) +
   scale_x_datetime(date_labels = "%H:%M")
 ```
 
-### Reintegrate from 10s to 60s epochs
-
-The Sadeh and Cole-Kripke algorithms for converting activity measurements into asleep/awake indicators were developed for 60s epochs. If the data is in smaller epochs, we need to collapse or aggregate the epochs. The example data is in 10s epochs. So we aggregate the epochs from 10s to 60s by adding the counts for the six consecutive 10s epochs that fall into the same 60s epoch.
+So we aggregate the epochs from 10s to 60s by adding the counts for the six consecutive 10s epochs that fall into the same 60s epoch.
 
 ```{r }
 # Collapse epochs from 10 sec to 60 sec by summing counts
@@ -76,6 +78,8 @@ ggplot(agdb_60s, aes(timestamp, axis1)) +
          "24 hours of activity data aggregated from 10s to 60s epochs") +
   scale_x_datetime(date_labels = "%H:%M")
 ```
+
+Integration nicely emphasizes a peak of activity just before 6pm.
 
 ### Process a batch of AGD files
 
@@ -102,9 +106,9 @@ for (basename in basenames) {
 }
 ```
 
-### Score sleep with the Sadeh algorithm
+### Apply the Sadeh algorithm
 
-The Sadeh algorithm is primarily used for younger adolescents as the supporting research was performed on children and young adults. It requires 60s epochs and uses an 11-minute window that includes the five previous and five future epochs. The `apply_sadeh` function implements the algorithm as described in the ActiGraph user manual.
+The Sadeh sleep scoring algorithm is primarily used for younger adolescents as the supporting research was performed on children and young adults. It requires 60s epochs and uses an 11-minute window that includes the five previous and five future epochs. The `apply_sadeh` function implements the algorithm as described in the ActiGraph user manual.
 
 ```{r }
 agdb_sadeh <- apply_sadeh(agdb_60s)
@@ -130,22 +134,22 @@ SD:
 LG
  : the natural (base e) logarithm of the activity at epoch t. To avoid taking the log of 0, we add 1 to the count.
 
-The time series of activity counts is padded with zeros as necessary, at the beginning and at the end, to compute the three functions AVG, SD, NATS in a rolling window. Finally, the sleep state is awake (1) if the sleep index SI is greater than -4; otherwise the sleep state is asleep (0).
+The time series of activity counts is padded with zeros as necessary, at the beginning and at the end, to compute the three functions AVG, SD, NATS within a rolling window. Finally, the sleep state is awake (1) if the sleep index SI is greater than -4; otherwise the sleep state is asleep (0).
 
 ```{r }
-ggplot(agdb_sadeh, aes(timestamp, axis1)) +
+ggplot(agdb_sadeh, aes(timestamp, count)) +
   geom_line() +
-  geom_point(aes(timestamp, 10000 * sleep, 
+  geom_point(aes(timestamp, 300 * sleep, 
                  color = as.character(sleep)), shape = 1) +
-  labs(x = "", y = "activity", subtitle =
+  labs(x = "", y = "activity (bounded at 300)", subtitle =
          "For each epoch, Sadeh infers whether the subject is sleeping or not") +
   scale_x_datetime(date_labels = "%H:%M") +
   scale_color_discrete(name = "", labels = c("asleep (0)", "awake (1)"))
 ```
 
-### Score sleep with the Cole-Kripke algorithm
+### Apply the Cole-Kripke algorithm
 
-The Cole-Kripke algorithm is primarily used for adult populations as the supporting research was performed on subjects ranging from 35 to 65 years of age. Like the Sadeh algorithm, it requires 60s epochs and uses a 7-minute window that includes the four previous and two future epochs. The `apply_cole_kripke` function implements the algorithm as described in the ActiGraph user manual.
+The Cole-Kripke sleep scoring algorithm is primarily used for adult populations as the supporting research was performed on subjects ranging from 35 to 65 years of age. Like the Sadeh algorithm, it requires 60s epochs and uses a 7-minute window that includes the four previous and two future epochs. The `apply_cole_kripke` function implements the algorithm as described in the ActiGraph user manual.
 
 ```{r }
 agdb_colekripke <- apply_cole_kripke(agdb_60s)
@@ -207,20 +211,11 @@ max_sleep_period
 min_nonzero_epochs	
  : Min number of epochs with non-zero activity. The default is 0.
 
-Bedtime is (the first minute of) `n_bedtime_start` consecutive epochs/minutes labeled 0. Similarly, wake time is (the first minute of) of `n_wake_time_end` consecutive epochs/minutes labeled 1, after a period of sleep. The block of time between bedtime and wake time is one sleep period, if the time elapsed is at least `min_sleep_period minutes`. There can be multiple sleep periods in 24 hours but a sleep period cannot be longer than `max_sleep_period` minutes.
+Bedtime is (the first minute of) `n_bedtime_start` consecutive epochs/minutes labeled 0. Similarly, wake time is (the first minute of) of `n_wake_time_end` consecutive epochs/minutes labeled 1, after a period of sleep. The time block between bedtime and wake time is one sleep period, if the time elapsed is at least `min_sleep_period minutes`. There can be multiple sleep periods in 24 hours but a sleep period cannot be longer than `max_sleep_period` minutes.
 
 ```{r }
 periods_sleep <- apply_tudor_locke(agdb_sadeh)
 periods_sleep
-```
-
-Let's find the awake periods, which are the complement of the sleep periods.
- 
-```{r }
-periods_awake <- complement_periods(periods_sleep, agdb_sadeh,
-                                    start_var = "in_bed_time", 
-                                    end_var = "out_bed_time")
-periods_awake
 ```
 
 For each sleep period, the Tudor-Locke algorithm computes several sleep quality measures:
@@ -229,7 +224,7 @@ in_bed_time
  : The first minute of the bedtime.
  
 out_bed_time
- : The last minute of wake time.
+ : The first minute of wake time.
 
 onset
  : The first minute that the algorithm scores "asleep". By the definition of Tudor-Locke, the sleep onset occurs with the start of bedtime.
@@ -265,7 +260,7 @@ fragmentation_index
  : Proportion of one-minute sleep bouts out of the number of sleep bouts of any length, in percentages.
 
 sleep_fragmentation_index
- : The sum of the movement and fragmentation indices.
+ : Sleep fragmentation index – The sum of the movement and fragmentation indices.
 
 ```{r }
 # Construct polygons to represent each sleep period
@@ -288,7 +283,16 @@ ggplot(agdb_60s, aes(timestamp, axis1)) +
                  "Sleep periods, if any, are highlighted as gray rectangles"))
 ```
 
-Let's combine the epoch counts data and the sleep periods data. Then we can easily slice the epochs data by sleep/non-sleep.
+Let's find the awake periods, which are the complement of the sleep periods.
+ 
+```{r }
+periods_awake <- complement_periods(periods_sleep, agdb_sadeh,
+                                    start_var = "in_bed_time", 
+                                    end_var = "out_bed_time")
+periods_awake
+```
+
+Let's combine the epoch counts data and the sleep periods data. Then we can easily slice the epochs data by sleep/non-sleep periods.
 
 ```{r }
 # Let's label the epochs with a `period_id`, which indicates the sleep period

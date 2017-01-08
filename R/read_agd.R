@@ -51,6 +51,7 @@ read_agd <- function(file, tz = "UTC") {
     setNames(tolower(names(.))) %>%
     select(settingname, settingvalue) %>%
     spread(settingname, settingvalue) %>%
+    mutate_at(vars(matches("dateOfBirth")), funs(ticks_to_dttm(., tz))) %>%
     mutate_at(vars(ends_with("time")), funs(ticks_to_dttm(., tz))) %>%
     mutate_at(vars(starts_with("epoch")), funs(as.integer))
 
@@ -126,13 +127,11 @@ read_agd_raw <- function(file, tz = "UTC") {
 
   # The capsense table stores data from an optional wear sensor,
   # so it might not be present in the database.
-
+  # The capsense table stores data from an optional wear sensor,
+  # so it might not be present in the database.
+  tables <-list(data = data, sleep = sleep, filters = filters,
+                settings = settings, awakenings = awakenings)
   if ("capsense" %in% tables_agd)
-    capsense <- select_dttms("capsense", "timeStamp")
-  else
-    capsense <- NULL
-
-  return(list(data = data, sleep = sleep, filters = filters,
-              settings = settings, awakenings = awakenings,
-              capsense = capsense))
+    tables$capsense <- select_dttms("capsense", "timeStamp")
+  tables
 }

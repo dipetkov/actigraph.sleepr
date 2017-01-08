@@ -19,3 +19,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// overlap
+LogicalVector overlap(IntegerVector start, IntegerVector end);
+RcppExport SEXP actigraph_sleepr_overlap(SEXP startSEXP, SEXP endSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type start(startSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type end(endSEXP);
+    rcpp_result_gen = Rcpp::wrap(overlap(start, end));
+    return rcpp_result_gen;
+END_RCPP
+}

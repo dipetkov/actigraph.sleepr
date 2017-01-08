@@ -91,7 +91,7 @@ apply_tudor_locke <- function(agdb,
               min_nonzero_epochs = min_nonzero_epochs)
 
   if (is.grouped_df(agdb))
-    sleep <- sleep %>% group_by_(as.character(attr(agdb, "vars")))
+    sleep <- sleep %>% group_by_(as.character(groups(agdb)))
 
   sleep
 }

@@ -1,4 +1,4 @@
-start_timestamp,end_timestamp,wear,length,nonwear_algorithm,min_period_len,max_nonzero_count,spike_tolerance,spike_stoplevel,activity_threshold,use_magnitude
+period_start,period_end,wear,length,nonwear_algorithm,min_period_len,max_nonzero_count,spike_tolerance,spike_stoplevel,activity_threshold,use_magnitude
 2012-06-27T10:54:00Z,2012-06-28T00:00:00Z,TRUE,786,Troiano Default,60,Inf,2,100,0,FALSE
 2012-06-28T00:00:00Z,2012-06-28T02:37:00Z,FALSE,157,Troiano Default,60,Inf,2,100,0,FALSE
 2012-06-28T02:37:00Z,2012-06-28T02:46:00Z,TRUE,9,Troiano Default,60,Inf,2,100,0,FALSE

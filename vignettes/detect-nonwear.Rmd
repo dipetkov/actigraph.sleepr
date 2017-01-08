@@ -20,16 +20,14 @@ theme_set(theme_light())
 The `actigraph.sleepr` package implements two non-wear detection algorithms: Troiano (Troiano et al. 2008) and Choi (Choi et al. 2011). For illustration, let's use GT3X+ / ActiSleep+ sample data taken from ActiGraph's [online documentation](https://actigraph.desk.com). See the [sleep vignette](detect-sleep.html) for details on reading AGD files and collapsing epochs.
 
 ```{r }
-file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
+file_10s <- system.file("extdata", "ActiSleepPlus-RawData-Day01-10sec.agd",
                         package = "actigraph.sleepr")
 agdb_10s <- read_agd(file_10s)
-agdb_60s <- collapse_epochs(agdb_10s, 60)
-
-# Not really necessary as we only have one day of data
-agdb_60s <- agdb_60s %>%
+agdb_60s <- collapse_epochs(agdb_10s, 60) %>%
   mutate(date = lubridate::as_date(timestamp)) %>%
   select(date, timestamp, starts_with("axis")) %>%
   group_by(date)
+agdb_60s
 ```
 
 Long stretches that consist almost entirely of zero counts (zero epochs) suggest that the device wasn't worn at all and therefore should be excluded from downstream analysis.
@@ -59,22 +57,31 @@ spike_stoplevel
 The Troiano algorithm specifies that a non-wear period starts with `min_length` consecutive epochs/minutes of zero activity and ends with more than `spike_tolerance` epochs/minutes of nonzero activity.
 
 ```{r }
-agdb_nonwear <- apply_troiano(agdb_60s)
-agdb_nonwear
+periods_nonwear <- apply_troiano(agdb_60s, min_period_len = 45)
+periods_nonwear
 ```
 
-Once non-wear periods are detected, we can further screen those intervals. For example, we can ignore non-wear periods that are very short.
+Once non-wear periods are detected, we can further screen those intervals. For example, we can ignore non-wear periods that are too short.
 
 ```{r }
-agdb_nonwear %>% filter(length >= 90)
+periods_nonwear %>% filter(length >= 60)
 ```
 
-Or we can flag 24-hour day as invalid if the device was worn for too short a time.
+Or we can flag 24-hour day as invalid if the device was worn only for a short period of time.
 
 ```{r }
-agdb_nonwear %>%
-  summarise(time_worn = 24 * 60 - sum(length)) %>%
-  filter(time_worn > 16 * 60)
+# Find the periods during which the device was worn
+periods_wear <- complement_periods(periods_nonwear, agdb_60s,
+                                   start_var = "period_start", end_var = "period_end")
+periods_wear
+
+# Each epoch either falls in a wear period (with period_id = 1, 2, 3, etc.)
+# or in a non-wear period with (period_id = NA)
+agdb_wear <- combine_epochs_periods(agdb_60s, periods_wear,
+                                    start_var = "period_start", end_var = "period_end")
+agdb_wear %>%
+  filter(!is.na(period_id)) %>%
+  summarise(time_worn = n())
 ```
 
 ### Non-wear detection with the Choi algorithm
@@ -82,8 +89,8 @@ agdb_nonwear %>%
 The Choi algorithm extends the Troiano algorithm by requiring that short spikes of artifactual movement during a non-wear period are preceded and followed by \code{min_window_len} consecutive zero epochs.
 
 ```{r }
-agdb_nonwear <- apply_choi(agdb_60s)
-agdb_nonwear
+periods_nonwear <- apply_choi(agdb_60s, min_period_len = 45, min_window_len = 10)
+periods_nonwear
 ```
 
 ### References
