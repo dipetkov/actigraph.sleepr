@@ -9,16 +9,16 @@
 #' @param min_nonzero_epochs Min number of epochs with non-zero activity. The default is 0.
 #' @return A summary \code{tibble} of the detected sleep periods. If the activity data is grouped, then sleep periods are detected separately for each group.
 #' \describe{
-#'   \item{in_bed_timestamp}{The first minute of the bedtime.}
-#'   \item{out_bed_timestamp}{The first minute of wake time.}
-#'   \item{onset_timestamp}{The first minute that the algorithm scores "asleep".}
+#'   \item{in_bed_time}{The first minute of the bedtime.}
+#'   \item{out_bed_time}{The first minute of wake time.}
+#'   \item{onset}{The first minute that the algorithm scores "asleep".}
 #'   \item{latency}{The time elapsed between bedtime and sleep onset. By the definition of Tudor-Locke, latency is 0.}
-#'   \item{total_counts}{The sum of activity counts for the entire sleep period.}
 #'   \item{efficiency}{The number of sleep minutes divided by the bedtime  minutes.}
-#'   \item{time_in_bed}{The duration of the sleep period, in minutes.}
-#'   \item{time_asleep}{Total Sleep Time (TST) – The number of minutes scored as "asleep" during the sleep period.}
-#'   \item{time_awake}{Wake after Sleep Onset (WASO) – The number of minutes scored as "awake", minus the sleep latency, during the sleep period.}
-#'   \item{awakenings}{The number of awakening episodes.}
+#'   \item{duration}{The duration of the sleep period, in minutes.}
+#'   \item{activity_counts}{The sum of activity counts for the entire sleep period.}
+#'   \item{total_sleep_time}{The number of minutes scored as "asleep" during the sleep period.}
+#'   \item{wake_after_onset}{The number of minutes scored as "awake", minus the sleep latency, during the sleep period.}
+#'   \item{nb_awakenings}{The number of awakening episodes.}
 #'   \item{ave_awakening}{The average length, in minutes, of all awakening episodes.}
 #'   \item{movement_index}{Proportion of awake time out of the total time in bed, in percentages.}
 #'   \item{fragmentation_index}{Proportion of one-minute sleep bouts out of the number of sleep bouts of any length, in percentages.}
@@ -134,17 +134,17 @@ apply_tudor_locke_ <- function(data,
     group_by(rleid = rleid(sleep)) %>%
     summarise(timestamp = first(timestamp),
               sleep = first(sleep),
-              time_in_bed = n(),                 # number of epochs
+              duration = n(),                 # number of epochs
               nonzero_epochs = sum(axis1 > 0), # number of epochs with activity
-              total_counts = sum(axis1)) %>%   # total activity
-    mutate(awakenings = (sleep == 1),
+              activity_counts = sum(axis1)) %>%   # total activity
+    mutate(nb_awakenings = (sleep == 1),
            dozings = (sleep == 0),
-           dozings_1min = (sleep == 0 & time_in_bed == 1),
-           time_asleep = if_else(sleep == 1 & time_in_bed < n_wake_time_end,
-                                 0L, time_in_bed),
+           dozings_1min = (sleep == 0 & duration == 1),
+           total_sleep_time = if_else(sleep == 1 & duration < n_wake_time_end,
+                                      0L, duration),
            # Set the state of short runs to NA
-           sleep = if_else( (sleep == 1 & time_in_bed < n_wake_time_end) |
-                              (sleep == 0 & time_in_bed < n_bedtime_start),
+           sleep = if_else( (sleep == 1 & duration < n_wake_time_end) |
+                              (sleep == 0 & duration < n_bedtime_start),
                             NA_integer_, sleep),
            # A special case that I am not sure how to handle:
            # Leading NAs can't be filled in with `na.locf`.
@@ -156,41 +156,42 @@ apply_tudor_locke_ <- function(data,
     group_by(rleid = rleid(sleep)) %>%
     summarise(timestamp = first(timestamp),
               sleep = first(sleep),
-              total_counts = sum(total_counts, na.rm = TRUE),
-              time_in_bed = sum(time_in_bed),
-              time_asleep = sum(time_asleep),
+              activity_counts = sum(activity_counts, na.rm = TRUE),
+              duration = sum(duration),
+              total_sleep_time = sum(total_sleep_time),
               nonzero_epochs = sum(nonzero_epochs),
-              awakenings = sum(awakenings),
+              nb_awakenings = sum(nb_awakenings),
               dozings = sum(dozings),
               dozings_1min = sum(dozings_1min)) %>%
     mutate(fragmentation_index =
              if_else(dozings > 0, 100 * dozings_1min / dozings, 0),
-           movement_index = 100 * nonzero_epochs / time_in_bed,
+           movement_index = 100 * nonzero_epochs / duration,
            # Set the state of short sleep runs to awake;
            # no need to set to NA and then fill in the NAs
            # as here we flip only asleep states to awake
-           sleep = if_else(sleep == 0 & time_in_bed < min_sleep_period,
+           sleep = if_else(sleep == 0 & duration < min_sleep_period,
                            1L, sleep)) %>%
     # Filter out wake (W) periods as well as sleep periods that
     # fail the min_nonzero_epochs and max_sleep_period criteria
     filter(sleep == 0,
            nonzero_epochs >= min_nonzero_epochs,
-           time_in_bed <= max_sleep_period) %>%
+           duration <= max_sleep_period) %>%
     # That's it. The rest are trivial manipulations to compute
     # various sleep quality metrics.
-    mutate(out_bed_timestamp =
-             timestamp + duration(time_in_bed, "mins"),
+    mutate(out_bed_time =
+             timestamp + duration(duration, "mins"),
            sleep_fragmentation_index = movement_index + fragmentation_index,
-           time_awake = time_in_bed - time_asleep,
-           ave_awakening = if_else(awakenings > 0, time_awake / awakenings, 0),
-           efficiency = 100 * time_asleep / time_in_bed,
+           wake_after_onset = duration - total_sleep_time,
+           ave_awakening =
+             if_else(nb_awakenings > 0, wake_after_onset / nb_awakenings, 0),
+           efficiency = 100 * total_sleep_time / duration,
            # latency is the difference between in bed and onset times
-           onset_timestamp = timestamp, latency = 0) %>%
-    rename(in_bed_timestamp = timestamp) %>%
-    select(in_bed_timestamp, out_bed_timestamp, onset_timestamp, latency,
-           total_counts, efficiency, time_in_bed, time_asleep, time_awake,
-           awakenings, ave_awakening, movement_index, fragmentation_index,
+           onset = timestamp, latency = 0) %>%
+    rename(in_bed_time = timestamp) %>%
+    select(in_bed_time, out_bed_time, onset, latency, efficiency,
+           duration, activity_counts, total_sleep_time, wake_after_onset,
+           nb_awakenings, ave_awakening, movement_index, fragmentation_index,
            sleep_fragmentation_index) %>%
-    mutate_at(vars(latency, total_counts,time_in_bed, time_asleep,
-                   time_awake, awakenings), funs(as.integer))
+    mutate_at(vars(latency, activity_counts,duration, total_sleep_time,
+                   wake_after_onset, nb_awakenings), funs(as.integer))
 }

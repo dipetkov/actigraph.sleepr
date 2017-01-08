@@ -23,16 +23,16 @@ apply_tudor_locke(agdb, n_bedtime_start = 5, n_wake_time_end = 10,
 \value{
 A summary \code{tibble} of the detected sleep periods. If the activity data is grouped, then sleep periods are detected separately for each group.
 \describe{
-  \item{in_bed_timestamp}{The first minute of the bedtime.}
-  \item{out_bed_timestamp}{The first minute of wake time.}
-  \item{onset_timestamp}{The first minute that the algorithm scores "asleep".}
+  \item{in_bed_time}{The first minute of the bedtime.}
+  \item{out_bed_time}{The first minute of wake time.}
+  \item{onset}{The first minute that the algorithm scores "asleep".}
   \item{latency}{The time elapsed between bedtime and sleep onset. By the definition of Tudor-Locke, latency is 0.}
-  \item{total_counts}{The sum of activity counts for the entire sleep period.}
   \item{efficiency}{The number of sleep minutes divided by the bedtime  minutes.}
-  \item{time_in_bed}{The duration of the sleep period, in minutes.}
-  \item{time_asleep}{Total Sleep Time (TST) – The number of minutes scored as "asleep" during the sleep period.}
-  \item{time_awake}{Wake after Sleep Onset (WASO) – The number of minutes scored as "awake", minus the sleep latency, during the sleep period.}
-  \item{awakenings}{The number of awakening episodes.}
+  \item{duration}{The duration of the sleep period, in minutes.}
+  \item{activity_counts}{The sum of activity counts for the entire sleep period.}
+  \item{total_sleep_time}{The number of minutes scored as "asleep" during the sleep period.}
+  \item{wake_after_onset}{The number of minutes scored as "awake", minus the sleep latency, during the sleep period.}
+  \item{nb_awakenings}{The number of awakening episodes.}
   \item{ave_awakening}{The average length, in minutes, of all awakening episodes.}
   \item{movement_index}{Proportion of awake time out of the total time in bed, in percentages.}
   \item{fragmentation_index}{Proportion of one-minute sleep bouts out of the number of sleep bouts of any length, in percentages.}

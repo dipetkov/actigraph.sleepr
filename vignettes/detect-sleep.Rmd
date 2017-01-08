@@ -218,41 +218,41 @@ Let's find the awake periods, which are the complement of the sleep periods.
  
 ```{r }
 periods_awake <- complement_periods(periods_sleep, agdb_sadeh,
-                                    start_var = "in_bed_timestamp", 
-                                    end_var = "out_bed_timestamp")
+                                    start_var = "in_bed_time", 
+                                    end_var = "out_bed_time")
 periods_awake
 ```
 
 For each sleep period, the Tudor-Locke algorithm computes several sleep quality measures:
 
-in_bed_timestamp
+in_bed_time
  : The first minute of the bedtime.
  
-out_bed_timestamp 
+out_bed_time
  : The last minute of wake time.
 
-onset_timestamp
+onset
  : The first minute that the algorithm scores "asleep". By the definition of Tudor-Locke, the sleep onset occurs with the start of bedtime.
 
 latency
  : The time elapsed between bedtime and sleep onset. By the definition of Tudor-Locke, latency is 0.
- 
-total_counts
- : The sum of activity counts for the entire sleep period.
+  
+duration
+ : The duration of the sleep period, in minutes.
 
 efficiency
  : The number of sleep minutes divided by the bedtime minutes.
- 
-time_in_bed
- : The duration of the sleep period, in minutes.
 
-time_asleep
- : Total Sleep Time (TST) – The number of minutes scored as "asleep" during the sleep period.
- 
-time_awake
- : Wake after Sleep Onset (WASO) – The number of minutes scored as "awake", minus the sleep latency, during the sleep period.
+activity_counts
+ : The sum of activity counts for the entire sleep period.
 
-awakenings
+total_sleep_time
+ : The number of minutes scored as "asleep" during the sleep period.
+ 
+wake_after_onset
+ : The number of minutes scored as "awake", minus the sleep latency, during the sleep period.
+
+nb_awakenings
  : The number of awakening episodes.
 
 ave_awakening
@@ -273,8 +273,8 @@ ymax <- max(agdb_60s$axis1)
 ymin <- 0
 p <- nrow(periods_sleep)
 id <- rep(seq(p), times = 4)
-x <- c(rep(periods_sleep$in_bed_timestamp, times = 2),
-       rep(periods_sleep$out_bed_timestamp, times = 2))
+x <- c(rep(periods_sleep$in_bed_time, times = 2),
+       rep(periods_sleep$out_bed_time, times = 2))
 y <- rep(c(ymax, ymin, ymin, ymax), each = p)
 sleep_poly <- data_frame(id = id, timestamp = x, axis1 = y)
 
@@ -295,8 +295,8 @@ Let's combine the epoch counts data and the sleep periods data. Then we can easi
 # that each epoch falls in. The ids are consecutive integers starting from 1.
 # If the epoch is outside a sleep period, then `period_id` is NA.
 agdb_sleep <- combine_epochs_periods(agdb_sadeh, periods_sleep,
-                                     start_var = "in_bed_timestamp", 
-                                     end_var = "out_bed_timestamp")
+                                     start_var = "in_bed_time", 
+                                     end_var = "out_bed_time")
 agdb_sleep
 ```
 

@@ -30,11 +30,11 @@ agdb_scored <- apply_sadeh(agdb_60s)
 periods_sleep <- apply_tudor_locke(agdb_scored,
                                    min_sleep_period = 60)
 agdb_sleep <- combine_epochs_periods(agdb_scored, periods_sleep,
-                                     start_var = "in_bed_timestamp",
-                                     end_var = "out_bed_timestamp")
+                                     start_var = "in_bed_time",
+                                     end_var = "out_bed_time")
 
 # How many sleep periods were detected and what is their duration, in minutes?
-periods_sleep$time_in_bed
+periods_sleep$duration
 # What is the assignment of epochs to periods?
 table(agdb_sleep$period_id)
 }

@@ -27,6 +27,7 @@ Imports:
   lubridate,
   stats,
   tidyr,
+  purrr,
   zoo
 Suggests:
   ggplot2,

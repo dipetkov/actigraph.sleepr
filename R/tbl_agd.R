@@ -30,9 +30,9 @@ tbl_period <- function(data) {
   if (!is.data.frame(data))
     stop("`data` must be a data frame")
   if (is.null(data$axis1))
-    stop("`data` must have an `in_bed_timestamp` column")
+    stop("`data` must have an `in_bed_time` column")
   if (is.null(data$timestamp))
-    stop("`data` must have an `out_bed_timestamp` column")
+    stop("`data` must have an `out_bed_time` column")
   data <- as_data_frame(data)
   structure(data, class = c("tbl_period", "tbl_df", "tbl", "data.frame"))
 }

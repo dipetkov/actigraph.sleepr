@@ -8,8 +8,9 @@
 #' @useDynLib actigraph.sleepr
 #' @docType package
 #' @import dplyr
-#' @import tidyr
-#' @import lazyeval
+#' @importFrom tidyr gather spread unnest
+#' @importFrom lazyeval interp
+#' @importFrom purrr map map2
 #' @importFrom data.table rleid
 #' @importFrom zoo na.locf na.trim na.spline na.fill
 #' @importFrom RcppRoll roll_mean roll_sd roll_sum
@@ -18,12 +19,12 @@
 #' @importFrom Rcpp sourceCpp
 NULL
 
-globalVariables(c("ave_awakening", "awakenings", "axis1", "axis2", "axis3",
-                  "datatimestamp", "dozings", "dozings_1min", "efficiency",
-                  "end_timestamp", "filtered", "fragmentation_index",
-                  "in_bed_timestamp", "latency", "length", "magnitude",
-                  "movement_index", "nonzero_epochs", "onset_timestamp",
-                  "out_bed_timestamp", "period_id", "rev_id", "settingname",
-                  "settingvalue", "sleep", "sleep_fragmentation_index",
-                  "start_timestamp", "time_asleep", "time_awake",
-                  "time_in_bed", "timestamp", "total_counts", "wear", "."))
+globalVariables(c( ".", "activity_counts", "ave_awakening", "axis1", "axis2",
+                   "axis3", "datatimestamp", "dozings", "dozings_1min",
+                   "duration", "efficiency", "end_timestamp", "filtered",
+                   "fragmentation_index", "in_bed_time", "latency", "length",
+                   "magnitude", "movement_index", "nb_awakenings",
+                   "nonzero_epochs", "onset", "out_bed_time", "period_id",
+                   "rev_id", "settingname", "settingvalue", "sleep",
+                   "sleep_fragmentation_index", "start_timestamp", "timestamp",
+                   "total_sleep_time", "wake_after_onset", "wear"))

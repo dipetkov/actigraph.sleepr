@@ -48,17 +48,18 @@ test_that("apply_tudor_locke return same result as ActiLife 6", {
                         min_nonzero_epochs = params$min_nonzero_epochs)
     common_vars <- intersect(colnames(sleep_periods),
                              colnames(actilife))
-    expect_equal(common_vars, c("in_bed_timestamp", "out_bed_timestamp",
-                                "onset_timestamp", "latency", "total_counts",
-                                "efficiency", "time_in_bed", "time_asleep",
-                                "time_awake", "awakenings", "ave_awakening",
-                                "movement_index", "fragmentation_index",
+    expect_equal(common_vars, c("in_bed_time", "out_bed_time", "onset",
+                                "latency", "efficiency", "duration",
+                                "activity_counts", "total_sleep_time",
+                                "wake_after_onset", "nb_awakenings",
+                                "ave_awakening", "movement_index",
+                                "fragmentation_index",
                                 "sleep_fragmentation_index"))
     x <- sleep_periods %>% mutate_if(is.numeric, round)
     y <- actilife %>% mutate_if(is.numeric, round)
     x <- x %>%
-      inner_join(y %>% select(in_bed_timestamp, out_bed_timestamp),
-                 by = c("in_bed_timestamp", "out_bed_timestamp"))
+      inner_join(y %>% select(in_bed_time, out_bed_time),
+                 by = c("in_bed_time", "out_bed_time"))
     for (var in common_vars) expect_identical(x[[var]], y[[var]])
   }
 })
