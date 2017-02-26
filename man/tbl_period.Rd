@@ -12,4 +12,3 @@ tbl_period(data)
 \description{
 This tbl has several attributes which specify the detection algorithm and the its parameter settings.
 }
-

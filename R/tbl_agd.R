@@ -130,6 +130,81 @@ do_.tbl_agd <- function(x, ...) {
   y
 }
 #' @export
+arrange_.tbl_agd <- function(x, ...) {
+  y <- x
+  class(y) <- class(y)[-1]
+  y <- dplyr::arrange_(y, ...)
+  for (a in setdiff(names(attributes(x)), special_dplyr_attributes())) {
+    attr(y, a) <- attr(x, a)
+  }
+  class(y) <- c("tbl_agd", class(y))
+  y
+}
+#' @export
+inner_join.tbl_agd <- function(x, y, by = NULL, copy = FALSE,
+                               suffix = c(".x", ".y"), ...) {
+  class(x) <- class(x)[-1]
+  z <- inner_join(x, y, by = by, copy = copy, suffix = suffix, ...)
+  for (a in setdiff(names(attributes(x)), special_dplyr_attributes())) {
+    attr(z, a) <- attr(x, a)
+  }
+  class(z) <- c("tbl_agd", class(z))
+  z
+}
+#' @export
+left_join.tbl_agd <- function(x, y, by = NULL, copy = FALSE,
+                              suffix = c(".x", ".y"), ...) {
+  class(x) <- class(x)[-1]
+  z <- left_join(x, y, by = by, copy = copy, suffix = suffix, ...)
+  for (a in setdiff(names(attributes(x)), special_dplyr_attributes())) {
+    attr(z, a) <- attr(x, a)
+  }
+  class(z) <- c("tbl_agd", class(z))
+  z
+}
+#' @export
+right_join.tbl_agd <- function(x, y, by = NULL, copy = FALSE,
+                               suffix = c(".x", ".y"), ...) {
+  class(x) <- class(x)[-1]
+  z <- right_join(x, y, by = by, copy = copy, suffix = suffix, ...)
+  for (a in setdiff(names(attributes(x)), special_dplyr_attributes())) {
+    attr(z, a) <- attr(x, a)
+  }
+  class(z) <- c("tbl_agd", class(z))
+  z
+}
+#' @export
+full_join.tbl_agd <- function(x, y, by = NULL, copy = FALSE,
+                              suffix = c(".x", ".y"), ...) {
+  class(x) <- class(x)[-1]
+  z <- full_join(x, y, by = by, copy = copy, suffix = suffix, ...)
+  for (a in setdiff(names(attributes(x)), special_dplyr_attributes())) {
+    attr(z, a) <- attr(x, a)
+  }
+  class(z) <- c("tbl_agd", class(z))
+  z
+}
+#' @export
+semi_join.tbl_agd <- function(x, y, by = NULL, copy = FALSE, ...) {
+  class(x) <- class(x)[-1]
+  z <- semi_join(x, y, by = by, copy = copy, ...)
+  for (a in setdiff(names(attributes(x)), special_dplyr_attributes())) {
+    attr(z, a) <- attr(x, a)
+  }
+  class(z) <- c("tbl_agd", class(z))
+  z
+}
+#' @export
+anti_join.tbl_agd <- function(x, y, by = NULL, copy = FALSE, ...) {
+  class(x) <- class(x)[-1]
+  z <- anti_join(x, y, by = by, copy = copy, ...)
+  for (a in setdiff(names(attributes(x)), special_dplyr_attributes())) {
+    attr(z, a) <- attr(x, a)
+  }
+  class(z) <- c("tbl_agd", class(z))
+  z
+}
+#' @export
 mutate_.tbl_period <- function(x, ...) {
   y <- x
   class(y) <- class(y)[-1]
@@ -211,6 +286,17 @@ do_.tbl_period <- function(x, ...) {
   y <- x
   class(y) <- class(y)[-1]
   y <- dplyr::do_(y, ...)
+  for (a in setdiff(names(attributes(x)), special_dplyr_attributes())) {
+    attr(y, a) <- attr(x, a)
+  }
+  class(y) <- c("tbl_period", class(y))
+  y
+}
+#' @export
+arrange_.tbl_period <- function(x, ...) {
+  y <- x
+  class(y) <- class(y)[-1]
+  y <- dplyr::arrange_(y, ...)
   for (a in setdiff(names(attributes(x)), special_dplyr_attributes())) {
     attr(y, a) <- attr(x, a)
   }

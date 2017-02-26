@@ -7,9 +7,9 @@
 complement_periods(periods, epochs, start_var, end_var)
 }
 \arguments{
-\item{periods}{A data frame with at least two columns, \code{start_var} and \code{end_var}, which are the first and the last epoch in a set of time periods.}
+\item{periods}{A data frame with at least two columns, \code{start_var} and \code{end_var}, which are the first and the last epoch in a set of time periods, e.g. sleep periods or (non)wear periods.}
 
-\item{epochs}{A data frame with at least one column, \code{timestamp}, which contains consecutive 60s epochs.}
+\item{epochs}{A data frame with at least one column, \code{timestamp}, which contains POSIXct objects.}
 
 \item{start_var}{The column which indicates when the time periods start.}
 
@@ -30,4 +30,3 @@ epochs <- data_frame(timestamp = ymd_hm("2017-01-01 00:00") +
                        minutes(0:12))
 complement_periods(periods, epochs, "start", "end")
 }
-

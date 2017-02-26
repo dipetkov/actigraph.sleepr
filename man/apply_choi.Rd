@@ -44,4 +44,3 @@ ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
 \seealso{
 \code{\link{apply_troiano}}, \code{\link{collapse_epochs}}
 }
-

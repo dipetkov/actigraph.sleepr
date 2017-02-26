@@ -4,15 +4,15 @@
 \alias{impute_epochs}
 \title{Impute missing count values}
 \usage{
-impute_epochs(agdb, activity_var)
+impute_epochs(agdb, ...)
 }
 \arguments{
 \item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute.}
 
-\item{activity_var}{The activity variable (e.g., axis1).}
+\item{...}{Comma separated list of unquoted variables.}
 }
 \value{
-A \code{tibble} (\code{tbl}) of activity data with missing values in the \code{activity_var} column imputed.
+A \code{tibble} (\code{tbl}) of activity data. Each variable in \code{...} is imputed.
 }
 \description{
 Trim leading and trailing NAs. Fill in the rest of the NAs using cubic spline interpolation.
@@ -22,10 +22,9 @@ file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
                     package = "actigraph.sleepr")
 agdb <- read_agd(file)
 agdb$axis1[5:10] <- NA
-agdb_imputed <- impute_epochs(agdb, "axis1")
+agdb_imputed <- impute_epochs(agdb, axis1)
 agdb_imputed
 }
 \seealso{
 \code{\link[zoo]{na.spline}}, \code{\link[zoo]{na.trim}}
 }
-

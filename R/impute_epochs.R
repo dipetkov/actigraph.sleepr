@@ -2,31 +2,33 @@
 #'
 #' Trim leading and trailing NAs. Fill in the rest of the NAs using cubic spline interpolation.
 #' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute.
-#' @param activity_var The activity variable (e.g., axis1).
-#' @return A \code{tibble} (\code{tbl}) of activity data with missing values in the \code{activity_var} column imputed.
+#' @param ... Comma separated list of unquoted variables.
+#' @return A \code{tibble} (\code{tbl}) of activity data. Each variable in \code{...} is imputed.
 #' @seealso \code{\link[zoo]{na.spline}}, \code{\link[zoo]{na.trim}}
 #' @examples
 #' file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
 #'                     package = "actigraph.sleepr")
 #' agdb <- read_agd(file)
 #' agdb$axis1[5:10] <- NA
-#' agdb_imputed <- impute_epochs(agdb, "axis1")
+#' agdb_imputed <- impute_epochs(agdb, axis1)
 #' agdb_imputed
 #' @export
-impute_epochs <- function(agdb, activity_var) {
+impute_epochs <- function(agdb, ...) {
 
   stopifnot(inherits(agdb, "tbl_agd"))
-  agdb <- agdb %>% do(impute_epochs_(., activity_var))
-}
-impute_epochs_ <- function(data, activity_var) {
 
-  spline_call <- interp(~ pmax(round(na.spline(var)), 0),
-                        var = as.name(activity_var))
+  vars_selected <- select_vars(names(agdb), ...)
+  if (length(vars_selected) == 0) return(agdb)
+
+  agdb %>% do(impute_epochs_(., vars_selected))
+}
+impute_epochs_ <- function(data, vars_selected) {
+
+  impute <- function(x) pmax(round(na.spline(x)), 0)
   data %>%
     # Trim, don't impute at the start/end of the time series
-    inner_join(na.trim(data %>% select_("timestamp", activity_var)),
-               by = c("timestamp", activity_var)) %>%
-    mutate_(.dots = setNames(list(spline_call), activity_var))
+    inner_join(na.trim(data %>% select_("timestamp", vars_selected))) %>%
+    mutate_at(vars_selected, impute)
 }
 #' Checks whether there are gaps in the time series
 #'

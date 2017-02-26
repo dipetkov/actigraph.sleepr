@@ -14,8 +14,8 @@
 #' @importFrom data.table rleid
 #' @importFrom zoo na.locf na.trim na.spline na.fill
 #' @importFrom RcppRoll roll_mean roll_sd roll_sum
-#' @importFrom lubridate duration ymd_hms time_length
-#' @importFrom stats setNames
+#' @importFrom lubridate duration ymd_hms time_length is.POSIXct
+#' @importFrom stats setNames na.omit
 #' @importFrom Rcpp sourceCpp
 NULL
 

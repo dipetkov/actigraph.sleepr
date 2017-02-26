@@ -38,4 +38,3 @@ periods_sleep$duration
 # What is the assignment of epochs to periods?
 table(agdb_sleep$period_id)
 }
-

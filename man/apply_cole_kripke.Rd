@@ -53,4 +53,3 @@ ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
 \seealso{
 \code{\link{collapse_epochs}}, \code{\link{apply_sadeh}}, \code{\link{apply_tudor_locke}}
 }
-

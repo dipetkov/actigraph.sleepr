@@ -33,4 +33,3 @@ agdb_60s <- collapse_epochs(agdb_10s, 60)
 \references{
 ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
 }
-

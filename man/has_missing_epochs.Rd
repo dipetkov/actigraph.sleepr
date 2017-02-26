@@ -15,4 +15,3 @@ True or false.
 \description{
 The timestamps in the agd time series should run from \code{first(timestamp)} to \code{last(timestamp)} in increments of \code{epochlength} seconds. This function checks whether this holds or not. If the data is grouped (e.g., by subject), the check is performed for each group separately.
 }
-

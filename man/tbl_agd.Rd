@@ -14,4 +14,3 @@ tbl_agd(data, settings)
 \description{
 This tbl has several attributes, most importantly - \code{epochlength}.
 }
-

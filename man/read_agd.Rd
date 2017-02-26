@@ -48,4 +48,3 @@ ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
 \seealso{
 \code{\link{read_agd_raw}}
 }
-
