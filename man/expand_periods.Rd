@@ -19,13 +19,11 @@ expand_periods(periods, start_var, end_var, units = "1 min")
 Expand time periods into a data frame of equally spaced time points
 }
 \examples{
-file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
-                    package = "actigraph.sleepr")
-agdb_10s <- read_agd(file)
-agdb_60s <- collapse_epochs(agdb_10s, 60)
-periods_nonwear <- apply_choi(agdb_60s,  min_period_len = 45)
-periods_nonwear
+library("dplyr")
+data("gtxplus1day")
 
-expand_periods(periods_nonwear, "period_start", "period_end",
-               units = "30 mins")
+gtxplus1day \%>\%
+  collapse_epochs(60) \%>\%
+  apply_choi(min_period_len = 45) \%>\%
+  expand_periods("period_start", "period_end", units = "30 mins")
 }

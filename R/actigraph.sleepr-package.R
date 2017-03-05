@@ -7,7 +7,7 @@
 #' @name actigraph.sleepr
 #' @useDynLib actigraph.sleepr
 #' @docType package
-#' @import dplyr
+#' @import dplyr ggplot2
 #' @importFrom tidyr gather spread unnest
 #' @importFrom lazyeval interp
 #' @importFrom purrr map map2
@@ -22,9 +22,9 @@ NULL
 globalVariables(c( ".", "a", "b", "activity_counts", "ave_awakening", "axis1",
                    "axis2", "axis3", "datatimestamp", "dozings", "dozings_1min",
                    "duration", "efficiency", "filtered", "fragmentation_index",
-                   "in_bed_time", "latency", "length", "magnitude",
+                   "in_bed_time", "key", "latency", "length", "magnitude",
                    "movement_index", "nb_awakenings", "nonzero_epochs",
                    "onset", "out_bed_time", "period_id", "period_end",
                    "period_start", "rev_id", "settingname", "settingvalue",
-                   "sleep", "sleep_fragmentation_index", "timestamp",
-                   "total_sleep_time", "wake_after_onset", "wear"))
+                   "sleep", "sleep_fragmentation_index", "timestamp", "tz",
+                   "total_sleep_time", "wake_after_onset", "x", "y", "wear"))

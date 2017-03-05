@@ -39,11 +39,12 @@ The time series of activity counts is padded with zeros as necessary, at the beg
 Finally, the sleep state is awake (1) if the sleep index SI is less than 1; otherwise the sleep state is asleep (0).
 }
 \examples{
-file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
-                    package = "actigraph.sleepr")
-agdb_10s <- read_agd(file)
-agdb_60s <- collapse_epochs(agdb_10s, 60)
-agdb_scored <- apply_cole_kripke(agdb_60s)
+library("dplyr")
+data("gtxplus1day")
+
+gtxplus1day \%>\%
+  collapse_epochs(60) \%>\%
+  apply_cole_kripke()
 }
 \references{
 RJ Cole, DF Kripke, W Gruen, DJ Mullaney and JC Gillin. Automatic sleep/wake identification from wrist activity. \emph{Sleep}, 15(5):461–469, 1992.

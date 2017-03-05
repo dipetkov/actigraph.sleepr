@@ -23,6 +23,7 @@ Imports:
   RSQLite,
   data.table,
   dplyr,
+  ggplot2,
   lazyeval,
   lubridate,
   stats,
@@ -30,7 +31,6 @@ Imports:
   purrr,
   zoo
 Suggests:
-  ggplot2,
   knitr,
   readr,
   rmarkdown,

@@ -37,11 +37,12 @@ The Troiano algorithm specifies that a non-wear period starts with \code{min_per
 This implementation of the algorithm expects that the epochs are 60 second long.
 }
 \examples{
-file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
-                    package = "actigraph.sleepr")
-agdb_10s <- read_agd(file)
-agdb_60s <- collapse_epochs(agdb_10s, 60)
-periods_nonwear <- apply_troiano(agdb_60s)
+library("dplyr")
+data("gtxplus1day")
+
+gtxplus1day \%>\%
+  collapse_epochs(60) \%>\%
+  apply_troiano()
 }
 \references{
 RP Troiano, D Berrigan, KW Dodd, LC Mâsse, T Tilert and M McDowell. Physical activity in the united states measured by accelerometer. \emph{Medicine & Science in Sports & Exercise}, 40(1):181–188, 2008.

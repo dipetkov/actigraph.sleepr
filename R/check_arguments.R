@@ -65,3 +65,9 @@ check_args_collapse_method <- function(agdb, epoch_len_out) {
   check_no_missing_timestamps(agdb)
   check_no_missing_counts(agdb, "axis1")
 }
+check_join_epochs_periods <- function(epochs, periods, start_var, end_var) {
+  stopifnot(exists("timestamp", where = epochs))
+  stopifnot(exists(start_var, where = periods))
+  stopifnot(exists(end_var, where = periods))
+  stopifnot(identical(groups(periods), groups(epochs)))
+}

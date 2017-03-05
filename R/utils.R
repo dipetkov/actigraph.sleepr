@@ -16,43 +16,24 @@
 #' complement_periods(periods, epochs, "start", "end")
 #' @export
 complement_periods <- function(periods, epochs, start_var, end_var) {
-  stopifnot(exists("timestamp", where = epochs))
-  stopifnot(exists(start_var, where = periods))
-  stopifnot(exists(end_var, where = periods))
 
-  epoch_len <- epochs %>%
-    mutate(epoch_len = time_length(timestamp - lag(timestamp),
-                                   unit = "second")) %>%
-    select(epoch_len) %>% na.omit() %>% .$epoch_len
-  stopifnot(n_distinct(epoch_len) == 1)
-  units <- paste(epoch_len[1], "sec")
+  if (nrow(periods) == 0)
+    return(epochs %>% summarise(period_start = first(timestamp),
+                                period_end = last(timestamp),
+                                length = time_length(period_end - period_start,
+                                                     "min")))
+  group_vars <- NULL
+  if (is.grouped_df(epochs)) group_vars <- as.character(groups(epochs))
 
-  # TODO: a more general approach to collapsing
-  # might use the findInterval function
-  # though care must be taken with "incomplete"
-  # epochs at the start/end of the time series
-
-  join_vars <- "timestamp"
-  if (is.grouped_df(epochs))
-    join_vars <- c(join_vars, as.character(groups(epochs)))
-
-  complement <- expand_periods(periods, start_var, end_var,
-                               units = units) %>%
-    right_join(epochs, by = join_vars) %>%
+  combine_epochs_periods(epochs, periods, start_var, end_var) %>%
     mutate(rev_id = rleid(is.na(period_id))) %>%
     filter(is.na(period_id)) %>%
-    # Even if the epochs are grouped, the grouping gets lost now,
-    # which is appropriate since we don't know if the grouping
-    # applies to the complement of the periods
-    group_by(rev_id) %>%
+    group_by_(.dots = c(group_vars, "rev_id")) %>%
     summarise(period_start = first(timestamp),
               period_end = last(timestamp),
               length = n()) %>%
-    ungroup() %>%
-    select(period_start, period_end, length)
-
-  class(complement) <- c("tbl_period", "tbl_df", "tbl", "data.frame")
-  complement
+    ungroup() %>% select(- rev_id) %>%
+    group_by_(.dots = group_vars)
 }
 
 #' Expand a time period into a vector of equally spaced time points
@@ -75,15 +56,13 @@ expand_timestamp <- function(start, end, units = "1 min") {
 #' @inheritParams complement_periods
 #' @param units The time unit as a characters string. The default is \code{"1 min"}.
 #' @examples
-#' file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
-#'                     package = "actigraph.sleepr")
-#' agdb_10s <- read_agd(file)
-#' agdb_60s <- collapse_epochs(agdb_10s, 60)
-#' periods_nonwear <- apply_choi(agdb_60s,  min_period_len = 45)
-#' periods_nonwear
+#' library("dplyr")
+#' data("gtxplus1day")
 #'
-#' expand_periods(periods_nonwear, "period_start", "period_end",
-#'                units = "30 mins")
+#' gtxplus1day %>%
+#'   collapse_epochs(60) %>%
+#'   apply_choi(min_period_len = 45) %>%
+#'   expand_periods("period_start", "period_end", units = "30 mins")
 #' @export
 expand_periods <- function(periods, start_var, end_var,
                            units = "1 min") {
@@ -103,4 +82,16 @@ expand_periods_ <- function(periods, start_var, end_var,
                                end = as.name(end_var))) %>%
     select(period_id, timestamp) %>%
     unnest()
+}
+get_epoch_length <- function(epochs) {
+
+  if (inherits(epochs, "tbl_agd")) return(attr(epochs, "epochlength"))
+  if (!exists("timestamp", epochs)) return(NULL)
+
+  epoch_len <- epochs %>%
+    mutate(epoch_len = time_length(timestamp - lag(timestamp))) %>%
+    ungroup() %>% select(epoch_len) %>% na.omit() %>% .$epoch_len
+
+  if (n_distinct(epoch_len) != 1) return(NULL)
+  epoch_len[1]
 }

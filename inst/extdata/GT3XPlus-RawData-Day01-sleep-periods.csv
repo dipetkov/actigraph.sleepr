@@ -1,4 +1,4 @@
-sleep_algorithm,period_algorithm,n_bedtime_start,n_wake_time_end,min_sleep_period,max_sleep_period,min_nonzero_epochs,in_bed_time,out_bed_time,onset,efficiency,latency,duration,total_sleep_time,wake_after_onset,nb_awakenings,ave_awakening,activity_counts,movement_index,fragmentation_index,sleep_fragmentation_index
+sleep_algorithm,period_algorithm,n_bedtime_start,n_wake_time_end,min_sleep_period,max_sleep_period,min_nonzero_epochs,in_bed_time,out_bed_time,onset,efficiency,latency,duration,total_sleep_time,wake_after_onset,nb_awakenings,ave_awakening,total_counts,movement_index,fragmentation_index,sleep_fragmentation_index
 Sadeh,Tudor-Locke Default,5,10,160,1440,0,2012-06-28T00:03:00Z,2012-06-28T07:38:00Z,2012-06-28T00:03:00Z,97.14,0,455,442,13,4,3.25,9126,5.934,40,45.934
 Sadeh,Tudor-Locke Custom1,5,5,20,1440,5,2012-06-27T16:15:00Z,2012-06-27T16:46:00Z,2012-06-27T16:15:00Z,100.0,0,31,31,0,0,0.0,346,35.484,0,35.484
 Sadeh,Tudor-Locke Custom1,5,5,20,1440,5,2012-06-27T20:55:00Z,2012-06-27T21:26:00Z,2012-06-27T20:55:00Z,100.0,0,31,31,0,0,0.0,261,25.806,0,25.806

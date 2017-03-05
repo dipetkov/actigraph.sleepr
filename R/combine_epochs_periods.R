@@ -1,40 +1,43 @@
 #' Combine epochs with sleep/nonwear periods
 #'
 #' Suppose we have used \code{apply_tudor_locke} to detect sleep periods or \code{apply_troiano}/\code{apply_choi} to detect non-wear periods. It might be useful to combine the epochs data with the periods data, so that each epoch is labeled according to which period it falls into, if any. Then we can easily slice the epochs data by sleep/non-sleep or wear/non-wear.
-#' @param epochs A \code{tibble} (\code{tbl}) of activity data with (at least) a timestamp column. The epoch length must be 60 seconds.
+#' @param epochs A \code{tibble} (\code{tbl}) of activity data with (at least) a timestamp column.
 #' @param periods A summary \code{tibble} of the (sleep or non-wear) periods.
 #' @param start_var The \code{periods} column which specifies when the periods start.
 #' @param end_var The \code{periods} column which specifies when the periods end.
 #' @return A \code{tibble} of activity data with one additional column, \code{period_id}, which indicates the period each epoch falls into.
 #' @examples
-#' file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
-#'                     package = "actigraph.sleepr")
-#' agdb_10s <- read_agd(file)
-#' agdb_60s <- collapse_epochs(agdb_10s, 60)
-#' agdb_scored <- apply_sadeh(agdb_60s)
-#' periods_sleep <- apply_tudor_locke(agdb_scored,
-#'                                    min_sleep_period = 60)
-#' agdb_sleep <- combine_epochs_periods(agdb_scored, periods_sleep,
-#'                                      start_var = "in_bed_time",
-#'                                      end_var = "out_bed_time")
+#' library("dplyr")
+#' data("gtxplus1day")
+#'
+#' agdb <- gtxplus1day %>%
+#'   collapse_epochs(60) %>%
+#'   apply_sadeh()
+#' periods <- agdb %>%
+#'   apply_tudor_locke(min_sleep_period = 60)
+#'
+#' agdb_with_periods <- combine_epochs_periods(agdb, periods,
+#'                                             "in_bed_time", "out_bed_time")
 #'
 #' # How many sleep periods were detected and what is their duration, in minutes?
-#' periods_sleep$duration
+#' periods %>% select(in_bed_time, out_bed_time, duration)
 #' # What is the assignment of epochs to periods?
-#' table(agdb_sleep$period_id)
+#' agdb_with_periods %>% count(period_id)
 #' @export
 combine_epochs_periods <- function(epochs, periods, start_var, end_var) {
 
-  stopifnot(inherits(epochs, "tbl_agd"))
-  stopifnot(inherits(periods, "tbl_period"))
-  stopifnot(attr(epochs, "epochlength") == 60)
-  stopifnot(exists(start_var, where = periods))
-  stopifnot(exists(end_var, where = periods))
+  check_join_epochs_periods(epochs, periods, start_var, end_var)
+  units <- get_epoch_length(epochs)
+  stopifnot(is.numeric(units))
 
-  epochs_periods <- epochs %>%
-    select(- matches("period_id")) %>%
-    left_join(expand_periods(periods, start_var, end_var),
-              by = "timestamp")
+  join_vars <- "timestamp"
+  group_vars <- NULL
+  if (is.grouped_df(epochs)) group_vars <- as.character(groups(epochs))
+  join_vars <- c(group_vars, join_vars)
+
+  epochs_periods <-
+    expand_periods(periods, start_var, end_var, units = units) %>%
+    right_join(epochs, by = join_vars)
 
   class(epochs_periods) <- class(epochs)
   for (a in setdiff(names(attributes(epochs)),

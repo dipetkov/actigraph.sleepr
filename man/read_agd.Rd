@@ -18,7 +18,7 @@ A \code{tibble} (\code{tbl}) of activity data with at least two columns: timesta
 Read ActiGraph sleep watch data from a database stored in an AGD file. Return a tibble.
 }
 \examples{
-file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
+file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
                     package = "actigraph.sleepr")
 agdb <- read_agd(file)
 agdb

@@ -25,10 +25,11 @@ Activity counts cannot be reintegrated into shorter epochs, e.g., 60s -> 10s. Cu
 Suppose we want to collapse from 15 to 60 seconds. A complete 60s epoch consists of four 15s epochs: 00, 15, 45 and 60. However, the first and last epochs would be incomplete if the device started/stopped collecting data mid-minute. ActiLife 6 uses these epochs anyway. For example, if only 45 and 60 are available for the first minute, then ActiLife will aggregate across these two epochs only. This is a reasonable approach to sleep analysis with the Sadeh and the Cole-Kripke algorithms which pad the beginning and the end of the time series with zeros anyway.
 }
 \examples{
-file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
-                    package = "actigraph.sleepr")
-agdb_10s <- read_agd(file)
-agdb_60s <- collapse_epochs(agdb_10s, 60)
+library("dplyr")
+data("gtxplus1day")
+
+gtxplus1day \%>\%
+  collapse_epochs(60)
 }
 \references{
 ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.

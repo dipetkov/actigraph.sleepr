@@ -20,7 +20,7 @@ theme_set(theme_light())
 The `actigraph.sleepr` package implements three sleep detection algorithms: Sadeh (Sadeh, Sharkey, and Carskadon 1994), Cole-Kripke (Cole et al. 1992) and Tudor-Locke (Tudor-Locke et al. 2014). For illustration, let's use GT3X+ / ActiSleep+ sample data taken from ActiGraph's [online documentation](https://actigraph.desk.com).
 
 ```{r }
-file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
+file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
                         package = "actigraph.sleepr")
 ```
 
@@ -46,9 +46,10 @@ str(agdb_10s)
 Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select, filter, summarise, group_by, arrange) to manipulate the data. For example, let's compute the magnitude of the three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
 
 ```{r }
-agdb_10s <- agdb_10s %>% select(timestamp, starts_with("axis"))
-agdb_10s %>%
+agdb_10s <- agdb_10s %>% 
+  select(timestamp, starts_with("axis")) %>%
   mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2))
+agdb_10s
 ```
 
 ### Reintegrate from 10s to 60s epochs
@@ -58,25 +59,24 @@ The Sadeh and Cole-Kripke algorithms for converting activity measurements into a
 ```{r }
 ggplot(agdb_10s, aes(timestamp, axis1)) +
   geom_line() +
-  labs(x = "", y = "activity", subtitle = 
-         "24 hours of activity data taken at a frequency of 10 seconds") +
-  scale_x_datetime(date_labels = "%H:%M")
+  labs(x = "", y = "movement (vertical direction)", subtitle = 
+         "24 hours of activity measured every 10 seconds") +
+  scale_x_datetime(date_labels = "%I%p")
 ```
 
 So we aggregate the epochs from 10s to 60s by adding the counts for the six consecutive 10s epochs that fall into the same 60s epoch.
 
 ```{r }
 # Collapse epochs from 10 sec to 60 sec by summing counts
-agdb_60s <- collapse_epochs(agdb_10s, 60)
+agdb_60s <- agdb_10s %>% collapse_epochs(60)
 agdb_60s
 ```
 
 ```{r }
-ggplot(agdb_60s, aes(timestamp, axis1)) +
-  geom_line() +
-  labs(x = "", y = "activity", subtitle = 
-         "24 hours of activity data aggregated from 10s to 60s epochs") +
-  scale_x_datetime(date_labels = "%H:%M")
+plot_activity(agdb_60s, "axis1") +
+  labs(x = "", y = "movement (vertical direction)", subtitle = 
+         "24 hours of activity data measured every minute") +
+  scale_x_datetime(date_labels = "%I%p")
 ```
 
 Integration nicely emphasizes a peak of activity just before 6pm.
@@ -88,22 +88,25 @@ With a few lines of code, we can load each AGD file in a directory, collapse fro
 ```{r , eval = FALSE}
 library("readr")
 library("tools")
+library("purrr")
 
 # Construct a path to the directory which contains the raw AGD files
 path_in <- system.file("extdata", package = "actigraph.sleepr")
 # And a path to the directory to contain the processed CSV files
 path_out <- path.expand("~")
-# Finally, get the list of available AGD files
-filenames <- list.files(path_in, pattern = ".agd", full.names = FALSE)
-basenames <- file_path_sans_ext(filenames)
 
-for (basename in basenames) {
+read_collapse_write <- function(filename, path_in, path_out) {
+  basename <- file_path_sans_ext(filename) 
   file_in <- file.path(path_in, paste0(basename, ".agd"))
   file_out <- file.path(path_out, paste0(basename, ".csv"))
-  agdb <- read_agd(file_in)
-  agdb <- collapse_epochs(agdb, 60)
-  write_csv(agdb, file_out)
+  file_in %>%
+    read_agd() %>%
+    collapse_epochs(60) %>%
+    write_csv(file_out)
 }
+
+list.files(path_in, pattern = ".agd", full.names = FALSE) %>%
+  map(read_collapse_write, path_in, path_out)
 ```
 
 ### Apply the Sadeh algorithm
@@ -140,10 +143,10 @@ The time series of activity counts is padded with zeros as necessary, at the beg
 ggplot(agdb_sadeh, aes(timestamp, count)) +
   geom_line() +
   geom_point(aes(timestamp, 300 * sleep, 
-                 color = as.character(sleep)), shape = 1) +
-  labs(x = "", y = "activity (bounded at 300)", subtitle =
-         "For each epoch, Sadeh infers whether the subject is sleeping or not") +
-  scale_x_datetime(date_labels = "%H:%M") +
+                 color = as.factor(sleep)), shape = 1) +
+  labs(x = "", y = "movement (bounded at 300)", subtitle =
+         "For each epoch, Sadeh infers whether the subject is asleep or not") +
+  scale_x_datetime(date_labels = "%I%p") +
   scale_color_discrete(name = "", labels = c("asleep (0)", "awake (1)"))
 ```
 
@@ -177,10 +180,10 @@ The time series of activity counts is padded with zeros as necessary, at the beg
 ggplot(agdb_colekripke, aes(timestamp, count)) +
   geom_line() +
   geom_point(aes(timestamp, 100 * sleep, 
-                 color = as.character(sleep)), shape = 1) +
-  labs(x = "", y = "activity (scaled by 0.01)", subtitle =
-         "Like Sadeh, Cole-Kripke infers whether the subject is sleeping or not") +
-  scale_x_datetime(date_labels = "%H:%M") +
+                 color = as.factor(sleep)), shape = 1) +
+  labs(x = "", y = "movement (scaled by 0.01)", subtitle =
+         "Like Sadeh, Cole-Kripke infers whether the subject is asleep or not") +
+  scale_x_datetime(date_labels = "%I%p") +
   scale_color_discrete(name = "", labels = c("asleep (0)", "awake (1)"))
 ```
 
@@ -260,27 +263,18 @@ fragmentation_index
  : Proportion of one-minute sleep bouts out of the number of sleep bouts of any length, in percentages.
 
 sleep_fragmentation_index
- : Sleep fragmentation index – The sum of the movement and fragmentation indices.
+ : The sum of the movement and fragmentation indices.
+
+Sleep (or any other type of) periods in a time series can be highlighted as rectangles.
 
 ```{r }
-# Construct polygons to represent each sleep period
-ymax <- max(agdb_60s$axis1)
-ymin <- 0
-p <- nrow(periods_sleep)
-id <- rep(seq(p), times = 4)
-x <- c(rep(periods_sleep$in_bed_time, times = 2),
-       rep(periods_sleep$out_bed_time, times = 2))
-y <- rep(c(ymax, ymin, ymin, ymax), each = p)
-sleep_poly <- data_frame(id = id, timestamp = x, axis1 = y)
-
-ggplot(agdb_60s, aes(timestamp, axis1)) + 
-  geom_line() +
-  geom_polygon(data = sleep_poly, aes(group = id), 
-               fill = "#DDDDDD", alpha = 0.5) +
-   scale_x_datetime(date_labels = "%H:%M") +
-   labs(x = "", y = "activity", subtitle = 
-          paste0("Tudor-Locke detects sleep periods in a sequence of 0s and 1s\n",
-                 "Sleep periods, if any, are highlighted as gray rectangles"))
+plot_activity_period(agdb_60s, periods_sleep, "axis1", 
+                     "in_bed_time", "out_bed_time", 
+                     fill = "#AAAAAA") +
+  scale_x_datetime(date_labels = "%I%p") +
+  labs(x = "", y = "movement", subtitle = 
+        paste0("Tudor-Locke detects sleep periods in a sequence of 0s and 1s\n",
+               "Sleep periods, if any, are highlighted as gray rectangles"))
 ```
 
 Let's find the awake periods, which are the complement of the sleep periods.
@@ -292,16 +286,17 @@ periods_awake <- complement_periods(periods_sleep, agdb_sadeh,
 periods_awake
 ```
 
-Let's combine the epoch counts data and the sleep periods data. Then we can easily slice the epochs data by sleep/non-sleep periods.
+Let's combine the epochs and the awake periods. Then we can easily slice the time series by sleep/non-sleep periods.
 
 ```{r }
-# Let's label the epochs with a `period_id`, which indicates the sleep period
+# Let's label the epochs with a `period_id`, which indicates the awake period
 # that each epoch falls in. The ids are consecutive integers starting from 1.
-# If the epoch is outside a sleep period, then `period_id` is NA.
-agdb_sleep <- combine_epochs_periods(agdb_sadeh, periods_sleep,
-                                     start_var = "in_bed_time", 
-                                     end_var = "out_bed_time")
-agdb_sleep
+# If the epoch is outside an awake period, then `period_id` is NA.
+agdb_awake <- combine_epochs_periods(agdb_sadeh, periods_awake,
+                                     start_var = "period_start", 
+                                     end_var = "period_end")
+agdb_awake
+agdb_awake %>% count(period_id)
 ```
 
 ### References

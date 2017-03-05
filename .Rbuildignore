@@ -5,3 +5,4 @@
 ^\.travis\.yml$
 ^.lintr$
 actigraph\.bib$
+^data-raw$

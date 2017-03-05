@@ -21,7 +21,7 @@ Read ActiGraph sleep watch data from an SQLite database stored in an AGD file an
 Some Actigraph devices contain a capacitive sensor to detect monitor removal when worn against the skin. If that data is available, the return list includes a capsense table as well.
 }
 \examples{
-file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
+file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
                     package = "actigraph.sleepr")
 agdb <- read_agd_raw(file)
 str(agdb)

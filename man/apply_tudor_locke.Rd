@@ -14,11 +14,11 @@ apply_tudor_locke(agdb, n_bedtime_start = 5, n_wake_time_end = 10,
 
 \item{n_wake_time_end}{Wake time definition, in minutes. The default is 10.}
 
-\item{min_sleep_period}{Min sleep period length, in minutes. The default is 160.}
+\item{min_sleep_period}{Minimum sleep period length, in minutes. The default is 160.}
 
-\item{max_sleep_period}{Max sleep period length, in minutes. The default is 1440 (24 hours).}
+\item{max_sleep_period}{Maximum sleep period length, in minutes. The default is 1440 (24 hours).}
 
-\item{min_nonzero_epochs}{Min number of epochs with non-zero activity. The default is 0.}
+\item{min_nonzero_epochs}{Minimum number of epochs with non-zero activity. The default is 0.}
 }
 \value{
 A summary \code{tibble} of the detected sleep periods. If the activity data is grouped, then sleep periods are detected separately for each group.
@@ -27,7 +27,7 @@ A summary \code{tibble} of the detected sleep periods. If the activity data is g
   \item{out_bed_time}{The first minute of wake time.}
   \item{onset}{The first minute that the algorithm scores "asleep".}
   \item{latency}{The time elapsed between bedtime and sleep onset. By the definition of Tudor-Locke, latency is 0.}
-  \item{efficiency}{The number of sleep minutes divided by the bedtime  minutes.}
+  \item{efficiency}{The number of sleep minutes divided by the bedtime minutes.}
   \item{duration}{The duration of the sleep period, in minutes.}
   \item{activity_counts}{The sum of activity counts for the entire sleep period.}
   \item{total_sleep_time}{The number of minutes scored as "asleep" during the sleep period.}
@@ -37,6 +37,7 @@ A summary \code{tibble} of the detected sleep periods. If the activity data is g
   \item{movement_index}{Proportion of awake time out of the total time in bed, in percentages.}
   \item{fragmentation_index}{Proportion of one-minute sleep bouts out of the number of sleep bouts of any length, in percentages.}
   \item{sleep_fragmentation_index}{The sum of the movement and fragmentation indices.}
+  \item{nonzero_epochs}{The number of epochs with activity > 0 (nonzero epochs).}
 }
 }
 \description{
@@ -48,32 +49,36 @@ Once each one-minute epoch is labeled as asleep (0) or awake (1), we can use the
 Bedtime is (the first minute of) \code{n_bedtime_start} consecutive epochs/minutes labeled asleep (0). Similarly, wake time is (the first minute of) of \code{n_wake_time_end} consecutive epochs/minutes labeled awake (1), after a period of sleep. The block of time between bedtime and wake time is one sleep period, if the time elapsed is at least \code{min_sleep_period} minutes. There can be multiple sleep periods in 24 hours but a sleep period cannot be longer than \code{max_sleep_period} minutes.
 
 For each sleep period, the algorithm calculates several measures of sleep quality such as time asleep and time awake, number and average length of awakenings, and movement and fragmentation indices.
+
+This implementation of the Tudor-Locke algorithm detects all the sleep periods that ActiLife detects and, in some cases, it detects \emph{additional} sleep periods. There are (at least) two such cases:
+\enumerate{
+  \item{ActiLife filters out some sleep periods with \emph{exactly} \code{min_nonzero_epochs} nonzero epochs. Alternatively, ActiLife computes the number of nonzero epochs in a sleep period differently and sometimes underestimates \code{nonzero_epochs} compared to \code{apply_tudor_locke}.}
+  \item{ActiLife filters out sleep periods that end when the activity data ends, i.e., when the \code{out_bed_time} is also the final timestamp in the \code{agdb} table.}
+}
 }
 \examples{
-file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
-                    package = "actigraph.sleepr")
-
-library("lubridate")
 library("dplyr")
-
-agdb_10s <- read_agd(file)
-agdb_60s <- collapse_epochs(agdb_10s, 60) \%>\%
-  filter(day(timestamp) == 28)
+library("lubridate")
+data("gtxplus1day")
 
 # Detect sleep periods using Sadeh as the sleep/awake algorithm
 # and Tudor-Locke as the sleep period algorithm
-agdb_scored <- apply_sadeh(agdb_60s)
-periods_sleep <- apply_tudor_locke(agdb_scored, min_sleep_period = 60)
+agdb <- gtxplus1day \%>\%
+  collapse_epochs(60) \%>\%
+  filter(day(timestamp) == 28)
+periods_sleep <- agdb \%>\%
+  apply_sadeh() \%>\%
+  apply_tudor_locke(min_sleep_period = 60)
 periods_sleep
 
-# Group and summarize by an extra varible: hour < 6 or not
-# This grouping is chosen not because it is interesting but to split
-# one longer sleep period in two, for illustration of how grouping works
-agdb_60s <- agdb_60s \%>\%
+# Group and summarize by an extra varible (hour < 6 or not), which
+# splits one long sleep period in two
+agdb <- agdb \%>\%
   mutate(hour_lt6 = hour(timestamp) < 6) \%>\%
   group_by(hour_lt6)
-agdb_scored <- apply_sadeh(agdb_60s)
-periods_sleep <- apply_tudor_locke(agdb_scored, min_sleep_period = 60)
+periods_sleep <- agdb \%>\%
+  apply_sadeh() \%>\%
+  apply_tudor_locke(min_sleep_period = 60)
 periods_sleep
 }
 \references{

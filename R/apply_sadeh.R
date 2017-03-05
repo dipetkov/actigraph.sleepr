@@ -29,11 +29,12 @@
 #' @references ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
 #' @seealso \code{\link{collapse_epochs}}, \code{\link{apply_cole_kripke}}, \code{\link{apply_tudor_locke}}
 #' @examples
-#' file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
-#'                     package = "actigraph.sleepr")
-#' agdb_10s <- read_agd(file)
-#' agdb_60s <- collapse_epochs(agdb_10s, 60)
-#' agdb_scored <- apply_sadeh(agdb_60s)
+#' library("dplyr")
+#' data("gtxplus1day")
+#'
+#' gtxplus1day %>%
+#'   collapse_epochs(60) %>%
+#'   apply_sadeh()
 #' @export
 
 apply_sadeh <- function(agdb) {

@@ -6,12 +6,12 @@
 #' @return A \code{tibble} (\code{tbl}) of activity data. Each variable in \code{...} is imputed.
 #' @seealso \code{\link[zoo]{na.spline}}, \code{\link[zoo]{na.trim}}
 #' @examples
-#' file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
-#'                     package = "actigraph.sleepr")
-#' agdb <- read_agd(file)
-#' agdb$axis1[5:10] <- NA
-#' agdb_imputed <- impute_epochs(agdb, axis1)
-#' agdb_imputed
+#' library("dplyr")
+#' data("gtxplus1day")
+#'
+#' gtxplus1day$axis1[5:10] <- NA
+#' gtxplus1day %>%
+#'   impute_epochs(axis1)
 #' @export
 impute_epochs <- function(agdb, ...) {
 

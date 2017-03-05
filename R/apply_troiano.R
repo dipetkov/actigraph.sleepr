@@ -18,11 +18,12 @@
 #' @references ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
 #' @seealso \code{\link{apply_choi}}, \code{\link{collapse_epochs}}
 #' @examples
-#' file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
-#'                     package = "actigraph.sleepr")
-#' agdb_10s <- read_agd(file)
-#' agdb_60s <- collapse_epochs(agdb_10s, 60)
-#' periods_nonwear <- apply_troiano(agdb_60s)
+#' library("dplyr")
+#' data("gtxplus1day")
+#'
+#' gtxplus1day %>%
+#'   collapse_epochs(60) %>%
+#'   apply_troiano()
 #' @export
 
 apply_troiano <- function(agdb,
@@ -78,15 +79,15 @@ apply_troiano_seq_ <- function(data,
     mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2),
            count = if (use_magnitude) magnitude else axis1,
            wear = if_else(count <= activity_threshold |
-                             count > max_nonzero_count, 0L, 1L),
+                            count > max_nonzero_count, 0L, 1L),
            wear = if_else(count > spike_stoplevel, 2L, wear)) %>%
     group_by(rleid = rleid(wear)) %>%
     summarise(wear = first(wear),
               timestamp = first(timestamp),
               length = n()) %>%
     mutate(wear = if_else(wear == 1L &
-                             lead(wear, default = 1L) == 0L &
-                             length <= spike_tolerance, NA_integer_, wear),
+                            lead(wear, default = 1L) == 0L &
+                            length <= spike_tolerance, NA_integer_, wear),
            # Since `na.locf` can't impute leading NAs, fill in those with 1s
            wear = if_else(row_number() == 1 & is.na(wear), 1L, wear),
            # Fill in NAs with the most recent zero/nonzero wear state

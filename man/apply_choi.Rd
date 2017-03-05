@@ -30,11 +30,12 @@ The Choi algorithm extends the Troiano algorithm by requiring that short spikes 
 This implementation of the algorithm expects that the epochs are 60 second long.
 }
 \examples{
-file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
-                    package = "actigraph.sleepr")
-agdb_10s <- read_agd(file)
-agdb_60s <- collapse_epochs(agdb_10s, 60)
-periods_nonwear <- apply_choi(agdb_60s)
+library("dplyr")
+data("gtxplus1day")
+
+gtxplus1day \%>\%
+  collapse_epochs(60) \%>\%
+  apply_choi()
 }
 \references{
 L Choi, Z Liu, CE Matthews and MS Buchowski. Validation of accelerometer wear and nonwear time classification algorithm. \emph{Medicine & Science in Sports & Exercise}, 43(2):357–364, 2011.

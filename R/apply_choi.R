@@ -14,11 +14,12 @@
 #' @references ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
 #' @seealso \code{\link{apply_troiano}}, \code{\link{collapse_epochs}}
 #' @examples
-#' file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
-#'                     package = "actigraph.sleepr")
-#' agdb_10s <- read_agd(file)
-#' agdb_60s <- collapse_epochs(agdb_10s, 60)
-#' periods_nonwear <- apply_choi(agdb_60s)
+#' library("dplyr")
+#' data("gtxplus1day")
+#'
+#' gtxplus1day %>%
+#'   collapse_epochs(60) %>%
+#'   apply_choi()
 #' @export
 
 apply_choi <- function(agdb,
@@ -80,7 +81,11 @@ apply_choi_ <- function(data,
               timestamp = first(timestamp),
               length = sum(length)) %>%
     filter(wear == 0L,
-           length >= min_period_len) %>%
+           # TODO: Filtering if the row_number is 1 or n(),
+           # regardless of the period length, means that
+           # the initial and final non-wear periods can be shorter.
+           length >= min_period_len # | row_number() %in% c(1, n())
+           ) %>%
     rename(period_start = timestamp) %>%
     mutate(period_end = period_start + duration(length, "mins")) %>%
     select(period_start, period_end, length)

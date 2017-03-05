@@ -20,10 +20,10 @@ theme_set(theme_light())
 The `actigraph.sleepr` package implements two non-wear detection algorithms: Troiano (Troiano et al. 2008) and Choi (Choi et al. 2011). For illustration, let's use GT3X+ / ActiSleep+ sample data taken from ActiGraph's [online documentation](https://actigraph.desk.com). See the [sleep vignette](detect-sleep.html) for details on reading AGD files and collapsing epochs.
 
 ```{r }
-file_10s <- system.file("extdata", "ActiSleepPlus-RawData-Day01-10sec.agd",
+file_10s <- system.file("extdata", "ActiSleepPlus-RawData-Day01.agd",
                         package = "actigraph.sleepr")
-agdb_10s <- read_agd(file_10s)
-agdb_60s <- collapse_epochs(agdb_10s, 60) %>%
+agdb_60s <- read_agd(file_10s) %>%
+  collapse_epochs(60) %>%
   mutate(date = lubridate::as_date(timestamp)) %>%
   select(date, timestamp, starts_with("axis")) %>%
   group_by(date)
@@ -57,7 +57,7 @@ spike_stoplevel
 The Troiano algorithm specifies that a non-wear period starts with `min_length` consecutive epochs/minutes of zero activity and ends with more than `spike_tolerance` epochs/minutes of nonzero activity.
 
 ```{r }
-periods_nonwear <- apply_troiano(agdb_60s, min_period_len = 45)
+periods_nonwear <- agdb_60s %>% apply_troiano(min_period_len = 45)
 periods_nonwear
 ```
 
@@ -89,7 +89,7 @@ agdb_wear %>%
 The Choi algorithm extends the Troiano algorithm by requiring that short spikes of artifactual movement during a non-wear period are preceded and followed by \code{min_window_len} consecutive zero epochs.
 
 ```{r }
-periods_nonwear <- apply_choi(agdb_60s, min_period_len = 45, min_window_len = 10)
+periods_nonwear <- agdb_60s %>% apply_choi(min_period_len = 45, min_window_len = 10)
 periods_nonwear
 ```
 

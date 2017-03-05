@@ -8,7 +8,7 @@
 #' @references \code{covertagd}: R package for converting agd files from ActiGraph into data.frames.
 #' @seealso \code{\link{read_agd_raw}}
 #' @examples
-#' file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
+#' file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
 #'                     package = "actigraph.sleepr")
 #' agdb <- read_agd(file)
 #' agdb
@@ -70,7 +70,7 @@ read_agd <- function(file, tz = "UTC") {
 #' @references \code{covertagd}: R package for converting agd files from ActiGraph into data.frames.
 #' @seealso \code{\link{read_agd}}
 #' @examples
-#' file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
+#' file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
 #'                     package = "actigraph.sleepr")
 #' agdb <- read_agd_raw(file)
 #' str(agdb)
@@ -129,8 +129,8 @@ read_agd_raw <- function(file, tz = "UTC") {
   # so it might not be present in the database.
   # The capsense table stores data from an optional wear sensor,
   # so it might not be present in the database.
-  tables <-list(data = data, sleep = sleep, filters = filters,
-                settings = settings, awakenings = awakenings)
+  tables <- list(data = data, sleep = sleep, filters = filters,
+                 settings = settings, awakenings = awakenings)
   if ("capsense" %in% tables_agd)
     tables$capsense <- select_dttms("capsense", "timeStamp")
   tables
