@@ -3,24 +3,37 @@
 #' Plot a time series of activity values (by default, the counts on the vertical axis \emph{axis1}).
 #' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute.
 #' @param var The activity variable to plot. The default is axis1.
-#' @param color Line color.
+#' @param color Activity line color.
 #' @param nrow,ncol Number of rows and columns. Relevant only if the activity data is grouped.
 #' @examples
+#' library("dplyr")
 #' data("gtxplus1day")
-#' plot_activity(gtxplus1day)
+#' data <- gtxplus1day %>%
+#'   collapse_epochs(60) %>%
+#'   apply_cole_kripke()
+#'
+#' plot_activity(data, color = "gray")
+#' plot_activity(data, color = "sleep")
 #' @export
 plot_activity <- function(agdb, var = "axis1", color = "black",
                           nrow = NULL, ncol = NULL) {
-  p <- ggplot(agdb, aes_string("timestamp", var)) +
-    geom_line(color = color) +
-    labs(x = "time", y = var)
+  selected_vars <- intersect(names(agdb), color)
+  if (length(selected_vars)) is.var <- TRUE else is.var <- FALSE
+  if (is.var) {
+    p <- ggplot(agdb, aes_string("timestamp", var,
+                                 color = color, fill = color)) +
+      geom_bar(stat = "identity")
+  } else {
+    p <- ggplot(agdb, aes_string("timestamp", var)) +
+      geom_bar(stat = "identity", color = color, fill = color)
+  }
   if (is.grouped_df(agdb)) {
     p <- p +
       facet_wrap(as.character(groups(agdb)),
                  nrow = nrow, ncol = ncol,
                  scales = "free_x")
   }
-  p + theme_light()
+  p + theme_light() + labs(x = "time", y = var) + guides(fill = "none")
 }
 #' Plot activity and periods
 #'
@@ -38,17 +51,17 @@ plot_activity <- function(agdb, var = "axis1", color = "black",
 #'
 #' # Detect sleep periods using Sadeh as the sleep/awake algorithm
 #' # and Tudor-Locke as the sleep period algorithm
-#' agdb <- gtxplus1day %>%
-#'   collapse_epochs(60)
-#' periods_sleep <- agdb %>%
+#' periods_sleep <- gtxplus1day %>%
+#'   collapse_epochs(60) %>%
 #'   apply_cole_kripke() %>%
 #'   apply_tudor_locke(min_sleep_period = 60)
 #'
-#' plot_activity_period(agdb, periods_sleep, "axis1",
+#' plot_activity_period(gtxplus1day, periods_sleep, "axis1",
 #'                      "in_bed_time", "out_bed_time")
 #' @export
 plot_activity_period <- function(agdb, periods, act_var,
-                                 start_var, end_var, fill = "#525252",
+                                 start_var, end_var,
+                                 color = "black", fill = "#525252",
                                  ncol = NULL, nrow = NULL) {
   stopifnot(identical(groups(agdb), groups(periods)))
   height <- max(agdb[[act_var]], 1000)
@@ -59,10 +72,13 @@ plot_activity_period <- function(agdb, periods, act_var,
               function(x) strftime(x, tz = tz(x), usetz = TRUE)) %>%
     construct_period_polys(start_var, end_var, height) %>%
     mutate_at(vars(x), ymd_hms)
-  p <- plot_activity(agdb, act_var, nrow = nrow, ncol = ncol)
+  p <- plot_activity(agdb, var = act_var, color = color,
+                     nrow = nrow, ncol = ncol)
   if (nrow(polys)) {
-    p <- p + geom_polygon(data = polys, aes(x = x, y = y, group = id),
-                          fill = fill, alpha = 0.2)
+    p <- p +
+      geom_polygon(data = polys, aes(x = x, y = y, group = id),
+                   fill = fill, alpha = 0.2,
+                   show.legend = FALSE, inherit.aes = FALSE)
   }
   p
 }

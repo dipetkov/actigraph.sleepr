@@ -8,7 +8,7 @@ apply_tudor_locke(agdb, n_bedtime_start = 5, n_wake_time_end = 10,
   min_sleep_period = 160, max_sleep_period = 1440, min_nonzero_epochs = 0)
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 seconds. Each epoch should be scored as asleep (0) or awake (1), using the Sadeh, the Cole-Kripke or a custom algorithm.}
+\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 seconds. Each epoch should be scored as asleep (S) or awake (W), using the Sadeh, the Cole-Kripke or a custom algorithm.}
 
 \item{n_bedtime_start}{Bedtime definition, in minutes. The default is 5.}
 
@@ -44,9 +44,9 @@ A summary \code{tibble} of the detected sleep periods. If the activity data is g
 The Tudor-Locke algorithm detects periods of time in bed and, for each period, computes sleep quality metrics such as total minutes in bed, total sleep time, number and average length of awakenings, movement and fragmentation index.
 }
 \details{
-Once each one-minute epoch is labeled as asleep (0) or awake (1), we can use the Tudor-Locke algorithm to detect periods of \emph{bedtime} and \emph{sleep time}. By definition, sleep time < bedtime since one can be in bed and not sleeping.
+Once each one-minute epoch is labeled as asleep (S) or awake (W), we can use the Tudor-Locke algorithm to detect periods of \emph{bedtime} and \emph{sleep time}. By definition, sleep time < bedtime since one can be in bed and not sleeping.
 
-Bedtime is (the first minute of) \code{n_bedtime_start} consecutive epochs/minutes labeled asleep (0). Similarly, wake time is (the first minute of) of \code{n_wake_time_end} consecutive epochs/minutes labeled awake (1), after a period of sleep. The block of time between bedtime and wake time is one sleep period, if the time elapsed is at least \code{min_sleep_period} minutes. There can be multiple sleep periods in 24 hours but a sleep period cannot be longer than \code{max_sleep_period} minutes.
+Bedtime is (the first minute of) \code{n_bedtime_start} consecutive epochs/minutes labeled asleep (S). Similarly, wake time is (the first minute of) of \code{n_wake_time_end} consecutive epochs/minutes labeled awake (W), after a period of sleep. The block of time between bedtime and wake time is one sleep period, if the time elapsed is at least \code{min_sleep_period} minutes. There can be multiple sleep periods in 24 hours but a sleep period cannot be longer than \code{max_sleep_period} minutes.
 
 For each sleep period, the algorithm calculates several measures of sleep quality such as time asleep and time awake, number and average length of awakenings, and movement and fragmentation indices.
 

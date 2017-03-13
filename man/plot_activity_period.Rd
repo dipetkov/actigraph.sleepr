@@ -5,7 +5,7 @@
 \title{Plot activity and periods}
 \usage{
 plot_activity_period(agdb, periods, act_var, start_var, end_var,
-  fill = "#525252", ncol = NULL, nrow = NULL)
+  color = "black", fill = "#525252", ncol = NULL, nrow = NULL)
 }
 \arguments{
 \item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute.}
@@ -17,6 +17,8 @@ plot_activity_period(agdb, periods, act_var, start_var, end_var,
 \item{start_var}{The column which indicates when the time periods start.}
 
 \item{end_var}{The column which indicates when the time periods end.}
+
+\item{color}{Activity line color.}
 
 \item{fill}{Polygon fill color.}
 
@@ -34,12 +36,11 @@ data("gtxplus1day")
 
 # Detect sleep periods using Sadeh as the sleep/awake algorithm
 # and Tudor-Locke as the sleep period algorithm
-agdb <- gtxplus1day \%>\%
-  collapse_epochs(60)
-periods_sleep <- agdb \%>\%
+periods_sleep <- gtxplus1day \%>\%
+  collapse_epochs(60) \%>\%
   apply_cole_kripke() \%>\%
   apply_tudor_locke(min_sleep_period = 60)
 
-plot_activity_period(agdb, periods_sleep, "axis1",
+plot_activity_period(gtxplus1day, periods_sleep, "axis1",
                      "in_bed_time", "out_bed_time")
 }

@@ -14,7 +14,8 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
                       fig.retina = NULL)
 pckg <- c("actigraph.sleepr", "dplyr", "tidyr", "lubridate", "ggplot2")
 inst <- suppressMessages(lapply(pckg, library, character.only = TRUE))
-theme_set(theme_light())
+theme_set(theme_light() + 
+            theme(title = element_text(size = 7)))
 ```
 
 The `actigraph.sleepr` package implements three sleep detection algorithms: Sadeh (Sadeh, Sharkey, and Carskadon 1994), Cole-Kripke (Cole et al. 1992) and Tudor-Locke (Tudor-Locke et al. 2014). For illustration, let's use GT3X+ / ActiSleep+ sample data taken from ActiGraph's [online documentation](https://actigraph.desk.com).
@@ -59,7 +60,7 @@ The Sadeh and Cole-Kripke algorithms for converting activity measurements into a
 ```{r }
 ggplot(agdb_10s, aes(timestamp, axis1)) +
   geom_line() +
-  labs(x = "", y = "movement (vertical direction)", subtitle = 
+  labs(x = "", y = "movement (vertical direction)", title = 
          "24 hours of activity measured every 10 seconds") +
   scale_x_datetime(date_labels = "%I%p")
 ```
@@ -74,7 +75,7 @@ agdb_60s
 
 ```{r }
 plot_activity(agdb_60s, "axis1") +
-  labs(x = "", y = "movement (vertical direction)", subtitle = 
+  labs(x = "", y = "movement (vertical direction)", title = 
          "24 hours of activity data measured every minute") +
   scale_x_datetime(date_labels = "%I%p")
 ```
@@ -137,17 +138,14 @@ SD:
 LG
  : the natural (base e) logarithm of the activity at epoch t. To avoid taking the log of 0, we add 1 to the count.
 
-The time series of activity counts is padded with zeros as necessary, at the beginning and at the end, to compute the three functions AVG, SD, NATS within a rolling window. Finally, the sleep state is awake (1) if the sleep index SI is greater than -4; otherwise the sleep state is asleep (0).
+The time series of activity counts is padded with zeros as necessary, at the beginning and at the end, to compute the three functions AVG, SD, NATS within a rolling window. Finally, the sleep state is awake (W) if the sleep index SI is greater than -4; otherwise the sleep state is asleep (S).
 
 ```{r }
-ggplot(agdb_sadeh, aes(timestamp, count)) +
-  geom_line() +
-  geom_point(aes(timestamp, 300 * sleep, 
-                 color = as.factor(sleep)), shape = 1) +
-  labs(x = "", y = "movement (bounded at 300)", subtitle =
-         "For each epoch, Sadeh infers whether the subject is asleep or not") +
+plot_activity(agdb_sadeh, "axis1", color = "sleep") +
+  labs(x = "", y = "movement (bounded at 300)", title =
+       "For each epoch, Sadeh infers whether the subject is asleep (red) or awake (blue)") +
   scale_x_datetime(date_labels = "%I%p") +
-  scale_color_discrete(name = "", labels = c("asleep (0)", "awake (1)"))
+  guides(color = FALSE)
 ```
 
 ### Apply the Cole-Kripke algorithm
@@ -174,17 +172,14 @@ Epoch_prev(i)
 Epoch_next(i)
  : the scaled activity count i epochs after t.
 
-The time series of activity counts is padded with zeros as necessary, at the beginning and at the end. Finally, the sleep state is awake (1) if the sleep index SI is less than 1; otherwise the sleep state is asleep (0).
+The time series of activity counts is padded with zeros as necessary, at the beginning and at the end. Finally, the sleep state is awake (W) if the sleep index SI is less than 1; otherwise the sleep state is asleep (S).
 
 ```{r }
-ggplot(agdb_colekripke, aes(timestamp, count)) +
-  geom_line() +
-  geom_point(aes(timestamp, 100 * sleep, 
-                 color = as.factor(sleep)), shape = 1) +
-  labs(x = "", y = "movement (scaled by 0.01)", subtitle =
-         "Like Sadeh, Cole-Kripke infers whether the subject is asleep or not") +
+plot_activity(agdb_colekripke, "axis1", color = "sleep") +
+  labs(x = "", y = "movement (bounded at 300)", title =
+       "For each epoch, Cole-Kripke infers whether the subject is asleep (red) or awake (blue)") +
   scale_x_datetime(date_labels = "%I%p") +
-  scale_color_discrete(name = "", labels = c("asleep (0)", "awake (1)"))
+  guides(color = FALSE)
 ```
 
 What is the agreement between the Sadeh and Cole-Kripke asleep/awake algorithms, on the example dataset?
@@ -195,7 +190,7 @@ table(agdb_sadeh$sleep, agdb_colekripke$sleep)
 
 ### Apply the Tudor-Locke algorithm
 
-Once each one-minute epoch is labeled as asleep (0) or awake (1), we can use the Tudor-Locke algorithm to detect periods of time in bed and, for each period, to compute sleep quality metrics such as total minutes in bed, total sleep time, number and average length of awakenings, movement and fragmentation indices
+Once each one-minute epoch is labeled as asleep (S) or awake (W), we can use the Tudor-Locke algorithm to detect periods of time in bed and, for each period, to compute sleep quality metrics such as total minutes in bed, total sleep time, number and average length of awakenings, movement and fragmentation indices
 
 The Tudor-Locke algorithm has several parameters:
 
@@ -272,8 +267,8 @@ plot_activity_period(agdb_60s, periods_sleep, "axis1",
                      "in_bed_time", "out_bed_time", 
                      fill = "#AAAAAA") +
   scale_x_datetime(date_labels = "%I%p") +
-  labs(x = "", y = "movement", subtitle = 
-        paste0("Tudor-Locke detects sleep periods in a sequence of 0s and 1s\n",
+  labs(x = "", y = "movement", title = 
+        paste0("Tudor-Locke detects sleep periods in a series of sleep-scored epochs (Ws and Ss)\n",
                "Sleep periods, if any, are highlighted as gray rectangles"))
 ```
 

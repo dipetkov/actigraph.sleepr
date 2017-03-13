@@ -2,7 +2,7 @@
 #'
 #' The Cole-Kripke sleep scoring algorithm is primarily used for adult populations as the supporting research was performed on subjects ranging from 35 to 65 years of age.
 #' @inheritParams apply_sadeh
-#' @return A \code{tibble} (\code{tbl}) of activity data. A new column \code{sleep} indicates whether each 60s epoch is scored as asleep (0) or awake (1).
+#' @return A \code{tibble} (\code{tbl}) of activity data. A new column \code{sleep} indicates whether each 60s epoch is scored as asleep (S) or awake (W).
 #' @details
 #' The Cole-Kripke algorithm requires that the activity data is in 60s epochs and uses a 7-minute window that includes the four previous and two future epochs. This function implements the algorithm as described in the ActiGraph user manual.
 #'
@@ -24,7 +24,7 @@
 #'
 #' The time series of activity counts is padded with zeros as necessary, at the beginning and at the end.
 #'
-#' Finally, the sleep state is awake (1) if the sleep index SI is less than 1; otherwise the sleep state is asleep (0).
+#' Finally, the sleep state is awake (W) if the sleep index SI is less than 1; otherwise the sleep state is asleep (S).
 #'
 #' @references RJ Cole, DF Kripke, W Gruen, DJ Mullaney and JC Gillin. Automatic sleep/wake identification from wrist activity. \emph{Sleep}, 15(5):461–469, 1992.
 #' @references ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
@@ -56,5 +56,5 @@ apply_cole_kripke_ <- function(data) {
                              230 * count +
                              74 * lead(count, 1, default = 0) +
                              67 * lead(count, 2, default = 0)),
-           sleep = if_else(sleep < 1, 0L, 1L))
+           sleep = if_else(sleep < 1, "S", "W"))
 }

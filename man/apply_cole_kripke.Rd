@@ -10,7 +10,7 @@ apply_cole_kripke(agdb)
 \item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 seconds.}
 }
 \value{
-A \code{tibble} (\code{tbl}) of activity data. A new column \code{sleep} indicates whether each 60s epoch is scored as asleep (0) or awake (1).
+A \code{tibble} (\code{tbl}) of activity data. A new column \code{sleep} indicates whether each 60s epoch is scored as asleep (S) or awake (W).
 }
 \description{
 The Cole-Kripke sleep scoring algorithm is primarily used for adult populations as the supporting research was performed on subjects ranging from 35 to 65 years of age.
@@ -36,7 +36,7 @@ where at epoch t
 
 The time series of activity counts is padded with zeros as necessary, at the beginning and at the end.
 
-Finally, the sleep state is awake (1) if the sleep index SI is less than 1; otherwise the sleep state is asleep (0).
+Finally, the sleep state is awake (W) if the sleep index SI is less than 1; otherwise the sleep state is asleep (S).
 }
 \examples{
 library("dplyr")

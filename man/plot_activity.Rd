@@ -12,7 +12,7 @@ plot_activity(agdb, var = "axis1", color = "black", nrow = NULL,
 
 \item{var}{The activity variable to plot. The default is axis1.}
 
-\item{color}{Line color.}
+\item{color}{Activity line color.}
 
 \item{nrow, ncol}{Number of rows and columns. Relevant only if the activity data is grouped.}
 }
@@ -20,6 +20,12 @@ plot_activity(agdb, var = "axis1", color = "black", nrow = NULL,
 Plot a time series of activity values (by default, the counts on the vertical axis \emph{axis1}).
 }
 \examples{
+library("dplyr")
 data("gtxplus1day")
-plot_activity(gtxplus1day)
+data <- gtxplus1day \%>\%
+  collapse_epochs(60) \%>\%
+  apply_cole_kripke()
+
+plot_activity(data, color = "gray")
+plot_activity(data, color = "sleep")
 }

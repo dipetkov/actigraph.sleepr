@@ -2,7 +2,7 @@
 #'
 #' The Sadeh sleep scoring algorithm is primarily used for younger adolescents as the supporting research was performed on children and young adults.
 #' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 seconds.
-#' @return A \code{tibble} (\code{tbl}) of activity data. A new column \code{sleep} indicates whether each 60s epoch is scored as asleep (0) or awake (1).
+#' @return A \code{tibble} (\code{tbl}) of activity data. A new column \code{sleep} indicates whether each 60s epoch is scored as asleep (S) or awake (W).
 #' @details
 #' The Sadeh algorithm requires that the activity data is in 60s epochs and uses an 11-minute window that includes the five previous and five future epochs. This function implements the algorithm as described in the ActiGraph user manual.
 #'
@@ -23,7 +23,7 @@
 #'
 #' The time series of activity counts is padded with zeros as necessary, at the beginning and at the end, to compute the three functions AVG, SD, NATS within a rolling window.
 #'
-#' Finally, the sleep state is awake (1) if the sleep index SI is greater than -4; otherwise the sleep state is asleep (0).
+#' Finally, the sleep state is awake (W) if the sleep index SI is greater than -4; otherwise the sleep state is asleep (S).
 #'
 #' @references A Sadeh, KM Sharkey and MA Carskadon. Activity based sleep-wake identification: An empirical test of methodological issues. \emph{Sleep}, 17(3):201–207, 1994.
 #' @references ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
@@ -68,5 +68,5 @@ apply_sadeh_ <- function(data) {
                     - 1.08 * roll_nats(count)
                     - 0.056 * roll_std(count)
                     - 0.703 * log(count + 1)),
-           sleep = if_else(sleep > -4, 0L, 1L))
+           sleep = if_else(sleep > -4, "S", "W"))
 }
