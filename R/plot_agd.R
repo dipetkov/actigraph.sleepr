@@ -64,41 +64,15 @@ plot_activity_period <- function(agdb, periods, act_var,
                                  color = "black", fill = "#525252",
                                  ncol = NULL, nrow = NULL) {
   stopifnot(identical(groups(agdb), groups(periods)))
-  height <- max(agdb[[act_var]], 1000)
-  polys <- periods %>%
-    # Convert the timestamps to strings and back to datetime objects
-    # to avoid error about "attributes not identical across variables"
-    mutate_at(c(start_var, end_var),
-              function(x) strftime(x, tz = tz(x), usetz = TRUE)) %>%
-    construct_period_polys(start_var, end_var, height) %>%
-    mutate_at(vars(x), ymd_hms)
   p <- plot_activity(agdb, var = act_var, color = color,
                      nrow = nrow, ncol = ncol)
-  if (nrow(polys)) {
+  for (r in seq_len(nrow(periods))) {
+    xmin <- periods$in_bed_time[r]
+    xmax <- periods$out_bed_time[r]
     p <- p +
-      geom_polygon(data = polys, aes(x = x, y = y, group = id),
-                   fill = fill, alpha = 0.2,
-                   show.legend = FALSE, inherit.aes = FALSE)
+      annotate("rect",
+               xmin = xmin, xmax = xmax, ymin = 0, ymax = Inf,
+               fill = fill, alpha = 0.2)
   }
   p
-}
-#' Transform periods to polygons
-#'
-#' Transform periods to polygons, so that they can be overlaid on an activity plot.
-#' @inheritParams plot_activity_period
-#' @param height The height of the rectangles.
-#' @export
-construct_period_polys <- function(periods, start_var, end_var, height) {
-  periods %>%
-    do(construct_period_polys_(., start_var, end_var, height))
-}
-construct_period_polys_ <- function(periods, start_var, end_var, height) {
-  nr <- nrow(periods)
-  df <- periods %>%
-    mutate(id = row_number()) %>%
-    select_("id", start_var, end_var) %>%
-    gather(key, x, - id) %>% select(- key) %>%
-    arrange(id, x)
-  df[rep(seq_len(2 * nr), each = 2), ] %>%
-    mutate(y = rep(c(height, 0, 0, height), times = nr))
 }
