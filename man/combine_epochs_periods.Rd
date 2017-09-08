@@ -32,7 +32,7 @@ periods <- agdb \%>\%
   apply_tudor_locke(min_sleep_period = 60)
 
 agdb_with_periods <- combine_epochs_periods(agdb, periods,
-                                            "in_bed_time", "out_bed_time")
+                                            in_bed_time, out_bed_time)
 
 # How many sleep periods were detected and what is their duration, in minutes?
 periods \%>\% select(in_bed_time, out_bed_time, duration)

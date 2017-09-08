@@ -39,7 +39,7 @@ An AGD file is an SQLite database file exported by an ActiGraph device. See the 
 
 ```{r }
 library("actigraph.sleepr")
-file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec.agd",
+file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
                         package = "actigraph.sleepr")
 agdb_10s <- read_agd(file_10s)
 ```
@@ -53,7 +53,7 @@ str(agdb_10s)
 Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select, filter, summarise, group_by, arrange) to manipulate the data. For example, let's compute the magnitude of the three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
 
 ```{r }
-library("dplyr")
+suppressMessages(library("dplyr"))
 agdb_10s <- agdb_10s %>% select(timestamp, starts_with("axis"))
 agdb_10s %>%
   mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2))
@@ -65,7 +65,7 @@ The Sadeh and Cole-Kripke algorithms for converting activity measurements into a
 
 ```{r }
 # Collapse epochs from 10 sec to 60 sec by summing
-agdb_60s <- collapse_epochs(agdb_10s, 60)
+agdb_60s <- agdb_10s %>% collapse_epochs(60)
 agdb_60s
 ```
 
@@ -74,8 +74,7 @@ agdb_60s
 The Sadeh algorithm is primarily used for younger adolescents as the supporting research was performed on children and young adults. It requires 60s epochs and uses an 11-minute window that includes the five previous and five future epochs. The `apply_sadeh` function implements the algorithm as described in the ActiGraph user manual.
 
 ```{r }
-agdb_sadeh <- apply_sadeh(agdb_60s)
-agdb_sadeh
+agdb_60s %>% apply_sadeh()
 ```
 
 ### Sleep scoring with the Cole-Kripke algorithm
@@ -83,14 +82,7 @@ agdb_sadeh
 The Cole-Kripke algorithm is primarily used for adult populations as the supporting research was performed on subjects ranging from 35 to 65 years of age. Like the Sadeh algorithm, it requires 60s epochs and uses a 7-minute window that includes the four previous and two future epochs. The `apply_cole` function implements the algorithm as described in the ActiGraph user manual.
 
 ```{r }
-agdb_colekripke <- apply_cole_kripke(agdb_60s)
-agdb_colekripke
-```
-
-What is the agreement between the Sadeh and Cole-Kripke asleep/awake algorithms, on the example dataset?
-
-```{r }
-table(agdb_sadeh$state, agdb_colekripke$state)
+agdb_60s %>% apply_cole_kripke()
 ```
 
 ### Sleep period detection with the Tudor-Locke algorithm
@@ -98,8 +90,7 @@ table(agdb_sadeh$state, agdb_colekripke$state)
 Once each one-minute epoch is labeled as asleep (S) or awake (W), we can use the Tudor-Locke algorithm to detect periods of time in bed and, for each period, to compute sleep quality metrics such as total minutes in bed, total sleep time, number and average length of awakenings, movement and fragmentation index.
 
 ```{r }
-agdb_sleep <- apply_tudor_locke(agdb_sadeh)
-agdb_sleep
+agdb_60s %>% apply_sadeh() %>% apply_tudor_locke()
 ```
 
 ### Non-wear period detection with the Troiano and Choi algorithms
@@ -107,8 +98,8 @@ agdb_sleep
 Long stretches that consist almost entirely of zero counts (zero epochs) suggest that the device wasn't worn at all and therefore should be excluded from downstream analysis. The Troiano algorithm for detecting periods of non-wear formalizes a technique used to analyze the 2003-2004 NHANES data, which allows a non-wear period to contain a few nonzero epochs of artifactual movement (spikes). The Choi algorithm extends the Troiano algorithm by requiring that short spikes of artifactual movement during a non-wear period are preceded and followed by a fixed number of consecutive zero epochs.
 
 ```{r }
-apply_troiano(agdb_60s)
-apply_choi(agdb_60s)
+agdb_60s %>% apply_troiano()
+agdb_60s %>% apply_choi()
 ```
 
 ### References

@@ -41,7 +41,7 @@ apply_sadeh <- function(agdb) {
 
   check_args_sleep_scores(agdb, "Sadeh")
   attr(agdb, "sleep_algorithm") <- "Sadeh"
-  agdb %>% do(apply_sadeh_(.))
+  agdb %>% do(apply_sadeh_(.data))
 }
 
 apply_sadeh_ <- function(data) {
@@ -62,11 +62,11 @@ apply_sadeh_ <- function(data) {
   }
 
   data %>%
-    mutate(count = pmin(axis1, 300),
+    mutate(count = pmin(.data$axis1, 300),
            sleep = (7.601
-                    - 0.065 * roll_avg(count)
-                    - 1.08 * roll_nats(count)
-                    - 0.056 * roll_std(count)
-                    - 0.703 * log(count + 1)),
-           sleep = if_else(sleep > -4, "S", "W"))
+                    - 0.065 * roll_avg(.data$count)
+                    - 1.08 * roll_nats(.data$count)
+                    - 0.056 * roll_std(.data$count)
+                    - 0.703 * log(.data$count + 1)),
+           sleep = if_else(.data$sleep > -4, "S", "W"))
 }

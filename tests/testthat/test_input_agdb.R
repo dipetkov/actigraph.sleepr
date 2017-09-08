@@ -28,13 +28,12 @@ context("Manipulate agdb data frame")
 test_that("all dplyr verbs work on a tbl_agd", {
   file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
                       package = "actigraph.sleepr")
-  agdb <- read_agd(file)
-  agdb <- agdb %>%
+  agdb <- read_agd(file) %>%
     mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2))
   expect_true(exists("magnitude", where = agdb))
   agdb <- agdb %>%
     group_by(day = lubridate::day(timestamp)) %>%
-    summarise_each(funs(sum), starts_with("axis"))
+    summarise_at(vars(starts_with("axis")), sum)
   expect_named(agdb, c("day", "axis1", "axis2", "axis3"))
 })
 test_that("group_by works as expected on tbl_agd with time gap", {
@@ -67,8 +66,7 @@ test_that("collapse_epochs returns same result as ActiLife 6", {
     collapse_epochs(60, use_incomplete = FALSE)
   n <- attr(agdb_60s, "epochcount")
   for (var in setdiff(colnames(agdb_60s), "timestamp")) {
-    expect_true(is.na(agdb_60s[[var]][n]))
-    expect_identical(agdb_60s[[var]][-n], actilife[[var]][-n])
+    expect_identical(agdb_60s[[var]], actilife[[var]][1:n])
   }
 })
 test_that("collapse_epochs errors if unexpected epoch length", {

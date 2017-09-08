@@ -9,9 +9,9 @@ expand_periods(periods, start_var, end_var, units = "1 min")
 \arguments{
 \item{periods}{A data frame with at least two columns, \code{start_var} and \code{end_var}, which are the first and the last epoch in a set of time periods, e.g. sleep periods or (non)wear periods.}
 
-\item{start_var}{The column which indicates when the time periods start.}
+\item{start_var}{The variable (unquoted) which indicates when the time periods start.}
 
-\item{end_var}{The column which indicates when the time periods end.}
+\item{end_var}{The variable (unquoted) which indicates when the time periods end.}
 
 \item{units}{The time unit as a characters string. The default is \code{"1 min"}.}
 }
@@ -25,5 +25,5 @@ data("gtxplus1day")
 gtxplus1day \%>\%
   collapse_epochs(60) \%>\%
   apply_choi(min_period_len = 45) \%>\%
-  expand_periods("period_start", "period_end", units = "30 mins")
+  expand_periods(period_start, period_end, units = "30 mins")
 }

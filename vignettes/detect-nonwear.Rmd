@@ -72,13 +72,13 @@ Or we can flag 24-hour day as invalid if the device was worn only for a short pe
 ```{r }
 # Find the periods during which the device was worn
 periods_wear <- complement_periods(periods_nonwear, agdb_60s,
-                                   start_var = "period_start", end_var = "period_end")
+                                   period_start, period_end)
 periods_wear
 
 # Each epoch either falls in a wear period (with period_id = 1, 2, 3, etc.)
 # or in a non-wear period with (period_id = NA)
 agdb_wear <- combine_epochs_periods(agdb_60s, periods_wear,
-                                    start_var = "period_start", end_var = "period_end")
+                                    period_start, period_end)
 agdb_wear %>%
   filter(!is.na(period_id)) %>%
   summarise(time_worn = n())

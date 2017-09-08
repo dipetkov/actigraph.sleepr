@@ -14,20 +14,23 @@ License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 NeedsCompilation: no
-RoxygenNote: 6.0.1
+RoxygenNote: 6.0.1.9000
 Depends:
   R (>= 3.2.4)
 Imports:
+  DBI,
   Rcpp,
   RcppRoll,
   RSQLite,
+  assertthat,
   data.table,
-  dplyr (<= 0.5.0),
+  dplyr (>= 0.7.1),
   ggplot2,
-  lazyeval,
   lubridate,
+  rlang,
   stats,
-  tidyr,
+  stringr,
+  tidyr (>= 0.7.1),
   purrr,
   zoo
 Suggests:

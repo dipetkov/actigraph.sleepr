@@ -11,9 +11,9 @@ complement_periods(periods, epochs, start_var, end_var)
 
 \item{epochs}{A data frame with at least one column, \code{timestamp}, which contains POSIXct objects.}
 
-\item{start_var}{The column which indicates when the time periods start.}
+\item{start_var}{The variable (unquoted) which indicates when the time periods start.}
 
-\item{end_var}{The column which indicates when the time periods end.}
+\item{end_var}{The variable (unquoted) which indicates when the time periods end.}
 }
 \value{
 A data frame of time periods with three columns: \code{period_id} (a sequential identifier), \code{start_var} (first epoch in period) and \code{end_var} (last epoch in period).
@@ -28,5 +28,5 @@ periods <- data_frame(start = ymd_hm("2017-01-01 00:01"),
                       end = ymd_hm("2017-01-01 00:05"))
 epochs <- data_frame(timestamp = ymd_hm("2017-01-01 00:00") +
                        minutes(0:12))
-complement_periods(periods, epochs, "start", "end")
+complement_periods(periods, epochs, start, end)
 }

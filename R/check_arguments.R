@@ -27,20 +27,17 @@ check_has_variable <- function(agdb, var) {
     stop("tbl_agd does not have variable ", var)
 }
 check_args_sleep_scores <- function(agdb, algorithm) {
-  stopifnot(inherits(agdb, "tbl_agd"))
   check_epochlen_is_60(agdb, algorithm)
   check_no_missing_timestamps(agdb)
   check_no_missing_counts(agdb, "axis1")
 }
 check_args_sleep_periods <- function(agdb, algorithm) {
-  stopifnot(inherits(agdb, "tbl_agd"))
   check_epochlen_is_60(agdb, algorithm)
   check_no_missing_timestamps(agdb)
   check_no_missing_state(agdb)
 }
 check_args_nonwear_periods <- function(agdb, algorithm,
                                        use_magnitude) {
-  stopifnot(inherits(agdb, "tbl_agd"))
   check_epochlen_is_60(agdb, algorithm)
   check_no_missing_timestamps(agdb)
   check_no_missing_counts(agdb, "axis1")
@@ -50,13 +47,11 @@ check_args_nonwear_periods <- function(agdb, algorithm,
   }
 }
 check_args_filter <- function(agdb, var) {
-  stopifnot(inherits(agdb, "tbl_agd"))
   check_has_variable(agdb, var)
   check_no_missing_timestamps(agdb)
   check_no_missing_counts(agdb, var)
 }
 check_args_collapse_method <- function(agdb, epoch_len_out) {
-  stopifnot(inherits(agdb, "tbl_agd"))
   if (epoch_len_out != 60)
     stop("Use `collapse_epochs` to aggregate to 60s epochs.")
   if (epoch_len_out %% attr(agdb, "epochlength"))
@@ -64,10 +59,4 @@ check_args_collapse_method <- function(agdb, epoch_len_out) {
          "of input epoch length.")
   check_no_missing_timestamps(agdb)
   check_no_missing_counts(agdb, "axis1")
-}
-check_join_epochs_periods <- function(epochs, periods, start_var, end_var) {
-  stopifnot(exists("timestamp", where = epochs))
-  stopifnot(exists(start_var, where = periods))
-  stopifnot(exists(end_var, where = periods))
-  stopifnot(identical(groups(periods), groups(epochs)))
 }

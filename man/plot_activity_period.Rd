@@ -12,11 +12,11 @@ plot_activity_period(agdb, periods, act_var, start_var, end_var,
 
 \item{periods}{A \code{tibble} of periods with at least two columns \code{start_var} and \code{end_var}.}
 
-\item{act_var}{The activity variable to plot. The default is axis1.}
+\item{act_var}{The activity variable (unquoted) to plot on the y-axis.}
 
-\item{start_var}{The column which indicates when the time periods start.}
+\item{start_var}{The variable (unquoted) which indicates when the time periods start.}
 
-\item{end_var}{The column which indicates when the time periods end.}
+\item{end_var}{The variable (unquoted) which indicates when the time periods end.}
 
 \item{color}{Activity line color.}
 
@@ -41,6 +41,6 @@ periods_sleep <- gtxplus1day \%>\%
   apply_cole_kripke() \%>\%
   apply_tudor_locke(min_sleep_period = 60)
 
-plot_activity_period(gtxplus1day, periods_sleep, "axis1",
-                     "in_bed_time", "out_bed_time")
+plot_activity_period(gtxplus1day, periods_sleep, axis1,
+                     in_bed_time, out_bed_time)
 }

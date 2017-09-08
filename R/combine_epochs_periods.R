@@ -17,7 +17,7 @@
 #'   apply_tudor_locke(min_sleep_period = 60)
 #'
 #' agdb_with_periods <- combine_epochs_periods(agdb, periods,
-#'                                             "in_bed_time", "out_bed_time")
+#'                                             in_bed_time, out_bed_time)
 #'
 #' # How many sleep periods were detected and what is their duration, in minutes?
 #' periods %>% select(in_bed_time, out_bed_time, duration)
@@ -26,18 +26,15 @@
 #' @export
 combine_epochs_periods <- function(epochs, periods, start_var, end_var) {
 
-  check_join_epochs_periods(epochs, periods, start_var, end_var)
+  start_var <- enquo(start_var)
+  end_var <- enquo(end_var)
+
   units <- get_epoch_length(epochs)
   stopifnot(is.numeric(units))
 
-  join_vars <- "timestamp"
-  group_vars <- NULL
-  if (is.grouped_df(epochs)) group_vars <- as.character(groups(epochs))
-  join_vars <- c(group_vars, join_vars)
-
   epochs_periods <-
-    expand_periods(periods, start_var, end_var, units = units) %>%
-    right_join(epochs, by = join_vars)
+    expand_periods(periods, !!start_var, !!end_var, units = units) %>%
+    right_join(epochs, by = c("timestamp", group_vars(epochs)))
 
   class(epochs_periods) <- class(epochs)
   for (a in setdiff(names(attributes(epochs)),

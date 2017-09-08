@@ -4,13 +4,12 @@
 \alias{plot_activity}
 \title{Plot activity values}
 \usage{
-plot_activity(agdb, var = "axis1", color = "black", nrow = NULL,
-  ncol = NULL)
+plot_activity(agdb, var, color = "black", nrow = NULL, ncol = NULL)
 }
 \arguments{
 \item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute.}
 
-\item{var}{The activity variable to plot. The default is axis1.}
+\item{var}{The activity variable (unquoted) to plot on the y-axis.}
 
 \item{color}{Activity line color.}
 
@@ -26,6 +25,6 @@ data <- gtxplus1day \%>\%
   collapse_epochs(60) \%>\%
   apply_cole_kripke()
 
-plot_activity(data, color = "gray")
-plot_activity(data, color = "sleep")
+plot_activity(data, axis1, color = "gray")
+plot_activity(data, axis1, color = "sleep")
 }

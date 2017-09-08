@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // wle
 IntegerVector wle(NumericVector counts, int activity_threshold, int spike_tolerance, int spike_stoplevel);
-RcppExport SEXP actigraph_sleepr_wle(SEXP countsSEXP, SEXP activity_thresholdSEXP, SEXP spike_toleranceSEXP, SEXP spike_stoplevelSEXP) {
+RcppExport SEXP _actigraph_sleepr_wle(SEXP countsSEXP, SEXP activity_thresholdSEXP, SEXP spike_toleranceSEXP, SEXP spike_stoplevelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -21,7 +21,7 @@ END_RCPP
 }
 // overlap
 LogicalVector overlap(IntegerVector start, IntegerVector end);
-RcppExport SEXP actigraph_sleepr_overlap(SEXP startSEXP, SEXP endSEXP) {
+RcppExport SEXP _actigraph_sleepr_overlap(SEXP startSEXP, SEXP endSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -30,4 +30,15 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(overlap(start, end));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_actigraph_sleepr_wle", (DL_FUNC) &_actigraph_sleepr_wle, 4},
+    {"_actigraph_sleepr_overlap", (DL_FUNC) &_actigraph_sleepr_overlap, 2},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_actigraph_sleepr(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

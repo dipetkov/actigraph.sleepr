@@ -42,19 +42,19 @@ apply_cole_kripke <- function(agdb) {
 
   check_args_sleep_scores(agdb, "Cole-Kripke")
   attr(agdb, "sleep_algorithm") <- "Cole-Kripke"
-  agdb %>% do(apply_cole_kripke_(.))
+  agdb %>% do(apply_cole_kripke_(.data))
 }
 
 apply_cole_kripke_ <- function(data) {
 
   data %>%
-    mutate(count = pmin(axis1 / 100, 300),
-           sleep = .001 * (106 * lag(count, 4, default = 0) +
-                             54 * lag(count, 3, default = 0) +
-                             58 * lag(count, 2, default = 0) +
-                             76 * lag(count, 1, default = 0) +
-                             230 * count +
-                             74 * lead(count, 1, default = 0) +
-                             67 * lead(count, 2, default = 0)),
-           sleep = if_else(sleep < 1, "S", "W"))
+    mutate(count = pmin(.data$axis1 / 100, 300),
+           sleep = .001 * (106 * lag(.data$count, 4, default = 0) +
+                             54 * lag(.data$count, 3, default = 0) +
+                             58 * lag(.data$count, 2, default = 0) +
+                             76 * lag(.data$count, 1, default = 0) +
+                             230 * .data$count +
+                             74 * lead(.data$count, 1, default = 0) +
+                             67 * lead(.data$count, 2, default = 0)),
+           sleep = if_else(.data$sleep < 1, "S", "W"))
 }

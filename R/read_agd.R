@@ -1,61 +1,72 @@
-#' Read an *.agd file
+#' Read activity counts from an *.agd file
 #'
 #' Read ActiGraph sleep watch data from a database stored in an AGD file. Return a tibble.
 #' @param file Full path to an agd file to read.
 #' @param tz Time zone to convert DateTime ticks to POSIX time.
-#' @return A \code{tibble} (\code{tbl}) of activity data with at least two columns: timestamp and axis1 counts. Optional columns include axis2, axis2, steps, lux and inclinometer indicators (incline off, standing, sitting and lying). The device settings are stored as attributes, which include \code{epochlength}.
+#' @return A \code{tibble} (\code{tbl}) of activity data with at least two columns: timestamp and axis1 counts. Optional columns include axis2, axis2, steps, lux and inclinometer indicators (incline off, standing, sitting and lying).
 #' @references ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
 #' @references \code{covertagd}: R package for converting agd files from ActiGraph into data.frames.
 #' @seealso \code{\link{read_agd_raw}}
 #' @examples
 #' file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
 #'                     package = "actigraph.sleepr")
-#' agdb <- read_agd(file)
-#' agdb
+#' read_agd(file)
 #'
 #' library("readr")
+#' library("dplyr")
 #' library("tools")
 #'
 #' # Read ActiGraph sleep watch data from the AGD files in a directory.
 #' # Write the raw activity data to csv files in the user's home directory.
 #' path_in <- system.file("extdata", package = "actigraph.sleepr")
 #' path_out <- path.expand("~")
+#'
 #' filenames <- list.files(path_in, pattern = ".agd", full.names = FALSE)
 #' basenames <- file_path_sans_ext(filenames)
 #'
 #' for (basename in basenames) {
 #'   file_in <- file.path(path_in, paste0(basename, ".agd"))
 #'   file_out <- file.path(path_out, paste0(basename, ".csv"))
-#'   agdb <- read_agd(file_in)
-#'   write_csv(agdb, file_out)
+#'   read_agd(file_in) %>% write_csv(file_out)
 #' }
 #' @export
-
 read_agd <- function(file, tz = "UTC") {
+
+  data <- read_agd_raw(file, tz) %>%
+    .$data %>%
+    rename_all(tolower) %>%
+    rename(timestamp = .data$datatimestamp) %>%
+    mutate_if(is.numeric, as.integer)
+
+  tbl_agd(data, data_frame(epochlength = 10))
+}
+#' Read settings from an *.agd file
+#'
+#' Read ActiGraph sleep watch data from a database stored in an AGD file. Return the settings.
+#' @inheritParams read_agd
+#' @examples
+#' file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
+#'                     package = "actigraph.sleepr")
+#' read_agd_settings(file)
+#' @export
+read_agd_settings <- function(file, tz = "UTC") {
 
   ticks_to_dttm <- function(ticks, tz) {
     as.POSIXct(as.numeric(ticks) / 1e7,
                origin = "0001-01-01 00:00:00", tz)
   }
 
-  agdb <- read_agd_raw(file, tz)
-  data <- agdb$data %>%
-    setNames(tolower(names(.))) %>%
-    rename(timestamp = datatimestamp) %>%
-    mutate_if(is.numeric, as.integer)
-
   # The settings are stored in a table with settingName, settingValue
   # columns and so all settings are of type `character`, including the
   # timestamps. I typecast the most salient settings appropriately.
-  settings <- agdb$settings %>%
-    setNames(tolower(names(.))) %>%
-    select(settingname, settingvalue) %>%
-    spread(settingname, settingvalue) %>%
-    mutate_at(vars(matches("dateOfBirth")), funs(ticks_to_dttm(., tz))) %>%
-    mutate_at(vars(ends_with("time")), funs(ticks_to_dttm(., tz))) %>%
-    mutate_at(vars(starts_with("epoch")), funs(as.integer))
-
-  tbl_agd(data, settings)
+  read_agd_raw(file, tz) %>%
+    .$settings %>%
+    rename_all(tolower) %>%
+    select(.data$settingname, .data$settingvalue) %>%
+    spread(.data$settingname, .data$settingvalue) %>%
+    mutate_at(vars(matches("dateOfBirth")), ticks_to_dttm, tz = tz) %>%
+    mutate_at(vars(ends_with("time")), ticks_to_dttm, tz = tz) %>%
+    mutate_at(vars(starts_with("epoch")), as.integer)
 }
 
 #' Read an *.agd file, with no post-processing
@@ -72,20 +83,19 @@ read_agd <- function(file, tz = "UTC") {
 #' @examples
 #' file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
 #'                     package = "actigraph.sleepr")
-#' agdb <- read_agd_raw(file)
-#' str(agdb)
+#' str(read_agd_raw(file))
 #' @export
-
 read_agd_raw <- function(file, tz = "UTC") {
 
   stopifnot(file.exists(file))
 
   # Connect to the *.agd database
-  db <- src_sqlite(file)
+  db <- DBI::dbConnect(RSQLite::SQLite(), dbname = file)
 
   # Get the names of all tables in the database
   query <- "SELECT name FROM sqlite_master WHERE type = 'table'"
-  tables_agd <- db %>% tbl(sql(query)) %>% collect() %>% .$name
+  tables_agd <- db %>% tbl(sql(query)) %>% collect()
+  tables_agd <- tables_agd$name
   tables_required <- c("data", "sleep", "awakenings", "filters", "settings")
   stopifnot(all(tables_required %in% tables_agd))
 
@@ -98,32 +108,34 @@ read_agd_raw <- function(file, tz = "UTC") {
   cast_dttms <- function(x) {
     if (length(x)) ymd_hms(x, tz = tz) else as.POSIXct(x)
   }
-  select_dttms <- function(table, vars) {
+  select_dttms <- function(table, cols) {
     query <- "SELECT"
-    for (var in vars) {
+    for (col in cols) {
       # Start counting seconds from January 1st, 1970;
       # 62135596800 is the number of seconds elapsed
       # from 01/01/0001 00:00:00 to 01/01/1970 00:00:00
       query <- paste0(query,
                       " STRFTIME('%Y-%m-%d %H:%M:%S', ",
-                      var, "/", "10000000 - 62135596800, ",
-                      "'unixepoch') AS ", var, "_ts, ")
+                      col, "/", "10000000 - 62135596800, ",
+                      "'unixepoch') AS ", col, "_ts, ")
     }
     query <- paste0(query, " * FROM ", table)
     db %>% tbl(sql(query)) %>%
       collect(n = Inf) %>%
-      select(- one_of(vars)) %>%
-      rename_(.dots = setNames(paste0(vars, "_ts"), vars)) %>%
-      mutate_at(vars(one_of(vars)), funs(cast_dttms))
+      select(- one_of(cols)) %>%
+      rename_all(str_replace, "_ts$", "") %>%
+      mutate_at(vars(cols), cast_dttms)
   }
 
+  settings <- db %>% tbl("settings") %>% collect()
   data <- select_dttms("data", "dataTimestamp")
   sleep <- select_dttms("sleep", c("inBedTimestamp",
                                    "outBedTimestamp"))
   awakenings <- select_dttms("awakenings", "timestamp")
   filters <- select_dttms("filters", c("filterStartTimestamp",
                                        "filterStopTimestamp"))
-  settings <- db %>% tbl("settings") %>% collect()
+
+  DBI::dbDisconnect(db)
 
   # The capsense table stores data from an optional wear sensor,
   # so it might not be present in the database.
@@ -133,5 +145,6 @@ read_agd_raw <- function(file, tz = "UTC") {
                  settings = settings, awakenings = awakenings)
   if ("capsense" %in% tables_agd)
     tables$capsense <- select_dttms("capsense", "timeStamp")
+
   tables
 }

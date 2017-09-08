@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_agd.R
 \name{read_agd}
 \alias{read_agd}
-\title{Read an *.agd file}
+\title{Read activity counts from an *.agd file}
 \usage{
 read_agd(file, tz = "UTC")
 }
@@ -12,7 +12,7 @@ read_agd(file, tz = "UTC")
 \item{tz}{Time zone to convert DateTime ticks to POSIX time.}
 }
 \value{
-A \code{tibble} (\code{tbl}) of activity data with at least two columns: timestamp and axis1 counts. Optional columns include axis2, axis2, steps, lux and inclinometer indicators (incline off, standing, sitting and lying). The device settings are stored as attributes, which include \code{epochlength}.
+A \code{tibble} (\code{tbl}) of activity data with at least two columns: timestamp and axis1 counts. Optional columns include axis2, axis2, steps, lux and inclinometer indicators (incline off, standing, sitting and lying).
 }
 \description{
 Read ActiGraph sleep watch data from a database stored in an AGD file. Return a tibble.
@@ -20,24 +20,24 @@ Read ActiGraph sleep watch data from a database stored in an AGD file. Return a 
 \examples{
 file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
                     package = "actigraph.sleepr")
-agdb <- read_agd(file)
-agdb
+read_agd(file)
 
 library("readr")
+library("dplyr")
 library("tools")
 
 # Read ActiGraph sleep watch data from the AGD files in a directory.
 # Write the raw activity data to csv files in the user's home directory.
 path_in <- system.file("extdata", package = "actigraph.sleepr")
 path_out <- path.expand("~")
+
 filenames <- list.files(path_in, pattern = ".agd", full.names = FALSE)
 basenames <- file_path_sans_ext(filenames)
 
 for (basename in basenames) {
   file_in <- file.path(path_in, paste0(basename, ".agd"))
   file_out <- file.path(path_out, paste0(basename, ".csv"))
-  agdb <- read_agd(file_in)
-  write_csv(agdb, file_out)
+  read_agd(file_in) \%>\% write_csv(file_out)
 }
 }
 \references{

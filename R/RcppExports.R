@@ -2,10 +2,10 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 wle <- function(counts, activity_threshold, spike_tolerance, spike_stoplevel) {
-    .Call('actigraph_sleepr_wle', PACKAGE = 'actigraph.sleepr', counts, activity_threshold, spike_tolerance, spike_stoplevel)
+    .Call(`_actigraph_sleepr_wle`, counts, activity_threshold, spike_tolerance, spike_stoplevel)
 }
 
 overlap <- function(start, end) {
-    .Call('actigraph_sleepr_overlap', PACKAGE = 'actigraph.sleepr', start, end)
+    .Call(`_actigraph_sleepr_overlap`, start, end)
 }
 
