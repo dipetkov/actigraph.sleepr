@@ -3,7 +3,7 @@
 #' Read ActiGraph sleep watch data from a database stored in an AGD file. Return a tibble.
 #' @param file Full path to an agd file to read.
 #' @param tz Time zone to convert DateTime ticks to POSIX time.
-#' @return A \code{tibble} (\code{tbl}) of activity data with at least two columns: timestamp and axis1 counts. Optional columns include axis2, axis2, steps, lux and inclinometer indicators (incline off, standing, sitting and lying).
+#' @return A \code{tibble} (\code{tbl}) of activity data with at least two columns: timestamp and axis1 counts. Optional columns include axis2, axis2, steps, lux and inclinometer indicators (incline off, standing, sitting and lying). The device settings are stored as attributes, which include \code{epochlength}.
 #' @references ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
 #' @references \code{covertagd}: R package for converting agd files from ActiGraph into data.frames.
 #' @seealso \code{\link{read_agd_raw}}
@@ -32,41 +32,29 @@
 #' @export
 read_agd <- function(file, tz = "UTC") {
 
-  data <- read_agd_raw(file, tz) %>%
-    .$data %>%
-    rename_all(tolower) %>%
-    rename(timestamp = .data$datatimestamp) %>%
-    mutate_if(is.numeric, as.integer)
-
-  tbl_agd(data, data_frame(epochlength = 10))
-}
-#' Read settings from an *.agd file
-#'
-#' Read ActiGraph sleep watch data from a database stored in an AGD file. Return the settings.
-#' @inheritParams read_agd
-#' @examples
-#' file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
-#'                     package = "actigraph.sleepr")
-#' read_agd_settings(file)
-#' @export
-read_agd_settings <- function(file, tz = "UTC") {
-
   ticks_to_dttm <- function(ticks, tz) {
     as.POSIXct(as.numeric(ticks) / 1e7,
                origin = "0001-01-01 00:00:00", tz)
   }
 
+  agdb <- read_agd_raw(file, tz)
+  data <- agdb$data %>%
+    rename_all(tolower) %>%
+    rename(timestamp = .data$datatimestamp) %>%
+    mutate_if(is.numeric, as.integer)
+
   # The settings are stored in a table with settingName, settingValue
   # columns and so all settings are of type `character`, including the
   # timestamps. I typecast the most salient settings appropriately.
-  read_agd_raw(file, tz) %>%
-    .$settings %>%
+  settings <- agdb$settings %>%
     rename_all(tolower) %>%
     select(.data$settingname, .data$settingvalue) %>%
     spread(.data$settingname, .data$settingvalue) %>%
     mutate_at(vars(matches("dateOfBirth")), ticks_to_dttm, tz = tz) %>%
     mutate_at(vars(ends_with("time")), ticks_to_dttm, tz = tz) %>%
     mutate_at(vars(starts_with("epoch")), as.integer)
+
+  tbl_agd(data, settings)
 }
 
 #' Read an *.agd file, with no post-processing

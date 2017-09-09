@@ -144,7 +144,7 @@ plot_activity(agdb_sadeh, axis1, color = "sleep") +
   labs(x = "", y = "movement (bounded at 300)", title =
        "For each epoch, Sadeh infers whether the subject is asleep (red) or awake (blue)") +
   scale_x_datetime(date_labels = "%I%p") +
-  guides(color = FALSE)
+  guides(color = FALSE, fill = FALSE)
 ```
 
 ### Apply the Cole-Kripke algorithm
@@ -178,7 +178,7 @@ plot_activity(agdb_colekripke, axis1, color = "sleep") +
   labs(x = "", y = "movement (bounded at 300)", title =
        "For each epoch, Cole-Kripke infers whether the subject is asleep (red) or awake (blue)") +
   scale_x_datetime(date_labels = "%I%p") +
-  guides(color = FALSE)
+  guides(color = FALSE, fill = FALSE)
 ```
 
 What is the agreement between the Sadeh and Cole-Kripke asleep/awake algorithms, on the example dataset?

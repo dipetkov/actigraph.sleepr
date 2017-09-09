@@ -12,7 +12,7 @@ read_agd(file, tz = "UTC")
 \item{tz}{Time zone to convert DateTime ticks to POSIX time.}
 }
 \value{
-A \code{tibble} (\code{tbl}) of activity data with at least two columns: timestamp and axis1 counts. Optional columns include axis2, axis2, steps, lux and inclinometer indicators (incline off, standing, sitting and lying).
+A \code{tibble} (\code{tbl}) of activity data with at least two columns: timestamp and axis1 counts. Optional columns include axis2, axis2, steps, lux and inclinometer indicators (incline off, standing, sitting and lying). The device settings are stored as attributes, which include \code{epochlength}.
 }
 \description{
 Read ActiGraph sleep watch data from a database stored in an AGD file. Return a tibble.

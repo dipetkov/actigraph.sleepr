@@ -39,9 +39,6 @@ The Troiano algorithm for detecting periods of non-wear formalizes a technique u
 activity_threshold
  : Highest activity level to be considered "zero"; an epoch with activity exceeding the threshold is considered a "spike". The default threshold is 0.
 
-use_magnitude
- : If true, the magnitude of the vector (axis1, axis2, axis3) is used to measure activity; otherwise the axis1 value is used. The default is FALSE.
-
 min_period_len
  : Minimum number of consecutive zero epoch to start a non-wear period. The default is 60.
 
@@ -54,11 +51,23 @@ spike_tolerance
 spike_stoplevel
  : An activity spike that exceeds `spike_stoplevel` counts ends a non-wear period, even if the spike tolerance has not been reached. The default is 100.
 
+use_magnitude
+ : If true, the magnitude of the vector (axis1, axis2, axis3) is used to measure activity; otherwise the axis1 value is used. The default is FALSE.
+ 
+endat_nnz_seq
+ : If true, a non-wear period ends with a run of nonzero epochs that is longer than `spike_tolerance`. This corresponds to the option *"Require consecutive epochs outside of the activity threshold"* in ActiLife's Wear Time Validation menu. The default is TRUE.
+
 The Troiano algorithm specifies that a non-wear period starts with `min_length` consecutive epochs/minutes of zero activity and ends with more than `spike_tolerance` epochs/minutes of nonzero activity.
 
 ```{r }
 periods_nonwear <- agdb_60s %>% apply_troiano(min_period_len = 45)
 periods_nonwear
+```
+
+The parameter settings of the Troiano algorithm are stored as attributes.
+
+```{r }
+tail(attributes(periods_nonwear), 8)
 ```
 
 Once non-wear periods are detected, we can further screen those intervals. For example, we can ignore non-wear periods that are too short.
@@ -75,22 +84,46 @@ periods_wear <- complement_periods(periods_nonwear, agdb_60s,
                                    period_start, period_end)
 periods_wear
 
-# Each epoch either falls in a wear period (with period_id = 1, 2, 3, etc.)
-# or in a non-wear period with (period_id = NA)
+# Label each epoch with the period_id of the wear period it falls in
+# or with NA if the epoch falls outside a wear period
 agdb_wear <- combine_epochs_periods(agdb_60s, periods_wear,
                                     period_start, period_end)
+agdb_wear %>% head(5)
+
+# Once we add the wear/nonwear information, it is straightforward to
+# compute summary statistics or join with external minute-by-minute data
 agdb_wear %>%
-  filter(!is.na(period_id)) %>%
-  summarise(time_worn = n())
+  group_by(period_id, add = TRUE) %>%
+  summarise(time_worn = n(),
+            ave_counts = mean(axis1))
 ```
 
 ### Non-wear detection with the Choi algorithm
 
 The Choi algorithm extends the Troiano algorithm by requiring that short spikes of artifactual movement during a non-wear period are preceded and followed by \code{min_window_len} consecutive zero epochs.
 
+min_period_len
+ : Minimum number of consecutive zero epoch to start a non-wear period. The default is 90.
+
+min_window_len
+ : The minimum number of consecutive "zero" epochs immediately preceding and following a spike of artifactual movement. The default is 30.
+
+spike_tolerance
+ : Also known as artifactual movement interval. At most `spike_tolerance` "nonzero" epochs can occur in sequence during a non-wear period without interrupting it. The default is 2.
+
+use_magnitude
+ : If true, the magnitude of the vector (axis1, axis2, axis3) is used to measure activity; otherwise the axis1 value is used. The default is FALSE.
+ 
 ```{r }
-periods_nonwear <- agdb_60s %>% apply_choi(min_period_len = 45, min_window_len = 10)
+periods_nonwear <- agdb_60s %>% apply_choi(min_period_len = 45, 
+                                           min_window_len = 10)
 periods_nonwear
+```
+
+Again, the parameter settings are saved as attributes.
+
+```{r }
+tail(attributes(periods_nonwear), 5)
 ```
 
 ### References

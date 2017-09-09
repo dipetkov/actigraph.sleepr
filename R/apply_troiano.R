@@ -8,11 +8,11 @@
 #' @param spike_tolerance Also known as artifactual movement interval. At most \code{spike_tolerance} "nonzero" epochs can occur in sequence during a non-wear period without interrupting it. The default is 2.
 #' @param spike_stoplevel An activity spike that exceeds \code{spike_stoplevel} counts ends a non-wear period, even if the spike tolerance has not been reached. The default is 100.
 #' @param use_magnitude Logical. If true, the magnitude of the vector (axis1, axis2, axis3) is used to measure activity; otherwise the axis1 value is used. The default is FALSE.
-#' @param endat_nnz_seq Logical. If true, a non-wear period ends with a run of nonzero epochs that is longer than \code{spike_tolerance}. The default is TRUE.
+#' @param endat_nnz_seq Logical. If true, a non-wear period ends with a run of nonzero epochs that is longer than \code{spike_tolerance}. This corresponds to the option \emph{"Require consecutive epochs outside of the activity threshold"} in ActiLife's Wear Time Validation menu. The default is TRUE.
 #' @details
 #' The Troiano algorithm specifies that a non-wear period starts with \code{min_period_len} consecutive epochs/minutes of "zero" activity and ends with more than \code{spike_tolerance} epochs/minutes of "nonzero" activity.
 #'
-#' This implementation of the algorithm expects that the epochs are 60 second long.
+#' This implementation of the algorithm expects 60s epochs.
 #' @return A summary \code{tibble} of the detected non-wear periods. If the activity data is grouped, then non-wear periods are detected separately for each group.
 #' @references RP Troiano, D Berrigan, KW Dodd, LC Mâsse, T Tilert and M McDowell. Physical activity in the united states measured by accelerometer. \emph{Medicine & Science in Sports & Exercise}, 40(1):181–188, 2008.
 #' @references ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
