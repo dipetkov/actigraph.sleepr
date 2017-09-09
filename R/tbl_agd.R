@@ -51,40 +51,40 @@ wrap_dplyr_join <- function(x, y, f, ...) {
 }
 
 #' @export
-mutate.tbl_agd <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::mutate, ...)
+mutate.tbl_agd <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::mutate, ...)
 }
 #' @export
-rename.tbl_agd <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::rename, ...)
+rename.tbl_agd <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::rename, ...)
 }
 #' @export
-select.tbl_agd <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::select, ...)
+select.tbl_agd <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::select, ...)
 }
 #' @export
-filter.tbl_agd <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::filter, ...)
+filter.tbl_agd <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::filter, ...)
 }
 #' @export
-summarise.tbl_agd <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::summarise, ...)
+summarise.tbl_agd <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::summarise, ...)
 }
 #' @export
-group_by.tbl_agd <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::group_by, ...)
+group_by.tbl_agd <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::group_by, ...)
 }
 #' @export
 ungroup.tbl_agd <- function(x, ...) {
   wrap_dplyr_verb(x, dplyr::ungroup, ...)
 }
 #' @export
-do.tbl_agd <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::do, ...)
+do.tbl_agd <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::do, ...)
 }
 #' @export
-arrange.tbl_agd <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::arrange, ...)
+arrange.tbl_agd <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::arrange, ...)
 }
 #' @export
 inner_join.tbl_agd <- function(x, y, by = NULL, copy = FALSE,

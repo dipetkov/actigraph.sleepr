@@ -16,7 +16,9 @@ LazyData: true
 NeedsCompilation: no
 RoxygenNote: 6.0.1.9000
 Depends:
-  R (>= 3.2.4)
+  R (>= 3.2.4),
+  dplyr (>= 0.7.1),
+  tidyr (>= 0.7.1)
 Imports:
   DBI,
   Rcpp,
@@ -25,13 +27,10 @@ Imports:
   assertthat,
   data.table,
   dbplyr,
-  dplyr (>= 0.7.1),
   ggplot2,
   lubridate,
   rlang,
-  stats,
   stringr,
-  tidyr (>= 0.7.1),
   purrr,
   zoo
 Suggests:

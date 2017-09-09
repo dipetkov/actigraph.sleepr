@@ -10,40 +10,40 @@ tbl_period <- function(data) {
   structure(data, class = c("tbl_period", "tbl_df", "tbl", "data.frame"))
 }
 #' @export
-mutate.tbl_period <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::mutate, ...)
+mutate.tbl_period <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::mutate, ...)
 }
 #' @export
-rename.tbl_period <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::rename, ...)
+rename.tbl_period <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::rename, ...)
 }
 #' @export
-select.tbl_period <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::select, ...)
+select.tbl_period <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::select, ...)
 }
 #' @export
-filter.tbl_period <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::filter, ...)
+filter.tbl_period <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::filter, ...)
 }
 #' @export
-summarise.tbl_period <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::summarise, ...)
+summarise.tbl_period <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::summarise, ...)
 }
 #' @export
-group_by.tbl_period <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::group_by, ...)
+group_by.tbl_period <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::group_by, ...)
 }
 #' @export
 ungroup.tbl_period <- function(x, ...) {
   wrap_dplyr_verb(x, dplyr::ungroup, ...)
 }
 #' @export
-do.tbl_period <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::do, ...)
+do.tbl_period <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::do, ...)
 }
 #' @export
-arrange.tbl_period <- function(x, ...) {
-  wrap_dplyr_verb(x, dplyr::arrange, ...)
+arrange.tbl_period <- function(.data, ...) {
+  wrap_dplyr_verb(.data, dplyr::arrange, ...)
 }
 #' @export
 inner_join.tbl_period <- function(x, y, by = NULL, copy = FALSE,

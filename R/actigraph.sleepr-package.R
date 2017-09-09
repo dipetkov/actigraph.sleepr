@@ -13,12 +13,10 @@
 #' @importFrom tidyr gather spread unnest
 #' @importFrom purrr map map2
 #' @importFrom data.table rleid
-#' @importFrom zoo na.locf na.trim na.spline na.fill
+#' @importFrom zoo na.locf na.trim na.spline
 #' @importFrom RcppRoll roll_mean roll_sd roll_sum
 #' @importFrom lubridate duration ymd_hms time_length is.POSIXct floor_date
 #' @importFrom stringr str_replace
-#' @importFrom stats na.omit
-#' @importFrom Rcpp sourceCpp
 NULL
 
 globalVariables(".")
