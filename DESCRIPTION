@@ -24,6 +24,7 @@ Imports:
   RSQLite,
   assertthat,
   data.table,
+  dbplyr,
   dplyr (>= 0.7.1),
   ggplot2,
   lubridate,
