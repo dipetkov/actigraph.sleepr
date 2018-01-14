@@ -123,8 +123,6 @@ read_agd_raw <- function(file, tz = "UTC") {
   filters <- select_dttms("filters", c("filterStartTimestamp",
                                        "filterStopTimestamp"))
 
-  DBI::dbDisconnect(db)
-
   # The capsense table stores data from an optional wear sensor,
   # so it might not be present in the database.
   # The capsense table stores data from an optional wear sensor,
@@ -133,6 +131,8 @@ read_agd_raw <- function(file, tz = "UTC") {
                  settings = settings, awakenings = awakenings)
   if ("capsense" %in% tables_agd)
     tables$capsense <- select_dttms("capsense", "timeStamp")
+
+  DBI::dbDisconnect(db)
 
   tables
 }
