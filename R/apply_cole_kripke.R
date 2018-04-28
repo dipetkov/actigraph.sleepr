@@ -42,7 +42,7 @@ apply_cole_kripke <- function(agdb) {
 
   check_args_sleep_scores(agdb, "Cole-Kripke")
   attr(agdb, "sleep_algorithm") <- "Cole-Kripke"
-  agdb %>% do(apply_cole_kripke_(.data))
+  agdb %>% do(apply_cole_kripke_(.))
 }
 
 apply_cole_kripke_ <- function(data) {

@@ -81,7 +81,7 @@ apply_tudor_locke <- function(agdb,
   # * n_bedtime_start + n_wake_time_end < min_sleep_period
 
   sleep <- agdb %>%
-    do(apply_tudor_locke_(.data, n_bedtime_start, n_wake_time_end,
+    do(apply_tudor_locke_(., n_bedtime_start, n_wake_time_end,
                           min_sleep_period, max_sleep_period,
                           min_nonzero_epochs))
   sleep <-

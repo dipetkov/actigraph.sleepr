@@ -20,7 +20,7 @@ impute_epochs <- function(agdb, ...) {
   selected <- select_vars(names(agdb), ...)
   if (length(selected) == 0) return(agdb)
 
-  agdb %>% do(impute_epochs_(.data, selected))
+  agdb %>% do(impute_epochs_(., selected))
 }
 impute_epochs_ <- function(data, selected) {
 
@@ -43,7 +43,7 @@ has_missing_epochs <- function(agdb) {
   if (anyNA(agdb$timestamp)) return(TRUE)
 
   epoch_len <- attr(agdb, "epochlength")
-  agdb <- agdb %>% do(has_missing_epochs_(.data, epoch_len))
+  agdb <- agdb %>% do(has_missing_epochs_(., epoch_len))
   any(agdb$missing)
 }
 has_missing_epochs_ <- function(data, epoch_len) {
