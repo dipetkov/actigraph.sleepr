@@ -6,3 +6,4 @@
 ^.lintr$
 actigraph\.bib$
 ^data-raw$
+^codecov\.yml$

@@ -77,3 +77,35 @@ test_that("collapse_epochs errors if unexpected epoch length", {
                         data_frame(epochlength = 9))
   expect_error(collapse_epochs(dummy_agdb, 60))
 })
+
+context("Impute epochs")
+test_that("impute_epochs fills in NA epoch counts", {
+  data("gtxplus1day", package = "actigraph.sleepr")
+
+  gtxplus1day <- gtxplus1day %>%
+    mutate_if(is.numeric, function(x) {
+      x[5:10] <- NA
+      x
+    })
+  expect_false(noNA(gtxplus1day$axis1))
+
+  gtxplus1day <- gtxplus1day %>% impute_epochs(axis1)
+  expect_true(noNA(gtxplus1day$axis1))
+})
+
+context("Combine epochs and periods")
+test_that("combine_epochs_periods adds period id column", {
+  data("gtxplus1day", package = "actigraph.sleepr")
+
+  agdb <- gtxplus1day %>% collapse_epochs(60) %>% apply_sadeh()
+  periods <- agdb %>% apply_tudor_locke(min_sleep_period = 60)
+  agdb_with_periods <-
+    combine_epochs_periods(agdb, periods, in_bed_time, out_bed_time)
+
+  expect_true(has_name(agdb_with_periods, "period_id"))
+  expect_equal(agdb, agdb_with_periods %>% select(- period_id))
+
+  x <- agdb_with_periods %>% drop_na() %>% count(period_id) %>% .$n
+  y <- periods %>% .$duration
+  expect_identical(x, y + 1L)
+})

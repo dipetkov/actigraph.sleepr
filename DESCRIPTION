@@ -33,7 +33,8 @@ Imports:
   rlang,
   stringr,
   zoo
-Suggests:
+Suggests: 
+  covr,
   knitr,
   readr,
   rmarkdown,

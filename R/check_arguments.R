@@ -22,9 +22,6 @@ check_no_missing_state <- function(agdb) {
   assert_that(noNA(agdb[["sleep"]]),
               msg = "Missing asleep/awake values.")
 }
-check_has_variable <- function(agdb, var) {
-  assert_that(has_name(agdb, var))
-}
 check_args_sleep_scores <- function(agdb, algorithm) {
   check_epochlen_is_60(agdb, algorithm)
   check_no_missing_timestamps(agdb)
@@ -46,7 +43,7 @@ check_args_nonwear_periods <- function(agdb, algorithm,
   }
 }
 check_args_filter <- function(agdb, var) {
-  check_has_variable(agdb, var)
+  assert_that(has_name(agdb, var))
   check_no_missing_timestamps(agdb)
   check_no_missing_counts(agdb, var)
 }

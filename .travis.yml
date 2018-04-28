@@ -12,4 +12,4 @@ r_github_packages:
   - tidyverse/tidyr
 
 after_success:
-  - Rscript -e 'library(covr); codecov()'
+  - Rscript -e 'covr::codecov()'
