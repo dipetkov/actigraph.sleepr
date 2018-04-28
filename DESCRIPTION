@@ -16,7 +16,9 @@ LazyData: true
 NeedsCompilation: no
 RoxygenNote: 6.0.1
 Depends:
-  R (>= 3.2.4)
+  R (>= 3.2.4),
+  dplyr (>= 0.7.4),
+  tidyr (>= 0.8.0.9000)
 Imports:
   DBI,
   Rcpp,
@@ -25,13 +27,11 @@ Imports:
   assertthat,
   data.table,
   dbplyr,
-  dplyr (>= 0.7.4),
   ggplot2,
   lubridate,
   purrr,
   rlang,
   stringr,
-  tidyr (>= 0.8.0.9000),
   zoo
 Suggests:
   knitr,
@@ -39,5 +39,7 @@ Suggests:
   rmarkdown,
   testthat,
   tools
+Remotes: 
+  tidyverse/tidyr
 VignetteBuilder: knitr
 LinkingTo: Rcpp

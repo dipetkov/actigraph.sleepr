@@ -8,5 +8,8 @@ warnings_are_errors: true
 r_packages:
   - covr
 
+r_github_packages:
+  - tidyverse/tidyr
+
 after_success:
   - Rscript -e 'library(covr); codecov()'
