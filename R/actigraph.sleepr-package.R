@@ -8,8 +8,8 @@
 #' @docType package
 #' @useDynLib actigraph.sleepr, .registration = TRUE
 #' @import dplyr ggplot2
-#' @importFrom assertthat assert_that has_name
-#' @importFrom rlang .data quo_text
+#' @importFrom assertthat assert_that has_name noNA
+#' @importFrom rlang .data quo_text is_scalar_integerish
 #' @importFrom tidyr gather spread unnest
 #' @importFrom purrr map map2
 #' @importFrom data.table rleid

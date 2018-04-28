@@ -1,6 +1,6 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sleepr?branch=master&svg=true)](https://ci.appveyor.com/project/dipetkov/actigraph.sleepr) [![Travis-CI Build Status](https://travis-ci.org/dipetkov/actigraph.sleepr.svg?branch=master)](https://travis-ci.org/dipetkov/actigraph.sleepr) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/actigraph.sleepr)](https://cran.r-project.org/package=actigraph.sleepr)
 
-[![minimal R version](https://img.shields.io/badge/R%3E%3D-3.2.4-6666ff.svg)](https://cran.r-project.org/) [![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2017--09--08-yellowgreen.svg)](/commits/master) [![codecov](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/dipetkov/actigraph.sleepr)
+[![minimal R version](https://img.shields.io/badge/R%3E%3D-3.2.4-6666ff.svg)](https://cran.r-project.org/) [![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2018--04--28-yellowgreen.svg)](/commits/master) [![codecov](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/dipetkov/actigraph.sleepr)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 ### actigraph.sleepr: Sleep and non-wear detection from ActiGraph data
@@ -20,6 +20,16 @@ An AGD file is an SQLite database file exported by an ActiGraph device. See the 
 
 ``` r
 library("actigraph.sleepr")
+#> Loading required package: dplyr
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
+#> Loading required package: tidyr
 file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
                         package = "actigraph.sleepr")
 agdb_10s <- read_agd(file_10s)
@@ -83,18 +93,18 @@ agdb_10s <- agdb_10s %>% select(timestamp, starts_with("axis"))
 agdb_10s %>%
   mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2))
 #> # A tibble: 8,999 x 5
-#>              timestamp axis1 axis2 axis3 magnitude
-#>                 <dttm> <int> <int> <int>     <dbl>
-#>  1 2012-06-27 10:54:00   377   397   413     685.8
-#>  2 2012-06-27 10:54:10   465   816  1225    1543.6
-#>  3 2012-06-27 10:54:20   505   444   713     980.1
-#>  4 2012-06-27 10:54:30    73    91   106     157.6
-#>  5 2012-06-27 10:54:40    45    43   115     130.8
-#>  6 2012-06-27 10:54:50     0     0     0       0.0
-#>  7 2012-06-27 10:55:00     0     0     0       0.0
-#>  8 2012-06-27 10:55:10   207   218   270     404.1
-#>  9 2012-06-27 10:55:20     0     0     0       0.0
-#> 10 2012-06-27 10:55:30     0     0     0       0.0
+#>    timestamp           axis1 axis2 axis3 magnitude
+#>    <dttm>              <int> <int> <int>     <dbl>
+#>  1 2012-06-27 10:54:00   377   397   413      686.
+#>  2 2012-06-27 10:54:10   465   816  1225     1544.
+#>  3 2012-06-27 10:54:20   505   444   713      980.
+#>  4 2012-06-27 10:54:30    73    91   106      158.
+#>  5 2012-06-27 10:54:40    45    43   115      131.
+#>  6 2012-06-27 10:54:50     0     0     0        0 
+#>  7 2012-06-27 10:55:00     0     0     0        0 
+#>  8 2012-06-27 10:55:10   207   218   270      404.
+#>  9 2012-06-27 10:55:20     0     0     0        0 
+#> 10 2012-06-27 10:55:30     0     0     0        0 
 #> # ... with 8,989 more rows
 ```
 
@@ -107,8 +117,8 @@ The Sadeh and Cole-Kripke algorithms for converting activity measurements into a
 agdb_60s <- agdb_10s %>% collapse_epochs(60)
 agdb_60s
 #> # A tibble: 1,500 x 4
-#>              timestamp axis1 axis2 axis3
-#>                 <dttm> <int> <int> <int>
+#>    timestamp           axis1 axis2 axis3
+#>    <dttm>              <int> <int> <int>
 #>  1 2012-06-27 10:54:00  1465  1791  2572
 #>  2 2012-06-27 10:55:00   207   218   270
 #>  3 2012-06-27 10:56:00   169   257   270
@@ -129,18 +139,18 @@ The Sadeh algorithm is primarily used for younger adolescents as the supporting 
 ``` r
 agdb_60s %>% apply_sadeh()
 #> # A tibble: 1,500 x 6
-#>              timestamp axis1 axis2 axis3 count sleep
-#>                 <dttm> <int> <int> <int> <dbl> <chr>
-#>  1 2012-06-27 10:54:00  1465  1791  2572   300     W
-#>  2 2012-06-27 10:55:00   207   218   270   207     W
-#>  3 2012-06-27 10:56:00   169   257   270   169     W
-#>  4 2012-06-27 10:57:00     0     0     0     0     W
-#>  5 2012-06-27 10:58:00   157   174   248   157     W
-#>  6 2012-06-27 10:59:00    23    23   279    23     W
-#>  7 2012-06-27 11:00:00     0     0     0     0     S
-#>  8 2012-06-27 11:01:00     0     0     0     0     S
-#>  9 2012-06-27 11:02:00     0     0     0     0     S
-#> 10 2012-06-27 11:03:00     0     0     0     0     S
+#>    timestamp           axis1 axis2 axis3 count sleep
+#>    <dttm>              <int> <int> <int> <dbl> <chr>
+#>  1 2012-06-27 10:54:00  1465  1791  2572   300 W    
+#>  2 2012-06-27 10:55:00   207   218   270   207 W    
+#>  3 2012-06-27 10:56:00   169   257   270   169 W    
+#>  4 2012-06-27 10:57:00     0     0     0     0 W    
+#>  5 2012-06-27 10:58:00   157   174   248   157 W    
+#>  6 2012-06-27 10:59:00    23    23   279    23 W    
+#>  7 2012-06-27 11:00:00     0     0     0     0 S    
+#>  8 2012-06-27 11:01:00     0     0     0     0 S    
+#>  9 2012-06-27 11:02:00     0     0     0     0 S    
+#> 10 2012-06-27 11:03:00     0     0     0     0 S    
 #> # ... with 1,490 more rows
 ```
 
@@ -151,18 +161,18 @@ The Cole-Kripke algorithm is primarily used for adult populations as the support
 ``` r
 agdb_60s %>% apply_cole_kripke()
 #> # A tibble: 1,500 x 6
-#>              timestamp axis1 axis2 axis3 count sleep
-#>                 <dttm> <int> <int> <int> <dbl> <chr>
-#>  1 2012-06-27 10:54:00  1465  1791  2572 14.65     W
-#>  2 2012-06-27 10:55:00   207   218   270  2.07     W
-#>  3 2012-06-27 10:56:00   169   257   270  1.69     W
-#>  4 2012-06-27 10:57:00     0     0     0  0.00     W
-#>  5 2012-06-27 10:58:00   157   174   248  1.57     W
-#>  6 2012-06-27 10:59:00    23    23   279  0.23     S
-#>  7 2012-06-27 11:00:00     0     0     0  0.00     S
-#>  8 2012-06-27 11:01:00     0     0     0  0.00     S
-#>  9 2012-06-27 11:02:00     0     0     0  0.00     S
-#> 10 2012-06-27 11:03:00     0     0     0  0.00     S
+#>    timestamp           axis1 axis2 axis3 count sleep
+#>    <dttm>              <int> <int> <int> <dbl> <chr>
+#>  1 2012-06-27 10:54:00  1465  1791  2572 14.6  W    
+#>  2 2012-06-27 10:55:00   207   218   270  2.07 W    
+#>  3 2012-06-27 10:56:00   169   257   270  1.69 W    
+#>  4 2012-06-27 10:57:00     0     0     0  0    W    
+#>  5 2012-06-27 10:58:00   157   174   248  1.57 W    
+#>  6 2012-06-27 10:59:00    23    23   279  0.23 S    
+#>  7 2012-06-27 11:00:00     0     0     0  0    S    
+#>  8 2012-06-27 11:01:00     0     0     0  0    S    
+#>  9 2012-06-27 11:02:00     0     0     0  0    S    
+#> 10 2012-06-27 11:03:00     0     0     0  0    S    
 #> # ... with 1,490 more rows
 ```
 
@@ -173,8 +183,8 @@ Once each one-minute epoch is labeled as asleep (S) or awake (W), we can use the
 ``` r
 agdb_60s %>% apply_sadeh() %>% apply_tudor_locke()
 #> # A tibble: 1 x 15
-#>           in_bed_time        out_bed_time               onset latency
-#> *              <dttm>              <dttm>              <dttm>   <int>
+#>   in_bed_time         out_bed_time        onset               latency
+#> * <dttm>              <dttm>              <dttm>                <int>
 #> 1 2012-06-28 00:03:00 2012-06-28 07:38:00 2012-06-28 00:03:00       0
 #> # ... with 11 more variables: efficiency <dbl>, duration <int>,
 #> #   activity_counts <int>, nonzero_epochs <int>, total_sleep_time <int>,
@@ -190,16 +200,16 @@ Long stretches that consist almost entirely of zero counts (zero epochs) suggest
 ``` r
 agdb_60s %>% apply_troiano()
 #> # A tibble: 3 x 3
-#>          period_start          period_end length
-#> *              <dttm>              <dttm>  <int>
+#>   period_start        period_end          length
+#> * <dttm>              <dttm>               <int>
 #> 1 2012-06-28 00:00:00 2012-06-28 02:37:00    157
 #> 2 2012-06-28 02:46:00 2012-06-28 03:59:00     73
 #> 3 2012-06-28 05:50:00 2012-06-28 07:25:00     95
 agdb_60s %>% apply_choi()
 #> # A tibble: 1 x 3
-#>   period_start          period_end length
-#> *       <dttm>              <dttm>  <int>
-#> 1   2012-06-28 2012-06-28 02:37:00    157
+#>   period_start        period_end          length
+#> * <dttm>              <dttm>               <int>
+#> 1 2012-06-28 00:00:00 2012-06-28 02:37:00    157
 ```
 
 ### References

@@ -29,7 +29,7 @@ apply_choi <- function(agdb,
                        use_magnitude = FALSE) {
 
   check_args_nonwear_periods(agdb, "Choi", use_magnitude)
-  stopifnot(min_window_len >= spike_tolerance)
+  assert_that(min_window_len >= spike_tolerance)
 
   nonwear <- agdb %>%
     do(apply_choi_(., min_period_len, min_window_len,

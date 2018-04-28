@@ -4,9 +4,9 @@
 #' @param data A data frame of sleep or non-wear periods
 #' @export
 tbl_period <- function(data) {
-  assert_that(is.data.frame(data))
-  assert_that(has_name(data, "axis1"))
-  assert_that(has_name(data, "timestamp"))
+  assert_that(is.data.frame(data),
+              has_name(data, "axis1"),
+              has_name(data, "timestamp"))
   structure(data, class = c("tbl_period", "tbl_df", "tbl", "data.frame"))
 }
 #' @export

@@ -5,49 +5,50 @@
 #' @param settings A data frame of device settings.
 #' @export
 tbl_agd <- function(data, settings) {
-  assert_that(is.data.frame(data))
-  assert_that(is.data.frame(settings))
-  assert_that(has_name(data, "axis1"))
-  assert_that(has_name(data, "timestamp"))
-  assert_that(has_name(settings, "epochlength"))
+
+  assert_that(is.data.frame(data),
+              is.data.frame(settings),
+              has_name(data, "axis1"),
+              has_name(data, "timestamp"),
+              has_name(settings, "epochlength"))
+
   for (key in names(settings)) {
     attr(data, key) <- settings[[key]]
   }
   structure(data, class = c("tbl_agd", "tbl_df", "tbl", "data.frame"))
 }
 
-special_dplyr_attributes <- function() {
+dplyr_attributes <- function() {
   c("names", "class", "row.names", "vars", "drop", "indices", "labels",
     "group_sizes", "biggest_group_size")
 }
 
 add_magnitude <- function(data) {
   data %>%
-    mutate(magnitude = sqrt(.data$axis1 ^ 2 + .data$axis2 ^ 2 +
+    mutate(magnitude = sqrt(.data$axis1 ^ 2 +
+                              .data$axis2 ^ 2 +
                               .data$axis3 ^ 2))
 }
 
-wrap_dplyr_verb <- function(x, f, ...) {
-  y <- x
-  cls1 <- class(y)[1]
-  class(y) <- class(y)[-1]
-  y <- f(y, ...)
-  for (a in setdiff(names(attributes(x)), special_dplyr_attributes())) {
-    attr(y, a) <- attr(x, a)
+reclass <- function(z, x, cls) {
+  for (a in setdiff(names(attributes(x)),
+                    dplyr_attributes())) {
+    attr(z, a) <- attr(x, a)
   }
-  class(y) <- c(cls1, class(y))
-  y
+  class(z) <- c(cls, class(z))
+  z
+}
+
+wrap_dplyr_verb <- function(x, f, ...) {
+  cls <- class(x)[1]
+  class(x) <- class(x)[-1]
+  reclass(f(x, ...), x, cls)
 }
 
 wrap_dplyr_join <- function(x, y, f, ...) {
-  cls1 <- class(y)[1]
+  cls <- class(x)[1]
   class(x) <- class(x)[-1]
-  z <- f(x, y, ...)
-  for (a in setdiff(names(attributes(x)), special_dplyr_attributes())) {
-    attr(z, a) <- attr(x, a)
-  }
-  class(z) <- c(cls1, class(z))
-  z
+  reclass(f(x, y, ...), x, cls)
 }
 
 #' @export

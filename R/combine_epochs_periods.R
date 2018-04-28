@@ -30,7 +30,7 @@ combine_epochs_periods <- function(epochs, periods, start_var, end_var) {
   end_var <- enquo(end_var)
 
   units <- get_epoch_length(epochs)
-  stopifnot(is.numeric(units))
+  assert_that(is_scalar_integerish(units))
 
   epochs_periods <-
     expand_periods(periods, !!start_var, !!end_var, units = units) %>%
@@ -38,7 +38,7 @@ combine_epochs_periods <- function(epochs, periods, start_var, end_var) {
 
   class(epochs_periods) <- class(epochs)
   for (a in setdiff(names(attributes(epochs)),
-                    special_dplyr_attributes())) {
+                    dplyr_attributes())) {
     attr(epochs_periods, a) <- attr(epochs, a)
   }
   epochs_periods

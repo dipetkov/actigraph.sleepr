@@ -46,7 +46,8 @@ complement_periods <- function(periods, epochs, start_var, end_var) {
 #' expand_timestamp(start, end, "15 mins")
 #' @export
 expand_timestamp <- function(start, end, units = "1 min") {
-  stopifnot(is.POSIXct(start), is.POSIXct(end))
+  assert_that(is.POSIXct(start),
+              is.POSIXct(end))
   seq(start, end, by = units)
 }
 

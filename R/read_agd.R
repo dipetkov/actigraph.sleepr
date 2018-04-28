@@ -75,7 +75,7 @@ read_agd <- function(file, tz = "UTC") {
 #' @export
 read_agd_raw <- function(file, tz = "UTC") {
 
-  stopifnot(file.exists(file))
+  assert_that(file.exists(file))
 
   # Connect to the *.agd database
   db <- DBI::dbConnect(RSQLite::SQLite(), dbname = file)
@@ -85,7 +85,7 @@ read_agd_raw <- function(file, tz = "UTC") {
   tables_agd <- db %>% tbl(sql(query)) %>% collect()
   tables_agd <- tables_agd$name
   tables_required <- c("data", "sleep", "awakenings", "filters", "settings")
-  stopifnot(all(tables_required %in% tables_agd))
+  assert_that(all(tables_required %in% tables_agd))
 
   # Cast Unix time ticks to POSIXct date/time
   # Timestamps are stored as ticks since 12:00:00 midnight, January 1, 0001.
