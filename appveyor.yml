@@ -10,11 +10,10 @@ init:
 install:
   ps: Bootstrap
 
-# Adapt as necessary starting from here
+cache:
+  - C:\RLibrary
 
-environment:
-  R_VERSION: stable
-  R_ARCH: x64
+# Adapt as necessary starting from here
 
 build_script:
   - travis-tool.sh install_deps
