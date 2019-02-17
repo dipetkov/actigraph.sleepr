@@ -1,6 +1,6 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sleepr?branch=master&svg=true)](https://ci.appveyor.com/project/dipetkov/actigraph.sleepr) [![Travis-CI Build Status](https://travis-ci.org/dipetkov/actigraph.sleepr.svg?branch=master)](https://travis-ci.org/dipetkov/actigraph.sleepr) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/actigraph.sleepr)](https://cran.r-project.org/package=actigraph.sleepr)
 
-[![minimal R version](https://img.shields.io/badge/R%3E%3D-3.2.4-6666ff.svg)](https://cran.r-project.org/) [![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2018--04--28-yellowgreen.svg)](/commits/master) [![Coverage status](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/github/dipetkov/actigraph.sleepr?branch=master)
+[![minimal R version](https://img.shields.io/badge/R%3E%3D-3.2.4-6666ff.svg)](https://cran.r-project.org/) [![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2019--02--17-yellowgreen.svg)](/commits/master) [![Coverage status](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/github/dipetkov/actigraph.sleepr?branch=master)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 ### actigraph.sleepr: Sleep and non-wear detection from ActiGraph data
@@ -16,7 +16,7 @@ install_github("dipetkov/actigraph.sleepr")
 
 ### Read AGD file(s)
 
-An AGD file is an SQLite database file exported by an ActiGraph device. See the [ActiLife 6 User manual](http://actigraphcorp.com/support/manuals/actilife-6-manual/). For illustration let's use GT3X+ sample data taken from ActiGraph's [online documentation](https://actigraph.desk.com).
+An AGD file is an SQLite database file exported by an ActiGraph device. See the [ActiLife 6 User manual](https://www.actigraphcorp.com/support/manuals/actilife-6-manual/). For illustration let's use GT3X+ sample data taken from ActiGraph's online documentation. \[The link I downloaded the data from, <https://actigraph.desk.com>, seems to be currently unavailable.\]
 
 ``` r
 library("actigraph.sleepr")
@@ -35,54 +35,117 @@ file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
 agdb_10s <- read_agd(file_10s)
 ```
 
-The `read_agd` function loads the raw activity measurements into a convenient format: a tibble (data frame) of timestamped activity counts, whose attributes are the device settings.
+The `read_agd` function loads the raw activity measurements into a convenient format: a tibble (data frame) of timestamped activity counts, whose attributes are the device settings. However, further manipulations of the tibble using the `dplyr` verbs (e.g., `mutate`, `inner_join`) might drop these non-standard attributes, i.e., the attributes are not always inherited.
 
 ``` r
-str(agdb_10s)
-#> Classes 'tbl_agd', 'tbl_df', 'tbl' and 'data.frame': 8999 obs. of  10 variables:
-#>  $ timestamp      : POSIXct, format: "2012-06-27 10:54:00" "2012-06-27 10:54:10" ...
-#>  $ axis1          : int  377 465 505 73 45 0 0 207 0 0 ...
-#>  $ axis2          : int  397 816 444 91 43 0 0 218 0 0 ...
-#>  $ axis3          : int  413 1225 713 106 115 0 0 270 0 0 ...
-#>  $ steps          : int  2 4 6 1 0 0 0 1 0 0 ...
-#>  $ lux            : int  0 0 0 0 0 0 0 0 0 0 ...
-#>  $ inclineoff     : int  0 0 0 0 0 0 0 0 0 0 ...
-#>  $ inclinestanding: int  10 10 10 10 0 0 0 10 0 0 ...
-#>  $ inclinesitting : int  0 0 0 0 10 10 10 0 10 10 ...
-#>  $ inclinelying   : int  0 0 0 0 0 0 0 0 0 0 ...
-#>  - attr(*, "age")= chr "43"
-#>  - attr(*, "batteryvoltage")= chr "4.22"
-#>  - attr(*, "culturename")= chr "English (United States)"
-#>  - attr(*, "dateOfBirth")= POSIXct, format: "1969-04-17"
-#>  - attr(*, "datetimeformat")= chr "M/d/yyyy"
-#>  - attr(*, "decimal")= chr "."
-#>  - attr(*, "devicename")= chr "GT3XPlus"
-#>  - attr(*, "deviceserial")= chr "NEO1DXXXXXXXX"
-#>  - attr(*, "deviceversion")= chr "2.5.0"
-#>  - attr(*, "dominance")= chr "Non-Dominant"
-#>  - attr(*, "downloaddatetime")= POSIXct, format: "2012-06-28 16:25:52"
-#>  - attr(*, "epochcount")= int 8999
-#>  - attr(*, "epochlength")= int 10
-#>  - attr(*, "filter")= chr "Normal"
-#>  - attr(*, "finished")= chr "true"
-#>  - attr(*, "grouping")= chr ","
-#>  - attr(*, "height")= chr "172.72"
-#>  - attr(*, "limb")= chr "Ankle"
-#>  - attr(*, "machinename")= chr "DESKTOP-51642G4"
-#>  - attr(*, "mass")= chr "69.8532249799612"
-#>  - attr(*, "modenumber")= chr "61"
-#>  - attr(*, "original sample rate")= chr "30"
-#>  - attr(*, "osversion")= chr "Microsoft Windows NT 10.0.14393.0"
-#>  - attr(*, "proximityIntervalInSeconds")= chr "0"
-#>  - attr(*, "race")= chr "White / Caucasian"
-#>  - attr(*, "sex")= chr "Male"
-#>  - attr(*, "side")= chr "Left"
-#>  - attr(*, "softwarename")= chr "ActiLife"
-#>  - attr(*, "softwareversion")= chr "6.13.3"
-#>  - attr(*, "startdatetime")= POSIXct, format: "2012-06-27 10:54:00"
-#>  - attr(*, "stopdatetime")= POSIXct, format: "2012-06-28 11:53:58"
-#>  - attr(*, "subjectname")= chr "GT3XPlus"
-#>  - attr(*, "unexpectedResets")= chr "0"
+attributes(agdb_10s)[-3]
+#> $names
+#>  [1] "timestamp"       "axis1"           "axis2"          
+#>  [4] "axis3"           "steps"           "lux"            
+#>  [7] "inclineoff"      "inclinestanding" "inclinesitting" 
+#> [10] "inclinelying"   
+#> 
+#> $class
+#> [1] "tibble"     "tbl_df"     "data.frame"
+#> 
+#> $age
+#> [1] "43"
+#> 
+#> $batteryvoltage
+#> [1] "4.22"
+#> 
+#> $culturename
+#> [1] "English (United States)"
+#> 
+#> $dateOfBirth
+#> [1] "1969-04-17 UTC"
+#> 
+#> $datetimeformat
+#> [1] "M/d/yyyy"
+#> 
+#> $decimal
+#> [1] "."
+#> 
+#> $devicename
+#> [1] "GT3XPlus"
+#> 
+#> $deviceserial
+#> [1] "NEO1DXXXXXXXX"
+#> 
+#> $deviceversion
+#> [1] "2.5.0"
+#> 
+#> $dominance
+#> [1] "Non-Dominant"
+#> 
+#> $downloaddatetime
+#> [1] "2012-06-28 16:25:52 UTC"
+#> 
+#> $epochcount
+#> [1] 8999
+#> 
+#> $epochlength
+#> [1] 10
+#> 
+#> $filter
+#> [1] "Normal"
+#> 
+#> $finished
+#> [1] "true"
+#> 
+#> $grouping
+#> [1] ","
+#> 
+#> $height
+#> [1] "172.72"
+#> 
+#> $limb
+#> [1] "Ankle"
+#> 
+#> $machinename
+#> [1] "DESKTOP-51642G4"
+#> 
+#> $mass
+#> [1] "69.8532249799612"
+#> 
+#> $modenumber
+#> [1] "61"
+#> 
+#> $`original sample rate`
+#> [1] "30"
+#> 
+#> $osversion
+#> [1] "Microsoft Windows NT 10.0.14393.0"
+#> 
+#> $proximityIntervalInSeconds
+#> [1] "0"
+#> 
+#> $race
+#> [1] "White / Caucasian"
+#> 
+#> $sex
+#> [1] "Male"
+#> 
+#> $side
+#> [1] "Left"
+#> 
+#> $softwarename
+#> [1] "ActiLife"
+#> 
+#> $softwareversion
+#> [1] "6.13.3"
+#> 
+#> $startdatetime
+#> [1] "2012-06-27 10:54:00 UTC"
+#> 
+#> $stopdatetime
+#> [1] "2012-06-28 11:53:58 UTC"
+#> 
+#> $subjectname
+#> [1] "GT3XPlus"
+#> 
+#> $unexpectedResets
+#> [1] "0"
 ```
 
 Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select, filter, summarise, group\_by, arrange) to manipulate the data. For example, let's compute the magnitude of the three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
@@ -91,21 +154,15 @@ Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select
 suppressMessages(library("dplyr"))
 agdb_10s <- agdb_10s %>% select(timestamp, starts_with("axis"))
 agdb_10s %>%
-  mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2))
-#> # A tibble: 8,999 x 5
-#>    timestamp           axis1 axis2 axis3 magnitude
-#>    <dttm>              <int> <int> <int>     <dbl>
-#>  1 2012-06-27 10:54:00   377   397   413      686.
-#>  2 2012-06-27 10:54:10   465   816  1225     1544.
-#>  3 2012-06-27 10:54:20   505   444   713      980.
-#>  4 2012-06-27 10:54:30    73    91   106      158.
-#>  5 2012-06-27 10:54:40    45    43   115      131.
-#>  6 2012-06-27 10:54:50     0     0     0        0 
-#>  7 2012-06-27 10:55:00     0     0     0        0 
-#>  8 2012-06-27 10:55:10   207   218   270      404.
-#>  9 2012-06-27 10:55:20     0     0     0        0 
-#> 10 2012-06-27 10:55:30     0     0     0        0 
-#> # ... with 8,989 more rows
+  mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2)) %>%
+  head()
+#>             timestamp axis1 axis2 axis3 magnitude
+#> 1 2012-06-27 10:54:00   377   397   413     685.8
+#> 2 2012-06-27 10:54:10   465   816  1225    1543.6
+#> 3 2012-06-27 10:54:20   505   444   713     980.1
+#> 4 2012-06-27 10:54:30    73    91   106     157.6
+#> 5 2012-06-27 10:54:40    45    43   115     130.8
+#> 6 2012-06-27 10:54:50     0     0     0       0.0
 ```
 
 ### Reintegrate from 10s to 60s epochs
@@ -129,7 +186,7 @@ agdb_60s
 #>  8 2012-06-27 11:01:00     0     0     0
 #>  9 2012-06-27 11:02:00     0     0     0
 #> 10 2012-06-27 11:03:00     0     0     0
-#> # ... with 1,490 more rows
+#> # … with 1,490 more rows
 ```
 
 ### Sleep scoring with the Sadeh algorithm
@@ -151,7 +208,7 @@ agdb_60s %>% apply_sadeh()
 #>  8 2012-06-27 11:01:00     0     0     0     0 S    
 #>  9 2012-06-27 11:02:00     0     0     0     0 S    
 #> 10 2012-06-27 11:03:00     0     0     0     0 S    
-#> # ... with 1,490 more rows
+#> # … with 1,490 more rows
 ```
 
 ### Sleep scoring with the Cole-Kripke algorithm
@@ -173,7 +230,7 @@ agdb_60s %>% apply_cole_kripke()
 #>  8 2012-06-27 11:01:00     0     0     0  0    S    
 #>  9 2012-06-27 11:02:00     0     0     0  0    S    
 #> 10 2012-06-27 11:03:00     0     0     0  0    S    
-#> # ... with 1,490 more rows
+#> # … with 1,490 more rows
 ```
 
 ### Sleep period detection with the Tudor-Locke algorithm
@@ -182,15 +239,14 @@ Once each one-minute epoch is labeled as asleep (S) or awake (W), we can use the
 
 ``` r
 agdb_60s %>% apply_sadeh() %>% apply_tudor_locke()
-#> # A tibble: 1 x 15
-#>   in_bed_time         out_bed_time        onset               latency
-#> * <dttm>              <dttm>              <dttm>                <int>
+#>           in_bed_time        out_bed_time               onset latency
 #> 1 2012-06-28 00:03:00 2012-06-28 07:38:00 2012-06-28 00:03:00       0
-#> # ... with 11 more variables: efficiency <dbl>, duration <int>,
-#> #   activity_counts <int>, nonzero_epochs <int>, total_sleep_time <int>,
-#> #   wake_after_onset <int>, nb_awakenings <int>, ave_awakening <dbl>,
-#> #   movement_index <dbl>, fragmentation_index <dbl>,
-#> #   sleep_fragmentation_index <dbl>
+#>   efficiency duration activity_counts nonzero_epochs total_sleep_time
+#> 1      97.14      455            9126             27              442
+#>   wake_after_onset nb_awakenings ave_awakening movement_index
+#> 1               13             4          3.25          5.934
+#>   fragmentation_index sleep_fragmentation_index
+#> 1                  40                     45.93
 ```
 
 ### Non-wear period detection with the Troiano and Choi algorithms
@@ -199,17 +255,13 @@ Long stretches that consist almost entirely of zero counts (zero epochs) suggest
 
 ``` r
 agdb_60s %>% apply_troiano()
-#> # A tibble: 3 x 3
-#>   period_start        period_end          length
-#> * <dttm>              <dttm>               <int>
+#>          period_start          period_end length
 #> 1 2012-06-28 00:00:00 2012-06-28 02:37:00    157
 #> 2 2012-06-28 02:46:00 2012-06-28 03:59:00     73
 #> 3 2012-06-28 05:50:00 2012-06-28 07:25:00     95
 agdb_60s %>% apply_choi()
-#> # A tibble: 1 x 3
-#>   period_start        period_end          length
-#> * <dttm>              <dttm>               <int>
-#> 1 2012-06-28 00:00:00 2012-06-28 02:37:00    157
+#>   period_start          period_end length
+#> 1   2012-06-28 2012-06-28 02:37:00    157
 ```
 
 ### References

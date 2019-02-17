@@ -36,7 +36,7 @@ install_github("dipetkov/actigraph.sleepr")
 
 ### Read AGD file(s)
 
-An AGD file is an SQLite database file exported by an ActiGraph device. See the [ActiLife 6 User manual](http://actigraphcorp.com/support/manuals/actilife-6-manual/). For illustration let's use GT3X+ sample data taken from ActiGraph's [online documentation](https://actigraph.desk.com).
+An AGD file is an SQLite database file exported by an ActiGraph device. See the [ActiLife 6 User manual](https://www.actigraphcorp.com/support/manuals/actilife-6-manual/). For illustration let's use GT3X+ sample data taken from ActiGraph's online documentation. [The link I downloaded the data from, https://actigraph.desk.com, seems to be currently unavailable.]
 
 ```{r }
 library("actigraph.sleepr")
@@ -45,10 +45,10 @@ file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
 agdb_10s <- read_agd(file_10s)
 ```
 
-The `read_agd` function loads the raw activity measurements into a convenient format: a tibble (data frame) of timestamped activity counts, whose attributes are the device settings.
+The `read_agd` function loads the raw activity measurements into a convenient format: a tibble (data frame) of timestamped activity counts, whose attributes are the device settings. However, further manipulations of the tibble using the `dplyr` verbs (e.g., `mutate`, `inner_join`) might drop these non-standard attributes, i.e., the attributes are not always inherited.
 
 ```{r }
-str(agdb_10s)
+attributes(agdb_10s)[-3]
 ```
 
 Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select, filter, summarise, group_by, arrange) to manipulate the data. For example, let's compute the magnitude of the three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
@@ -57,7 +57,8 @@ Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select
 suppressMessages(library("dplyr"))
 agdb_10s <- agdb_10s %>% select(timestamp, starts_with("axis"))
 agdb_10s %>%
-  mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2))
+  mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2)) %>%
+  head()
 ```
 
 ### Reintegrate from 10s to 60s epochs
