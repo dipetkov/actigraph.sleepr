@@ -4,13 +4,13 @@ library("readr")
 library("dplyr")
 
 context("Non-wear detection algorithm")
-test_that("apply_troiano returns a tbl_period", {
+test_that("apply_troiano returns a tibble", {
   file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
                       package = "actigraph.sleepr")
   agdb_10s <- read_agd(file)
   agdb_60s <- collapse_epochs(agdb_10s, 60)
   agdb_nonwear <- apply_troiano(agdb_60s)
-  expect_s3_class(agdb_nonwear, "tbl_period")
+  expect_s3_class(agdb_nonwear, "tibble")
 })
 test_that("apply_troiano return same result as ActiLife 6", {
   agd_file <-

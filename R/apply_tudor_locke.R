@@ -86,7 +86,7 @@ apply_tudor_locke <- function(agdb,
                           min_nonzero_epochs))
   sleep <-
     structure(sleep,
-              class = c("tbl_period", "tbl_df", "tbl", "data.frame"),
+              class = c("tibble", "tbl_df", "data.frame"),
               sleep_algorithm = attr(agdb, "sleep_algorithm"),
               period_algorithm = "Tudor-Locke",
               n_bedtime_start = n_bedtime_start,

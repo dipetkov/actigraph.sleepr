@@ -37,11 +37,11 @@ agdb_10s_raw <- read_agd_raw(file_10s, tz = "UTC")
 names(agdb_10s_raw)
 ```
 
-Alternatively, we can use the `read_agd` function to get the raw activity measurements in a more convenient format: a `dplyr` data frame (a tibble) of timestamped activity counts, whose attributes are the device settings.
+Alternatively, we can use the `read_agd` function to get the raw activity measurements in a more convenient format: a `dplyr` data frame (a tibble) of timestamped activity counts, whose attributes are the device settings. However, further manipulations of the tibble using the `dplyr` verbs (e.g., `mutate`, `inner_join`) might drop these non-standard attributes, i.e., the attributes are not always inherited.
 
 ```{r }
 agdb_10s <- read_agd(file_10s, tz = "UTC")
-str(agdb_10s)
+attributes(agdb_10s)[-3]
 ```
 
 Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select, filter, summarise, group_by, arrange) to manipulate the data. For example, let's compute the magnitude of the three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
@@ -50,7 +50,7 @@ Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select
 agdb_10s <- agdb_10s %>% 
   select(timestamp, starts_with("axis")) %>%
   mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2))
-agdb_10s
+agdb_10s %>% head()
 ```
 
 ### Reintegrate from 10s to 60s epochs

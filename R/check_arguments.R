@@ -1,5 +1,5 @@
 check_epochlen_is_60 <- function(agdb, algorithm) {
-  assert_that(attr(agdb, "epochlen") == 60,
+  assert_that(get_epoch_length(agdb) == 60,
               msg = paste0(algorithm, " assumes 60sec epochs. ",
                           "Aggregate epochs with `collapse_epochs`."))
 }
@@ -52,7 +52,7 @@ check_args_collapse_method <- function(agdb, epoch_len_out) {
   check_no_missing_counts(agdb, "axis1")
   assert_that(epoch_len_out == 60,
               msg = "Use `collapse_epochs` to aggregate to 60s epochs.")
-  assert_that(exact_division(epoch_len_out, attr(agdb, "epochlen")),
+  assert_that(exact_division(epoch_len_out, get_epoch_length(agdb)),
               msg = paste0("Output epoch length is not an exact multiple ",
                            "of input epoch length."))
 }

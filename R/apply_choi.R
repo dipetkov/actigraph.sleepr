@@ -36,7 +36,7 @@ apply_choi <- function(agdb,
                    spike_tolerance, use_magnitude))
   nonwear <-
     structure(nonwear,
-              class = c("tbl_period", "tbl_df", "tbl", "data.frame"),
+              class = c("tibble", "tbl_df", "data.frame"),
               nonwear_algorithm = "Choi",
               min_period_len = min_period_len,
               min_window_len = min_window_len,

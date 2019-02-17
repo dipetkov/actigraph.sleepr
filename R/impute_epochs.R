@@ -15,8 +15,6 @@
 #' @export
 impute_epochs <- function(agdb, ...) {
 
-  assert_that(inherits(agdb, "tbl_agd"))
-
   selected <- select_vars(names(agdb), ...)
   if (length(selected) == 0) return(agdb)
 
@@ -39,10 +37,9 @@ impute_epochs_ <- function(data, selected) {
 #' @export
 has_missing_epochs <- function(agdb) {
 
-  assert_that(inherits(agdb, "tbl_agd"))
   if (anyNA(agdb$timestamp)) return(TRUE)
 
-  epoch_len <- attr(agdb, "epochlength")
+  epoch_len <- get_epoch_length(agdb)
   agdb <- agdb %>% do(has_missing_epochs_(., epoch_len))
   any(agdb$missing)
 }

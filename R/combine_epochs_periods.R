@@ -36,10 +36,5 @@ combine_epochs_periods <- function(epochs, periods, start_var, end_var) {
     expand_periods(periods, !!start_var, !!end_var, units = units) %>%
     right_join(epochs, by = c("timestamp", group_vars(epochs)))
 
-  class(epochs_periods) <- class(epochs)
-  for (a in setdiff(names(attributes(epochs)),
-                    dplyr_attributes())) {
-    attr(epochs_periods, a) <- attr(epochs, a)
-  }
   epochs_periods
 }

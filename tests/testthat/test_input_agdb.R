@@ -12,11 +12,11 @@ if (requireNamespace("lintr", quietly = TRUE)) {
 }
 
 context("Read agd files")
-test_that("read_agd returns a tbl_agd", {
+test_that("read_agd returns a tibble", {
   file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
                       package = "actigraph.sleepr")
   agdb <- read_agd(file)
-  expect_s3_class(agdb, "tbl_agd")
+  expect_s3_class(agdb, "tibble")
 })
 test_that("Error if file doesn't exist", {
   file <- system.file("extdata", "dummy.agd",
@@ -25,7 +25,7 @@ test_that("Error if file doesn't exist", {
 })
 
 context("Manipulate agdb data frame")
-test_that("all dplyr verbs work on a tbl_agd", {
+test_that("all dplyr verbs work on a tibble", {
   file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
                       package = "actigraph.sleepr")
   agdb <- read_agd(file) %>%
@@ -36,7 +36,7 @@ test_that("all dplyr verbs work on a tbl_agd", {
     summarise_at(vars(starts_with("axis")), sum)
   expect_named(agdb, c("day", "axis1", "axis2", "axis3"))
 })
-test_that("group_by works as expected on tbl_agd with time gap", {
+test_that("group_by works as expected on tibble with time gap", {
   file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
                       package = "actigraph.sleepr")
   agdb <- read_agd(file) %>%
@@ -55,7 +55,8 @@ test_that("collapse_epochs returns same result as ActiLife 6", {
                           package = "actigraph.sleepr")
   csv_file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec60sec.csv",
                           package = "actigraph.sleepr")
-  actilife <- read_csv(csv_file)
+  # Read all columns but the first one (the timestamps) as integers
+  actilife <- read_csv(csv_file, col_types = "?iiiiiiiii")
   agdb_60s <- read_agd(agd_file) %>%
     collapse_epochs(60, use_incomplete = TRUE)
   for (var in setdiff(colnames(agdb_60s), "timestamp")) {
@@ -64,7 +65,7 @@ test_that("collapse_epochs returns same result as ActiLife 6", {
   # The last epoch in the example dataset is incomplete
   agdb_60s <- read_agd(agd_file) %>%
     collapse_epochs(60, use_incomplete = FALSE)
-  n <- attr(agdb_60s, "epochcount")
+  n <- nrow(agdb_60s)
   for (var in setdiff(colnames(agdb_60s), "timestamp")) {
     expect_identical(agdb_60s[[var]], actilife[[var]][1:n])
   }

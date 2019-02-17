@@ -53,7 +53,7 @@ apply_troiano <- function(agdb,
                                use_magnitude))
   nonwear <-
     structure(nonwear,
-              class = c("tbl_period", "tbl_df", "tbl", "data.frame"),
+              class = c("tibble", "tbl_df", "data.frame"),
               nonwear_algorithm = "Troiano",
               min_period_len = min_period_len,
               max_nonzero_count = max_nonzero_count,

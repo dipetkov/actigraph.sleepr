@@ -22,7 +22,7 @@ collapse_epochs <- function(agdb, epoch_len_out,
                             use_incomplete = TRUE) {
 
   check_args_collapse_method(agdb, epoch_len_out)
-  collapse_factor <- epoch_len_out / attr(agdb, "epochlength")
+  collapse_factor <- epoch_len_out / get_epoch_length(agdb)
   if (collapse_factor == 1) return(agdb)
 
   # TODO: a more general approach to collapsing
@@ -30,12 +30,8 @@ collapse_epochs <- function(agdb, epoch_len_out,
   # though care must be taken with "incomplete"
   # epochs at the start/end of the time series
 
-  agdb <- agdb %>%
+  agdb %>%
     do(collapse_epochs_(., collapse_factor, use_incomplete))
-
-  attr(agdb, "epochlength") <- epoch_len_out
-  attr(agdb, "epochcount") <- nrow(agdb)
-  agdb
 }
 
 collapse_epochs_ <- function(data, collapse_factor, use_incomplete) {

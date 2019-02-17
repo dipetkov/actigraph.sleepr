@@ -24,9 +24,9 @@ Find the complement of a set of time periods in a set of epochs. For illustratio
 \examples{
 library("lubridate")
 library("dplyr")
-periods <- data_frame(start = ymd_hm("2017-01-01 00:01"),
-                      end = ymd_hm("2017-01-01 00:05"))
-epochs <- data_frame(timestamp = ymd_hm("2017-01-01 00:00") +
-                       minutes(0:12))
+periods <- tibble(start = ymd_hm("2017-01-01 00:01"),
+                  end = ymd_hm("2017-01-01 00:05"))
+epochs <- tibble(timestamp = ymd_hm("2017-01-01 00:00") +
+                 minutes(0:12))
 complement_periods(periods, epochs, start, end)
 }

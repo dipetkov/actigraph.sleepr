@@ -18,14 +18,14 @@ test_that("apply_sadeh/apply_cole_kripke return same result as ActiLife 6", {
 })
 
 context("Period detection algorithm")
-test_that("apply_tudor_locke returns a tbl_period", {
+test_that("apply_tudor_locke returns a tibble", {
   file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
                       package = "actigraph.sleepr")
   periods <- read_agd(file) %>%
     collapse_epochs(60) %>%
     apply_sadeh() %>%
     apply_tudor_locke()
-  expect_s3_class(periods, "tbl_period")
+  expect_s3_class(periods, "tibble")
 })
 test_that("apply_tudor_locke return same result as ActiLife 6", {
   agd_file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",

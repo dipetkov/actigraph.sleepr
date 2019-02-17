@@ -35,7 +35,7 @@ where at epoch t
 
 The time series of activity counts is padded with zeros as necessary, at the beginning and at the end, to compute the three functions AVG, SD, NATS within a rolling window.
 
-Finally, the sleep state is awake (W) if the sleep index SI is greater than -4; otherwise the sleep state is asleep (S).
+Finally, the sleep state is asleep (S) if the sleep index SI is greater than -4; otherwise the sleep state is awake (W).
 }
 \examples{
 library("dplyr")

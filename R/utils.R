@@ -9,10 +9,10 @@
 #' @examples
 #' library("lubridate")
 #' library("dplyr")
-#' periods <- data_frame(start = ymd_hm("2017-01-01 00:01"),
-#'                       end = ymd_hm("2017-01-01 00:05"))
-#' epochs <- data_frame(timestamp = ymd_hm("2017-01-01 00:00") +
-#'                        minutes(0:12))
+#' periods <- tibble(start = ymd_hm("2017-01-01 00:01"),
+#'                   end = ymd_hm("2017-01-01 00:05"))
+#' epochs <- tibble(timestamp = ymd_hm("2017-01-01 00:00") +
+#'                  minutes(0:12))
 #' complement_periods(periods, epochs, start, end)
 #' @export
 complement_periods <- function(periods, epochs, start_var, end_var) {
@@ -74,6 +74,7 @@ expand_periods_ <- function(periods, start_var, end_var,
                             units = "1 min") {
   start_var <- enquo(start_var)
   end_var <- enquo(end_var)
+
   periods %>%
     mutate(period_id = row_number()) %>%
     mutate(timestamp = map2(!!start_var, !!end_var, expand_timestamp,
@@ -81,14 +82,40 @@ expand_periods_ <- function(periods, start_var, end_var,
     select(.data$period_id, .data$timestamp) %>%
     unnest()
 }
+
+#' Guess the epoch length (in seconds) from the timestamp column
+#' @param epochs A data frame with at least one column, \code{timestamp}, which contains POSIXct objects.
+#' @examples
+#' data("gtxplus1day")
+#'
+#' gtxplus1day %>%
+#'   get_epoch_length()
+#'
+#' gtxplus1day %>%
+#'   collapse_epochs(60) %>%
+#'   get_epoch_length()
+#' @export
 get_epoch_length <- function(epochs) {
 
-  if (!exists("timestamp", epochs)) return(NULL)
+  assert_that(exists("timestamp", epochs),
+              msg = "Tibble has no timestamp column.")
 
-  epoch_len <- epochs %>%
+  epoch_lens <- epochs %>%
     mutate(len = time_length(.data$timestamp - lag(.data$timestamp))) %>%
     filter(row_number() > 1) %>%
     .$len
 
-  if (n_distinct(epoch_len) != 1) NULL else first(epoch_len)
+  epoch_len <- first(epoch_lens)
+
+  if (epoch_len == last(epoch_lens) &
+      epoch_len == mode(epoch_lens)) {
+    epoch_len
+  } else {
+    stop("Failed to determine epoch length from timestamps.")
+  }
+}
+
+mode <- function(x) {
+  uniqx <- unique(x)
+  uniqx[which.max(tabulate(match(x, uniqx)))]
 }
