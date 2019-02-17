@@ -23,7 +23,7 @@
 #'
 #' The time series of activity counts is padded with zeros as necessary, at the beginning and at the end, to compute the three functions AVG, SD, NATS within a rolling window.
 #'
-#' Finally, the sleep state is awake (W) if the sleep index SI is greater than -4; otherwise the sleep state is asleep (S).
+#' Finally, the sleep state is asleep (S) if the sleep index SI is greater than -4; otherwise the sleep state is awake (W).
 #'
 #' @references A Sadeh, KM Sharkey and MA Carskadon. Activity based sleep-wake identification: An empirical test of methodological issues. \emph{Sleep}, 17(3):201–207, 1994.
 #' @references ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
