@@ -126,7 +126,8 @@ read_agd_raw <- function(file, tz = "UTC") {
                       "'unixepoch') AS ", col, "_ts, ")
     }
     query <- paste0(query, " * FROM ", table)
-    db %>% tbl(sql(query)) %>%
+    db %>%
+      tbl(sql(query)) %>%
       collect(n = Inf) %>%
       select(- one_of(cols)) %>%
       rename_all(str_replace, "_ts$", "") %>%

@@ -11,6 +11,8 @@ An object of class \code{tbl_agd} (inherits from \code{tbl_df}, \code{tbl}, \cod
 gtxplus1day
 }
 \description{
-24 hours of actigraphy data collected with a GT3X+ device, which uses a tri-axial accelerometer to record activity in vertical (axis 1), horizontal (axis 2) and lateral (axis 3) directions.
+24 hours of actigraphy data collected with a GT3X+ device,
+which uses a tri-axial accelerometer to record activity in
+vertical (axis 1), horizontal (axis 2) and lateral (axis 3) directions.
 }
 \keyword{datasets}

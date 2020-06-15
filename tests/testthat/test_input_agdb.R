@@ -104,8 +104,8 @@ testthat::test_that("combine_epochs_periods adds period id column", {
     combine_epochs_periods(agdb, periods, in_bed_time, out_bed_time)
 
   testthat::expect_true(assertthat::has_name(agdb_with_periods, "period_id"))
-  aa = agdb
-  attr(aa, "sleep_algorithm") = NULL
+  aa <- agdb
+  attr(aa, "sleep_algorithm") <- NULL
   testthat::expect_equal(aa, agdb_with_periods %>%
                            select(- period_id) %>%
                            arrange(timestamp))

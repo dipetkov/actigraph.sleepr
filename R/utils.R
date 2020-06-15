@@ -87,7 +87,7 @@ expand_periods <- function(periods, start_var, end_var,
 }
 expand_periods_ <- function(periods, start_var, end_var,
                             units = "1 min") {
-  timestamp = NULL
+  timestamp <- NULL
   rm(list = "timestamp")
 
   start_var <- enquo(start_var)
