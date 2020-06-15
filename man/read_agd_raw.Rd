@@ -12,13 +12,20 @@ read_agd_raw(file, tz = "UTC")
 \item{tz}{Time zone to convert DateTime ticks to POSIX time.}
 }
 \value{
-A list of five tables: settings, data, filters, sleep, awakenings and, if available, capsense.
+A list of five tables: settings, data, filters, sleep,
+awakenings and, if available, capsense.
 }
 \description{
-Read ActiGraph sleep watch data from an SQLite database stored in an AGD file and return a list with (at least) five tables: data, sleep, filters, settings, awakenings. The tables have the schema described in the ActiLife 6 User manual and the timestamps are converted from Unix time format to human-readable POSIXct representation.
+Read ActiGraph sleep watch data from an SQLite database stored in an
+AGD file and return a list with (at least) five tables: data, sleep,
+filters, settings, awakenings. The tables have the schema described
+in the ActiLife 6 User manual and the timestamps are converted from
+Unix time format to human-readable POSIXct representation.
 }
 \details{
-Some Actigraph devices contain a capacitive sensor to detect monitor removal when worn against the skin. If that data is available, the return list includes a capsense table as well.
+Some ActiGraph devices contain a capacitive sensor to detect
+monitor removal when worn against the skin. If that data is
+available, the return list includes a capsense table as well.
 }
 \examples{
 file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
@@ -26,9 +33,11 @@ file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
 str(read_agd_raw(file))
 }
 \references{
-ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
+ActiLife 6 User's Manual by the ActiGraph Software
+Department. 04/03/2012.
 
-\code{covertagd}: R package for converting agd files from ActiGraph into data.frames.
+\code{covertagd}: R package for converting agd files
+from ActiGraph into data.frames.
 }
 \seealso{
 \code{\link{read_agd}}

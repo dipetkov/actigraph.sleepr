@@ -1,10 +1,13 @@
 #' Plot activity values
 #'
-#' Plot a time series of activity values (by default, the counts on the vertical axis \emph{axis1}).
-#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute.
+#' Plot a time series of activity values (by default, the counts on the
+#' vertical axis \emph{axis1}).
+#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least)
+#' an \code{epochlength} attribute.
 #' @param var The activity variable (unquoted) to plot on the y-axis.
 #' @param color Activity line color.
-#' @param nrow,ncol Number of rows and columns. Relevant only if the activity data is grouped.
+#' @param nrow,ncol Number of rows and columns. Relevant only if the
+#' activity data is grouped.
 #' @examples
 #' library("dplyr")
 #' data("gtxplus1day")
@@ -38,10 +41,13 @@ plot_activity <- function(agdb, var, color = "black",
 #'
 #' Plot activity values as a time series and periods as polygons.
 #' @inheritParams plot_activity
-#' @param periods A \code{tibble} of periods with at least two columns \code{start_var} and \code{end_var}.
+#' @param periods A \code{tibble} of periods with at least two columns
+#' \code{start_var} and \code{end_var}.
 #' @param act_var The activity variable (unquoted) to plot on the y-axis.
-#' @param start_var The variable (unquoted) which indicates when the time periods start.
-#' @param end_var The variable (unquoted) which indicates when the time periods end.
+#' @param start_var The variable (unquoted) which indicates when the
+#' time periods start.
+#' @param end_var The variable (unquoted) which indicates when the time
+#'  periods end.
 #' @param fill Polygon fill color.
 #' @examples
 #' library("dplyr")

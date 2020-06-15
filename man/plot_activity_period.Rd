@@ -4,27 +4,42 @@
 \alias{plot_activity_period}
 \title{Plot activity and periods}
 \usage{
-plot_activity_period(agdb, periods, act_var, start_var, end_var,
-  color = "black", fill = "#525252", ncol = NULL, nrow = NULL)
+plot_activity_period(
+  agdb,
+  periods,
+  act_var,
+  start_var,
+  end_var,
+  color = "black",
+  fill = "#525252",
+  ncol = NULL,
+  nrow = NULL
+)
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute.}
+\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least)
+an \code{epochlength} attribute.}
 
-\item{periods}{A \code{tibble} of periods with at least two columns \code{start_var} and \code{end_var}.}
+\item{periods}{A \code{tibble} of periods with at least two columns
+\code{start_var} and \code{end_var}.}
 
 \item{act_var}{The activity variable (unquoted) to plot on the y-axis.}
 
-\item{start_var}{The variable (unquoted) which indicates when the time periods start.}
+\item{start_var}{The variable (unquoted) which indicates when the
+time periods start.}
 
-\item{end_var}{The variable (unquoted) which indicates when the time periods end.}
+\item{end_var}{The variable (unquoted) which indicates when the time
+periods end.}
 
 \item{color}{Activity line color.}
 
 \item{fill}{Polygon fill color.}
 
-\item{ncol}{Number of rows and columns. Relevant only if the activity data is grouped.}
+\item{ncol}{Number of rows and columns. Relevant only if the
+activity data is grouped.}
 
-\item{nrow}{Number of rows and columns. Relevant only if the activity data is grouped.}
+\item{nrow}{Number of rows and columns. Relevant only if the
+activity data is grouped.}
 }
 \description{
 Plot activity values as a time series and periods as polygons.

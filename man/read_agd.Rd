@@ -12,10 +12,15 @@ read_agd(file, tz = "UTC")
 \item{tz}{Time zone to convert DateTime ticks to POSIX time.}
 }
 \value{
-A \code{tibble} (\code{tbl}) of activity data with at least two columns: timestamp and axis1 counts. Optional columns include axis2, axis2, steps, lux and inclinometer indicators (incline off, standing, sitting and lying). The device settings are stored as attributes, which include \code{epochlength}.
+A \code{tibble} (\code{tbl}) of activity data with at
+least two columns: timestamp and axis1 counts. Optional columns
+include axis2, axis2, steps, lux and inclinometer indicators
+(incline off, standing, sitting and lying). The device settings
+are stored as attributes, which include \code{epochlength}.
 }
 \description{
-Read ActiGraph sleep watch data from a database stored in an AGD file. Return a tibble.
+Read ActiGraph sleep watch data from a database stored in an
+AGD file. Return a tibble.
 }
 \examples{
 file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
@@ -41,9 +46,11 @@ for (basename in basenames) {
 }
 }
 \references{
-ActiLife 6 User's Manual by the ActiGraph Software Department. 04/03/2012.
+ActiLife 6 User's Manual by the ActiGraph Software
+Department. 04/03/2012.
 
-\code{covertagd}: R package for converting agd files from ActiGraph into data.frames.
+\code{covertagd}: R package for converting agd files
+from ActiGraph into data.frames.
 }
 \seealso{
 \code{\link{read_agd_raw}}

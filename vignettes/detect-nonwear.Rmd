@@ -102,16 +102,16 @@ agdb_wear %>%
 
 The Choi algorithm extends the Troiano algorithm by requiring that short spikes of artifactual movement during a non-wear period are preceded and followed by \code{min_window_len} consecutive zero epochs.
 
-min_period_len
+`min_period_len`
  : Minimum number of consecutive zero epoch to start a non-wear period. The default is 90.
 
-min_window_len
+`min_window_len`
  : The minimum number of consecutive "zero" epochs immediately preceding and following a spike of artifactual movement. The default is 30.
 
-spike_tolerance
+`spike_tolerance`
  : Also known as artifactual movement interval. At most `spike_tolerance` "nonzero" epochs can occur in sequence during a non-wear period without interrupting it. The default is 2.
 
-use_magnitude
+`use_magnitude`
  : If true, the magnitude of the vector (axis1, axis2, axis3) is used to measure activity; otherwise the axis1 value is used. The default is FALSE.
  
 ```{r }
