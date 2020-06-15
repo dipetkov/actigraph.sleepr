@@ -22,9 +22,11 @@ Plot a time series of activity values (by default, the counts on the
 vertical axis \emph{axis1}).
 }
 \examples{
-library("dplyr")
 data("gtxplus1day")
-data <- gtxplus1day \%>\%
+sub_gt3x = gtxplus1day \%>\%
+   dplyr::filter(timestamp <= lubridate::as_date("2012-06-28"))
+
+data <- sub_gt3x \%>\%
   collapse_epochs(60) \%>\%
   apply_cole_kripke()
 

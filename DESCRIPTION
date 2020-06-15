@@ -1,7 +1,7 @@
 Package: actigraph.sleepr
 Type: Package
 Title: Detect Periods of Sleep and Non-Wear from 'ActiGraph' Data
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: c(person(given = "Desislava",
            family = "Petkova",
            email = "desislavka@gmail.com",
