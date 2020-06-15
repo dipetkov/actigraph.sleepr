@@ -1,18 +1,24 @@
 #' Re-integrate epochs
 #'
-#' Collapse post-filtered activity counts into larger epoch "buckets".
-#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least)
+#' Collapse post-filtered activity counts into
+#'  larger epoch "buckets".
+#' @param agdb A \code{tibble} (\code{tbl}) of
+#' activity data (at least)
 #' an \code{epochlength} attribute.
-#' @param epoch_len_out Output (longer) epoch length in seconds, must be
+#' @param epoch_len_out Output (longer) epoch length in
+#' seconds, must be
 #' exact multiple of the input epoch length. Currently only
 #' \code{epoch_len_out} = 60 is supported.
-#' @param use_incomplete logical. Set to \code{TRUE} to follow ActiLife
-#' convention, which collapses all observed epochs even if they are
+#' @param use_incomplete logical. Set to \code{TRUE} to
+#' follow ActiLife
+#' convention, which collapses all observed epochs
+#' even if they are
 #' incomplete.
-#' @return A \code{tibble} (\code{tbl}) of activity data collapsed into
+#' @return A \code{tibble} (\code{tbl}) of activity
+#' data collapsed into
 #' one-minute epochs.
-#' @references ActiLife 6 User's Manual by the ActiGraph Software
-#' Department. 04/03/2012.
+#' @references ActiLife 6 User's Manual by the
+#' ActiGraph Software Department. 04/03/2012.
 #' @details
 #' Activity counts cannot be reintegrated into shorter epochs, e.g.,
 #' 60s -> 10s. Currently, \code{collapse_epochs} integrates into 60s

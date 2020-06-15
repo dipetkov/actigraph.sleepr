@@ -7,23 +7,29 @@
 collapse_epochs(agdb, epoch_len_out, use_incomplete = TRUE)
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least)
+\item{agdb}{A \code{tibble} (\code{tbl}) of
+activity data (at least)
 an \code{epochlength} attribute.}
 
-\item{epoch_len_out}{Output (longer) epoch length in seconds, must be
+\item{epoch_len_out}{Output (longer) epoch length in
+seconds, must be
 exact multiple of the input epoch length. Currently only
 \code{epoch_len_out} = 60 is supported.}
 
-\item{use_incomplete}{logical. Set to \code{TRUE} to follow ActiLife
-convention, which collapses all observed epochs even if they are
+\item{use_incomplete}{logical. Set to \code{TRUE} to
+follow ActiLife
+convention, which collapses all observed epochs
+even if they are
 incomplete.}
 }
 \value{
-A \code{tibble} (\code{tbl}) of activity data collapsed into
+A \code{tibble} (\code{tbl}) of activity
+data collapsed into
 one-minute epochs.
 }
 \description{
-Collapse post-filtered activity counts into larger epoch "buckets".
+Collapse post-filtered activity counts into
+ larger epoch "buckets".
 }
 \details{
 Activity counts cannot be reintegrated into shorter epochs, e.g.,
@@ -50,6 +56,6 @@ gtxplus1day \%>\%
   collapse_epochs(60)
 }
 \references{
-ActiLife 6 User's Manual by the ActiGraph Software
-Department. 04/03/2012.
+ActiLife 6 User's Manual by the
+ActiGraph Software Department. 04/03/2012.
 }
