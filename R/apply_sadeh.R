@@ -64,28 +64,47 @@ apply_sadeh <- function(agdb) {
 
 apply_sadeh_ <- function(data) {
   half_window <- 5
+  # From the Sadeh paper:
+  # Mean-W-5-min is the average number of activity counts during the scored
+  # epoch and the window of five epochs preceding and following it.
   roll_avg <- function(x) {
-    zeros <- rep(0, half_window)
-    roll_mean(c(zeros, x, zeros), n = 2 * half_window + 1, partial = FALSE)
+    padding <- rep(0, half_window)
+    roll_mean(
+      c(padding, x, padding),
+      n = 2 * half_window + 1, align = "center", partial = FALSE
+    )
   }
+  # From the Sadeh paper:
+  # SD-last 6 min is the standard deviation of the activity counts during
+  # the scored epoch and the five epochs preceding it.
   roll_std <- function(x) {
-    zeros <- rep(0, half_window)
-    roll_sd(c(zeros, x), n = half_window + 1, partial = FALSE, align = "right")
+    padding <- rep(0, half_window)
+    roll_sd(c(padding, x),
+      n = half_window + 1, align = "right", partial = FALSE
+    )
   }
+  # From the Sadeh paper:
+  # NAT is the number of epochs with activity level equal to or higher than
+  # 50 but lower than 100 activity counts in a window of 11 minutes that
+  # includes the scored epoch and the five epochs preceding and following it.
   roll_nats <- function(x) {
-    zeros <- rep(0, half_window)
+    padding <- rep(0, half_window)
     y <- if_else(x >= 50 & x < 100, 1, 0)
-    roll_sum(c(zeros, y, zeros), n = 2 * half_window + 1, partial = FALSE)
+    roll_sum(
+      c(padding, y, padding),
+      n = 2 * half_window + 1, align = "center", partial = FALSE
+    )
   }
 
   data %>%
     mutate(
       count = pmin(.data$axis1, 300),
-      sleep = (7.601
-      - 0.065 * roll_avg(.data$count)
-        - 1.08 * roll_nats(.data$count)
-        - 0.056 * roll_std(.data$count)
-        - 0.703 * log(.data$count + 1)),
+      sleep = (
+        7.601
+        - 0.065 * roll_avg(.data$count)
+          - 1.08 * roll_nats(.data$count)
+          - 0.056 * roll_std(.data$count)
+          - 0.703 * log(.data$count + 1)),
       sleep = if_else(.data$sleep > -4, "S", "W")
     )
 }
