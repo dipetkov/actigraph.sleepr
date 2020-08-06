@@ -34,14 +34,14 @@
 #' subsequent epochs. The time series of activity counts is padded with zeros as
 #' necessary, at the beginning and at the end.
 #'
-#' Finally, the sleep state is awake (W) if the sleep index SI is less than 1;
-#' otherwise the sleep state is asleep (S).
+#' Finally, the sleep state is awake (W) if the sleep index SI is less
+#' than 1; otherwise the sleep state is asleep (S).
 #'
 #' @references RJ Cole, DF Kripke, W Gruen, DJ Mullaney and JC Gillin.
-#' Automatic sleep/wake identification from wrist activity. \emph{Sleep},
-#' 15(5):461–469, 1992.
-#' @references ActiLife 6 User's Manual by the ActiGraph Software Department.
-#' 04/03/2012.
+#' Automatic sleep/wake identification from wrist activity.
+#' \emph{Sleep}, 15(5):461–469, 1992.
+#' @references ActiLife 6 User's Manual by the ActiGraph Software
+#' Department. 04/03/2012.
 #' @seealso \code{\link{collapse_epochs}}, \code{\link{apply_sadeh}},
 #' \code{\link{apply_tudor_locke}}
 #' @examples
@@ -112,4 +112,3 @@ actigraph_adjustment <- function(data) {
     mutate(
       count = pmin(.data$axis1 / 100, 300)
     )
-}

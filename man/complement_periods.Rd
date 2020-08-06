@@ -7,28 +7,29 @@
 complement_periods(periods, epochs, start_var, end_var)
 }
 \arguments{
-\item{periods}{A data frame with at least two columns, \code{start_var}
-and \code{end_var}, which are the first and the last epoch in a set of
-time periods, e.g. sleep periods or (non)wear periods.}
+\item{periods}{A data frame with at least two columns,
+\code{start_var} and \code{end_var}, which are the first
+and the last epoch in a set of time periods, e.g. sleep
+periods or (non)wear periods.}
 
-\item{epochs}{A data frame with at least one column, \code{timestamp},
-which contains POSIXct objects.}
+\item{epochs}{A data frame with at least one column,
+\code{timestamp}, which contains POSIXct objects.}
 
-\item{start_var}{The variable (unquoted) which indicates when the time
-periods start.}
+\item{start_var}{The variable (unquoted) which indicates
+when the time periods start.}
 
-\item{end_var}{The variable (unquoted) which indicates when the time
-periods end.}
+\item{end_var}{The variable (unquoted) which indicates when
+the time periods end.}
 }
 \value{
-A data frame of time periods with three columns: \code{period_id}
-(a sequential identifier), \code{start_var} (first epoch in period) and
-\code{end_var} (last epoch in period).
+A data frame of time periods with three columns:
+\code{period_id} (a sequential identifier), \code{start_var}
+(first epoch in period) and \code{end_var} (last epoch in period).
 }
 \description{
-Find the complement of a set of time periods in a set of epochs. For
-illustration, let's use integers instead of time periods and epochs.
-Suppose we have two intervals/periods, \code{\{[1, 3], [8, 10]\}};
+Find the complement of a set of time periods in a set of epochs.
+For illustration, let's use integers instead of time periods and
+epochs. Suppose we have two intervals/periods, \code{\{[1, 3], [8, 10]\}};
 their complement in the set \code{\{[0, ..., 12]\}} is
 \code{\{[0, 0], [4, 7], [11, 12]\}}.
 }

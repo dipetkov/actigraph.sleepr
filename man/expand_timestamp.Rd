@@ -11,8 +11,8 @@ expand_timestamp(start, end, units = "1 min")
 
 \item{end}{The end time, as a POSIXct object.}
 
-\item{units}{The time unit as a characters string. The default is
-\code{"1 min"}.}
+\item{units}{The time unit as a characters string.
+The default is \code{"1 min"}.}
 }
 \description{
 Given the start time and the end time of a period, expand it into a

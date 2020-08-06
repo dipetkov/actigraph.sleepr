@@ -1,12 +1,12 @@
 #' Impute missing count values
 #'
-#' Trim leading and trailing NAs. Fill in the rest of the NAs using cubic
-#' spline interpolation.
-#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an
-#' \code{epochlength} attribute.
+#' Trim leading and trailing NAs. Fill in the rest of the NAs using
+#' cubic spline interpolation.
+#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least)
+#' an \code{epochlength} attribute.
 #' @param ... Comma separated list of unquoted variables.
-#' @return A \code{tibble} (\code{tbl}) of activity data. Each variable in
-#' \code{...} is imputed.
+#' @return A \code{tibble} (\code{tbl}) of activity data. Each variable
+#' in \code{...} is imputed.
 #' @seealso \code{\link[zoo]{na.spline}}, \code{\link[zoo]{na.trim}}
 #' @examples
 #' library("dplyr")
@@ -17,10 +17,9 @@
 #'   impute_epochs(axis1)
 #' @export
 impute_epochs <- function(agdb, ...) {
-  selected <- select_vars(names(agdb), ...)
-  if (length(selected) == 0) {
-    return(agdb)
-  }
+
+  selected <- tidyselect::vars_select(names(agdb), ...)
+  if (length(selected) == 0) return(agdb)
 
   agdb %>% do(impute_epochs_(., selected))
 }
@@ -34,12 +33,13 @@ impute_epochs_ <- function(data, selected) {
 }
 #' Checks whether there are gaps in the time series
 #'
-#' The timestamps in the agd time series should run from \code{first(timestamp)}
-#' to \code{last(timestamp)} in increments of \code{epochlength} seconds. This
-#' function checks whether this holds or not. If the data is grouped (e.g., by
-#' subject), the check is performed for each group separately.
-#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an
-#' \code{epochlength} attribute.
+#' The timestamps in the agd time series should run from
+#' \code{first(timestamp)} to \code{last(timestamp)} in increments of
+#' \code{epochlength} seconds. This function checks whether this holds
+#' or not. If the data is grouped (e.g., by subject), the check is
+#' performed for each group separately.
+#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least)
+#' an \code{epochlength} attribute.
 #' @return True or false.
 #' @export
 has_missing_epochs <- function(agdb) {
@@ -53,7 +53,6 @@ has_missing_epochs <- function(agdb) {
 }
 has_missing_epochs_ <- function(data, epoch_len) {
   epochs <- seq(first(data$timestamp), last(data$timestamp),
-    by = epoch_len
-  )
-  tibble(missing = !identical(epochs, data$timestamp))
+                by = epoch_len)
+  tibble::tibble(missing = !identical(epochs, data$timestamp))
 }
