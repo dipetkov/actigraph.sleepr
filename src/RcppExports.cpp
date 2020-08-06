@@ -6,16 +6,16 @@
 using namespace Rcpp;
 
 // wle
-IntegerVector wle(NumericVector counts, int activity_threshold, int spike_tolerance, int spike_stoplevel);
-RcppExport SEXP _actigraph_sleepr_wle(SEXP countsSEXP, SEXP activity_thresholdSEXP, SEXP spike_toleranceSEXP, SEXP spike_stoplevelSEXP) {
+IntegerVector wle(NumericVector counts, int act_thresh, int spike_tol, int spike_stop);
+RcppExport SEXP _actigraph_sleepr_wle(SEXP countsSEXP, SEXP act_threshSEXP, SEXP spike_tolSEXP, SEXP spike_stopSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type counts(countsSEXP);
-    Rcpp::traits::input_parameter< int >::type activity_threshold(activity_thresholdSEXP);
-    Rcpp::traits::input_parameter< int >::type spike_tolerance(spike_toleranceSEXP);
-    Rcpp::traits::input_parameter< int >::type spike_stoplevel(spike_stoplevelSEXP);
-    rcpp_result_gen = Rcpp::wrap(wle(counts, activity_threshold, spike_tolerance, spike_stoplevel));
+    Rcpp::traits::input_parameter< int >::type act_thresh(act_threshSEXP);
+    Rcpp::traits::input_parameter< int >::type spike_tol(spike_tolSEXP);
+    Rcpp::traits::input_parameter< int >::type spike_stop(spike_stopSEXP);
+    rcpp_result_gen = Rcpp::wrap(wle(counts, act_thresh, spike_tol, spike_stop));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -1,4 +1,12 @@
-exclusions: list("R/RcppExports.R", "R/zzz.R")
-exclude: "# Exclude Linting"
-exclude_start: "# Begin Exclude Linting"
-exclude_end: "# End Exclude Linting"
+linters: with_defaults(
+    dummy_linter = NULL
+  )
+exclusions: list(
+    "R/RcppExports.R",
+    "R/zzz.R",
+    "data/gtxplus1day.rda",
+    "vignettes/detect-nonwear.html",
+    "vignettes/detect-nonwear.R",
+    "vignettes/detect-sleep.html",
+    "vignettes/detect-sleep.R"
+  )

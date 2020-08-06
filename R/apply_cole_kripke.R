@@ -52,7 +52,6 @@
 #'   collapse_epochs(60) %>%
 #'   apply_cole_kripke()
 #' @export
-
 apply_cole_kripke <- function(agdb) {
   check_args_sleep_scores(agdb, "Cole-Kripke")
   attr(agdb, "sleep_algorithm") <- "Cole-Kripke"
@@ -61,6 +60,8 @@ apply_cole_kripke <- function(agdb) {
     do(apply_cole_kripke_1min_(.))
 }
 
+# The optimal parameters for the mean activity per minute.
+# pg. 466, Sleep, Vol. 15, No. 5, 1992.
 apply_cole_kripke_1min_ <- function(data) {
   data %>%
     mutate(
@@ -76,6 +77,9 @@ apply_cole_kripke_1min_ <- function(data) {
     )
 }
 
+# The optimal parameters for the maximum 30-second nonoverlapping epoch of
+# activity per minute.
+# pg. 466, Sleep, Vol. 15, No. 5, 1992.
 apply_cole_kripke_30sec_ <- function(data) {
   data %>%
     mutate(
@@ -91,10 +95,12 @@ apply_cole_kripke_30sec_ <- function(data) {
     )
 }
 
+# The optimal parameters for the maximum 10-second nonoverlapping epoch of
+# activity per minute.
+# pg. 466, Sleep, Vol. 15, No. 5, 1992.
 apply_cole_kripke_10sec_ <- function(data) {
   data %>%
     mutate(
-      count = pmin(.data$axis1 / 100, 300),
       sleep = .00001 * (
         550 * lag(.data$count, 4, default = 0) +
           378 * lag(.data$count, 3, default = 0) +

@@ -3,7 +3,7 @@ state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sleepr?branch=master&svg=true)](https://ci.appveyor.com/project/dipetkov/actigraph.sleepr)
-[![Travis-CI Build
+[![Build
 Status](https://travis-ci.org/dipetkov/actigraph.sleepr.svg?branch=master)](https://travis-ci.org/dipetkov/actigraph.sleepr)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/actigraph.sleeper)](https://cran.r-project.org/package=actigraph.sleeper)
 
@@ -11,8 +11,7 @@ Status](https://travis-ci.org/dipetkov/actigraph.sleepr.svg?branch=master)](http
 version](https://img.shields.io/badge/R%3E%3D-3.2.4-6666ff.svg)](https://cran.r-project.org/)
 [![packageversion](https://img.shields.io/badge/Package%20version-0.2.0-orange.svg?style=flat-square)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2020--08--07-yellowgreen.svg)](/commits/master)
-[![Coverage
-status](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/github/dipetkov/actigraph.sleepr?branch=master)
+[![codecov](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/dipetkov/actigraph.sleepr)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 

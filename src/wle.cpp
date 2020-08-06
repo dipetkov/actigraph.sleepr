@@ -5,14 +5,14 @@ using namespace Rcpp;
 // to start at x[i]
 // [[Rcpp::export]]
 IntegerVector wle(NumericVector counts,
-                  int activity_threshold,
-                  int spike_tolerance,
-                  int spike_stoplevel) {
+                  int act_thresh,
+                  int spike_tol,
+                  int spike_stop) {
   int n_epochs = counts.size();
   IntegerVector lengths(n_epochs);
   /*
    Keep track of the current run of zeros in run0s[0] and
-   the next `spike_tolerance` runs of zeros which follow a spike.
+   the next `spike_tol` runs of zeros which follow a spike.
 
    For example, let counts = c(0, 0, 1, 1, 0) and spike_tol = 2.
 
@@ -26,13 +26,13 @@ IntegerVector wle(NumericVector counts,
    4. (0, 0, 1) -> (1, 0, 1) : Add 1 to the start of run0s
    5. (1, 0, 1) -> (2, 0, 1) : Increment run0s[0] again
   */
-  IntegerVector run0s(spike_tolerance + 1);
-  for (int j = 0; j < spike_tolerance + 1; j++) {
+  IntegerVector run0s(spike_tol + 1);
+  for (int j = 0; j < spike_tol + 1; j++) {
     run0s[j] = 0;
   }
   for (int i = n_epochs - 1; i >= 0; i--) {
 
-    if (counts[i] <= activity_threshold) {
+    if (counts[i] <= act_thresh) {
 
       ++run0s[0];
 
@@ -40,7 +40,7 @@ IntegerVector wle(NumericVector counts,
       // that isn't followed by a run of zero epochs
       int len = run0s[0];
       bool add = false;
-      for (int j = spike_tolerance; j > 0; j--) {
+      for (int j = spike_tol; j > 0; j--) {
         // Don't end the period with a nonzero epoch
         if (run0s[j] > 0) { add = true; }
         if (add) len += run0s[j] + 1;
@@ -52,10 +52,10 @@ IntegerVector wle(NumericVector counts,
       lengths[i] = 0;
 
       // Stop non-wear periods because a large spike of activity has occurred
-      if (counts[i] > spike_stoplevel) {
+      if (counts[i] > spike_stop) {
 
         // Fill in run0s with 0s
-        for (int j = 0; j < spike_tolerance + 1; j++) {
+        for (int j = 0; j < spike_tol + 1; j++) {
           run0s[j] = 0;
         }
 
@@ -64,7 +64,7 @@ IntegerVector wle(NumericVector counts,
       } else {
 
         // Shift run0s one place to the right, padding with 0
-        for (int j = spike_tolerance; j > 0; j--) {
+        for (int j = spike_tol; j > 0; j--) {
           run0s[j] = run0s[j - 1];
         }
         run0s[0] = 0;

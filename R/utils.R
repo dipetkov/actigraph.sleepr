@@ -94,6 +94,7 @@ expand_periods <- function(periods, start_var, end_var,
   periods %>%
     do(expand_periods_(., !!start_var, !!end_var, units))
 }
+
 expand_periods_ <- function(periods, start_var, end_var,
                             units = "1 min") {
   start_var <- enquo(start_var)
@@ -139,11 +140,13 @@ get_epoch_length <- function(epochs) {
   epoch_len
 }
 
+# Find the mode [the most common value].
 mode <- function(x) {
   uniqx <- unique(x)
   uniqx[which.max(tabulate(match(x, uniqx)))]
 }
 
+# Remove the dependency on `data.table::rleid`.
 rleid <- function(x) {
   x <- rle(x)$lengths
   rep(seq_along(x), times = x)
