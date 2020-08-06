@@ -8,10 +8,10 @@ bibliography: actigraph.bib
 version <- as.vector(read.dcf("DESCRIPTION")[, "Version"])
 version <- gsub("-", ".", version)
 
-dep <- as.vector(read.dcf('DESCRIPTION')[, 'Depends'])
-m <- regexpr('R *\\\\(>= \\\\d+.\\\\d+.\\\\d+\\\\)', dep)
+dep <- as.vector(read.dcf("DESCRIPTION")[, "Depends"])
+m <- regexpr("R *\\(>= \\d+.\\d+.\\d+\\)", dep)
 rm <- regmatches(dep, m)
-rvers <- gsub('.*(\\\\d+.\\\\d+.\\\\d+).*', '\\\\1', rm)
+rvers <- gsub(".*(\\d+.\\d+.\\d+).*", "\\1", rm)
 ```
 
 

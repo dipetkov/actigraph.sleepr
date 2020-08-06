@@ -24,7 +24,7 @@ LazyData: true
 NeedsCompilation: no
 RoxygenNote: 7.1.1
 Depends:
-  R (>= 3.2.4),
+    R (>= 3.2.4)
 Imports:
     DBI,
     Rcpp,

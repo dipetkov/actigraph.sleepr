@@ -8,7 +8,7 @@ Status](https://travis-ci.org/dipetkov/actigraph.sleepr.svg?branch=master)](http
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/actigraph.sleeper)](https://cran.r-project.org/package=actigraph.sleeper)
 
 [![minimal R
-version](https://img.shields.io/badge/R%3E%3D--6666ff.svg)](https://cran.r-project.org/)
+version](https://img.shields.io/badge/R%3E%3D-3.2.4-6666ff.svg)](https://cran.r-project.org/)
 [![packageversion](https://img.shields.io/badge/Package%20version-0.2.0-orange.svg?style=flat-square)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2020--08--07-yellowgreen.svg)](/commits/master)
 [![Coverage
