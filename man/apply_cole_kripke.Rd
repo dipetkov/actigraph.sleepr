@@ -21,26 +21,31 @@ populations as the supporting research was performed on subjects
 ranging from 35 to 65 years of age.
 }
 \details{
-The Cole-Kripke algorithm requires that the activity data is in 60s epochs
-and uses a 7-minute window that includes the four previous and two future
-epochs. This function implements the algorithm as described in the ActiGraph
-user manual.
+The original paper proposes three versions of the Cole-Kripke algorithm,
+optimized for 1-minute, 30-second and 10-second epochs. Here only the 1-min
+version is implemented and therefore the \code{apply_cole_kripke} function
+requires that the activity data is in 60s epochs. Use the
+\code{\link{collapse_epochs}} function to modify higher-frequency data,
+if necessary.
 
 The Cole-Kripke algorithm uses the y-axis (axis 1) counts. First epoch
-counts are divided by 100 and afterwards any scaled counts over 300 are
-set to 300. The sleep index (SI) is defined as
+counts are divided by 100 and any scaled counts over 300 are clipped to 300.
+This transformation is specific to ActiGraph devices. The sleep index (SI)
+is defined as
 
 \code{
-.001 * (106 * Epoch_prev(4) + 54 * Epoch_prev(3) +
-         58 * Epoch_prev(2) + 76 * Epoch_prev(1) +
-        230 * Epoch +
-         74 * Epoch_next(1) + 67 * Epoch_next(2))
+.001 * (106 * epoch_prev(4) + 54 * epoch_prev(3) +
+         58 * epoch_prev(2) + 76 * epoch_prev(1) +
+        230 * epoch +
+         74 * epoch_next(1) + 67 * epoch_next(2))
 }
 
-where at epoch \code{t}, \code{Epoch_prev(i)} is the scaled activity count
-\code{i} epochs before \code{t}. Similarly, \code{Epoch_next(i)} is the scaled
-activity count \code{i} epochs before \code{t}. The time series of activity counts
-is padded with zeros as necessary, at the beginning and at the end.
+where at epoch \code{t}, \code{epoch_prev(i)} is the scaled activity count
+\code{i} epochs before \code{t}. Similarly, \code{epoch_next(i)} is the
+scaled activity count \code{i} epochs before \code{t}. That is, the algorithm
+uses a 7-epoch window which includes the four preceding and the two
+subsequent epochs. The time series of activity counts is padded with zeros as
+necessary, at the beginning and at the end.
 
 Finally, the sleep state is awake (W) if the sleep index SI is less than 1;
 otherwise the sleep state is asleep (S).
