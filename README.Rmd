@@ -1,16 +1,16 @@
 ---
 output:
   md_document:
-    variant: markdown_github
+    variant: gfm
 bibliography: actigraph.bib
 ---
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sleepr?branch=master&svg=true)](https://ci.appveyor.com/project/dipetkov/actigraph.sleepr)
 [![Travis-CI Build Status](https://travis-ci.org/dipetkov/actigraph.sleepr.svg?branch=master)](https://travis-ci.org/dipetkov/actigraph.sleepr)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/actigraph.sleepr)](https://cran.r-project.org/package=actigraph.sleepr)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/actigraph.sleeper)](https://cran.r-project.org/package=actigraph.sleeper)
 
 [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.2.4-6666ff.svg)](https://cran.r-project.org/)
-[![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-`r version`-orange.svg?style=flat-square)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](/commits/master)
 [![Coverage status](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/github/dipetkov/actigraph.sleepr?branch=master)
 
@@ -20,9 +20,11 @@ bibliography: actigraph.bib
 ### `actigraph.sleepr`: Sleep and non-wear detection from ActiGraph data
 
 ```{r , echo = FALSE}
-knitr::opts_chunk$set(collapse = TRUE, 
-                      comment = "#>",
-                      fig.path = "README-")
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
 ```
 
 The `actigraph.sleepr` package implements three sleep scoring/detection algorithms: Sadeh [@Sadeh:1994aa], Cole-Kripke [@Cole:1992aa] and Tudor-Locke [@Tudor-Locke:2014aa] as well as two non-wear detection algorithms: Troiano [@Troiano:2008aa] and Choi [@Choi:2011aa].
@@ -41,14 +43,15 @@ An AGD file is an SQLite database file exported by an ActiGraph device. See the 
 ```{r }
 library("actigraph.sleepr")
 file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
-                        package = "actigraph.sleepr")
+  package = "actigraph.sleepr"
+)
 agdb_10s <- read_agd(file_10s)
 ```
 
 The `read_agd` function loads the raw activity measurements into a convenient format: a tibble (data frame) of timestamped activity counts, whose attributes are the device settings. However, further manipulations of the tibble using the `dplyr` verbs (e.g., `mutate`, `inner_join`) might drop these non-standard attributes, i.e., the attributes are not always inherited.
 
 ```{r }
-attributes(agdb_10s)[-3]
+attributes(agdb_10s)[4:10]
 ```
 
 Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select, filter, summarise, group_by, arrange) to manipulate the data. For example, let's compute the magnitude of the three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
@@ -57,7 +60,7 @@ Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select
 suppressMessages(library("dplyr"))
 agdb_10s <- agdb_10s %>% select(timestamp, starts_with("axis"))
 agdb_10s %>%
-  mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2)) %>%
+  mutate(magnitude = sqrt(axis1^2 + axis2^2 + axis3^2)) %>%
   head()
 ```
 
@@ -92,7 +95,9 @@ agdb_60s %>% apply_cole_kripke()
 Once each one-minute epoch is labeled as asleep (S) or awake (W), we can use the Tudor-Locke algorithm to detect periods of time in bed and, for each period, to compute sleep quality metrics such as total minutes in bed, total sleep time, number and average length of awakenings, movement and fragmentation index.
 
 ```{r }
-agdb_60s %>% apply_sadeh() %>% apply_tudor_locke()
+agdb_60s %>%
+  apply_sadeh() %>%
+  apply_tudor_locke()
 ```
 
 ### Non-wear period detection with the Troiano and Choi algorithms
