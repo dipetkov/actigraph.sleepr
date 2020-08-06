@@ -4,7 +4,9 @@
 \name{gtxplus1day}
 \alias{gtxplus1day}
 \title{GT3X+ sample data}
-\format{An object of class \code{tbl_agd} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 8999 rows and 4 columns.}
+\format{
+An object of class \code{tbl_agd} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 8999 rows and 4 columns.
+}
 \usage{
 gtxplus1day
 }

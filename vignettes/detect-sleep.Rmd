@@ -86,27 +86,16 @@ Integration nicely emphasizes a peak of activity just before 6pm.
 With a few lines of code, we can load each AGD file in a directory, collapse from 10s to 60s and save the integrated activity data.
 
 ```{r , eval = FALSE}
-library("readr")
-library("tools")
-library("purrr")
+library("tidyverse")
 
 # Construct a path to the directory which contains the raw AGD files
-path_in <- system.file("extdata", package = "actigraph.sleepr")
-# And a path to the directory to contain the processed CSV files
-path_out <- path.expand("~")
+path <- system.file("extdata", package = "actigraph.sleepr")
 
-read_collapse_write <- function(filename, path_in, path_out) {
-  basename <- file_path_sans_ext(filename) 
-  file_in <- file.path(path_in, paste0(basename, ".agd"))
-  file_out <- file.path(path_out, paste0(basename, ".csv"))
-  file_in %>%
-    read_agd() %>%
-    collapse_epochs(60) %>%
-    write_csv(file_out)
-}
-
-list.files(path_in, pattern = ".agd", full.names = FALSE) %>%
-  map(read_collapse_write, path_in, path_out)
+fs::dir_ls(path, glob = "*.agd") %>%
+  map_dfr(
+    ~read_agd(.) %>% collapse_epochs(60),
+    .id = ".filename") %>%
+  write_csv("agd-activity-at-60sec-frequency.csv")
 ```
 
 ### Apply the Sadeh algorithm

@@ -4,8 +4,17 @@
 \alias{plot_activity_period}
 \title{Plot activity and periods}
 \usage{
-plot_activity_period(agdb, periods, act_var, start_var, end_var,
-  color = "black", fill = "#525252", ncol = NULL, nrow = NULL)
+plot_activity_period(
+  agdb,
+  periods,
+  act_var,
+  start_var,
+  end_var,
+  color = "black",
+  fill = "#525252",
+  ncol = NULL,
+  nrow = NULL
+)
 }
 \arguments{
 \item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute.}

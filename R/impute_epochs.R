@@ -47,5 +47,5 @@ has_missing_epochs_ <- function(data, epoch_len) {
 
   epochs <- seq(first(data$timestamp), last(data$timestamp),
                 by = epoch_len)
-  data_frame(missing = !identical(epochs, data$timestamp))
+  tibble(missing = !identical(epochs, data$timestamp))
 }

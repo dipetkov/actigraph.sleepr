@@ -32,9 +32,11 @@ combine_epochs_periods <- function(epochs, periods, start_var, end_var) {
   units <- get_epoch_length(epochs)
   assert_that(is_scalar_integerish(units))
 
-  epochs_periods <-
-    expand_periods(periods, !!start_var, !!end_var, units = units) %>%
-    right_join(epochs, by = c("timestamp", group_vars(epochs)))
+  periods_by_minute <-
+    expand_periods(periods, !!start_var, !!end_var, units = units)
 
-  epochs_periods
+  left_join(
+    epochs, periods_by_minute,
+    by = c("timestamp", group_vars(epochs))
+  )
 }

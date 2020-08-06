@@ -80,7 +80,7 @@ expand_periods_ <- function(periods, start_var, end_var,
     mutate(timestamp = map2(!!start_var, !!end_var, expand_timestamp,
                             units)) %>%
     select(.data$period_id, .data$timestamp) %>%
-    unnest()
+    unnest(cols = .data$timestamp)
 }
 
 #' Guess the epoch length (in seconds) from the timestamp column
@@ -100,19 +100,15 @@ get_epoch_length <- function(epochs) {
   assert_that(exists("timestamp", epochs),
               msg = "Tibble has no timestamp column.")
 
-  epoch_lens <- epochs %>%
-    mutate(len = time_length(.data$timestamp - lag(.data$timestamp))) %>%
-    filter(row_number() > 1) %>%
-    .$len
+  epoch_lens <- time_length(epochs$timestamp - lag(epochs$timestamp))
+  # The first length is `NA` by construction
+  epoch_len <- epoch_lens[2]
 
-  epoch_len <- first(epoch_lens)
+  assert_that(
+    epoch_len == last(epoch_lens) & epoch_len == mode(epoch_lens),
+    msg = "Failed to determine epoch length from timestamps.")
 
-  if (epoch_len == last(epoch_lens) &
-      epoch_len == mode(epoch_lens)) {
-    epoch_len
-  } else {
-    stop("Failed to determine epoch length from timestamps.")
-  }
+  epoch_len
 }
 
 mode <- function(x) {

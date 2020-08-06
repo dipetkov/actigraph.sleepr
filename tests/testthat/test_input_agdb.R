@@ -3,13 +3,13 @@ library("actigraph.sleepr")
 library("dplyr")
 library("readr")
 
-context("General tests")
-if (requireNamespace("lintr", quietly = TRUE)) {
-  context("lints")
-  test_that("Package Style", {
-    lintr::expect_lint_free()
-  })
-}
+# context("General tests")
+# if (requireNamespace("lintr", quietly = TRUE)) {
+#   context("lints")
+#   test_that("Package Style", {
+#     lintr::expect_lint_free()
+#   })
+# }
 
 context("Read agd files")
 test_that("read_agd returns a tibble", {
@@ -106,7 +106,7 @@ test_that("combine_epochs_periods adds period id column", {
   expect_true(has_name(agdb_with_periods, "period_id"))
   expect_equal(agdb, agdb_with_periods %>% select(- period_id))
 
-  x <- agdb_with_periods %>% drop_na() %>% count(period_id) %>% .$n
-  y <- periods %>% .$duration
+  x <- agdb_with_periods %>% drop_na() %>% count(period_id) %>% pull(.data$n)
+  y <- periods %>% pull(.data$duration)
   expect_identical(x, y + 1L)
 })

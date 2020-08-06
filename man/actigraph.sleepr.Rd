@@ -3,7 +3,6 @@
 \docType{package}
 \name{actigraph.sleepr}
 \alias{actigraph.sleepr}
-\alias{actigraph.sleepr-package}
 \title{actigraph.sleepr}
 \description{
 This package implements three standard algorithms for sleep detection from ActiGraph data: Sadeh, Cole-Kripke and Tudor-Locke.

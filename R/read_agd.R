@@ -12,23 +12,14 @@
 #'                     package = "actigraph.sleepr")
 #' read_agd(file)
 #'
-#' library("readr")
-#' library("dplyr")
-#' library("tools")
+#' library("tidyverse")
 #'
-#' # Read ActiGraph sleep watch data from the AGD files in a directory.
-#' # Write the raw activity data to csv files in the user's home directory.
-#' path_in <- system.file("extdata", package = "actigraph.sleepr")
-#' path_out <- path.expand("~")
+#' # Read ActiGraph sleep watch data from the AGD files in a directory
+#' # and bind the data into one data frame indexed by `.filename`.
+#' path <- system.file("extdata", package = "actigraph.sleepr")
 #'
-#' filenames <- list.files(path_in, pattern = ".agd", full.names = FALSE)
-#' basenames <- file_path_sans_ext(filenames)
-#'
-#' for (basename in basenames) {
-#'   file_in <- file.path(path_in, paste0(basename, ".agd"))
-#'   file_out <- file.path(path_out, paste0(basename, ".csv"))
-#'   read_agd(file_in) %>% write_csv(file_out)
-#' }
+#' fs::dir_ls(path, glob = "*.agd") %>%
+#'   map_dfr(read_agd, .id = ".filename")
 #' @export
 read_agd <- function(file, tz = "UTC") {
 

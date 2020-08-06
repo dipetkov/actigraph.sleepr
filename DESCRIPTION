@@ -1,7 +1,7 @@
 Package: actigraph.sleepr
 Type: Package
 Title: Detect Periods of Sleep and Non-Wear from ActiGraph Data
-Version: 0.1.0
+Version: 0.2.0
 Author: Desislava Petkova
 Maintainer: Desislava Petkova <desislavka@gmail.com>
 Description: Reads *.agd files exported from ActiGraph devices; 
@@ -14,11 +14,11 @@ License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 NeedsCompilation: no
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 Depends:
   R (>= 3.2.4),
-  dplyr (>= 0.7.4),
-  tidyr (>= 0.8.0.9000)
+  dplyr (>= 1.0.1),
+  tidyr (>= 1.1.1)
 Imports:
   DBI,
   Rcpp,
@@ -27,11 +27,13 @@ Imports:
   assertthat,
   data.table,
   dbplyr,
+  fs,
   ggplot2,
   lubridate,
   purrr,
   rlang,
   stringr,
+  tidyverse,
   zoo
 Suggests: 
   covr,
@@ -40,7 +42,5 @@ Suggests:
   rmarkdown,
   testthat,
   tools
-Remotes: 
-  tidyverse/tidyr
 VignetteBuilder: knitr
 LinkingTo: Rcpp

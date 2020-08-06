@@ -4,9 +4,16 @@
 \alias{apply_troiano}
 \title{Apply the Troiano algorithm}
 \usage{
-apply_troiano(agdb, activity_threshold = 0, min_period_len = 60,
-  max_nonzero_count = Inf, spike_tolerance = 2,
-  spike_stoplevel = 100, use_magnitude = FALSE, endat_nnz_seq = TRUE)
+apply_troiano(
+  agdb,
+  activity_threshold = 0,
+  min_period_len = 60,
+  max_nonzero_count = Inf,
+  spike_tolerance = 2,
+  spike_stoplevel = 100,
+  use_magnitude = FALSE,
+  endat_nnz_seq = TRUE
+)
 }
 \arguments{
 \item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 seconds.}

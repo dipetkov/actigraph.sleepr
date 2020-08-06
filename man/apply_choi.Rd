@@ -4,8 +4,13 @@
 \alias{apply_choi}
 \title{Apply the Choi algorithm}
 \usage{
-apply_choi(agdb, min_period_len = 90, min_window_len = 30,
-  spike_tolerance = 2, use_magnitude = FALSE)
+apply_choi(
+  agdb,
+  min_period_len = 90,
+  min_window_len = 30,
+  spike_tolerance = 2,
+  use_magnitude = FALSE
+)
 }
 \arguments{
 \item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute. The epoch length must be 60 seconds.}
