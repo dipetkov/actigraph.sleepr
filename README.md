@@ -8,8 +8,8 @@ Status](https://travis-ci.org/dipetkov/actigraph.sleepr.svg?branch=master)](http
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/actigraph.sleeper)](https://cran.r-project.org/package=actigraph.sleeper)
 
 [![minimal R
-version](https://img.shields.io/badge/R%3E%3D-3.2.4-6666ff.svg)](https://cran.r-project.org/)
-[![packageversion](https://img.shields.io/badge/Package%20version-x86_64-apple-darwin17.0,%20x86_64,%20darwin17.0,%20x86_64,%20darwin17.0,%20,%204,%200.2,%202020,%2006,%2022,%2078730,%20R,%20R%20version%204.0.2%20(2020-06-22),%20Taking%20Off%20Again-orange.svg?style=flat-square)](commits/master)
+version](https://img.shields.io/badge/R%3E%3D--6666ff.svg)](https://cran.r-project.org/)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.2.0-orange.svg?style=flat-square)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2020--08--07-yellowgreen.svg)](/commits/master)
 [![Coverage
 status](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/github/dipetkov/actigraph.sleepr?branch=master)
