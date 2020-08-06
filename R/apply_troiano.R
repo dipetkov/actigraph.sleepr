@@ -149,7 +149,7 @@ apply_troiano_seq_ <- function(data,
     ) %>%
     rename(period_start = .data$timestamp) %>%
     mutate(period_end = .data$period_start +
-             duration(.data$length, "mins")) %>%
+      duration(.data$length, "mins")) %>%
     select(.data$period_start, .data$period_end, .data$length)
 }
 

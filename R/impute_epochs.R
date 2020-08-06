@@ -17,9 +17,10 @@
 #'   impute_epochs(axis1)
 #' @export
 impute_epochs <- function(agdb, ...) {
-
   selected <- tidyselect::vars_select(names(agdb), ...)
-  if (length(selected) == 0) return(agdb)
+  if (length(selected) == 0) {
+    return(agdb)
+  }
 
   agdb %>% do(impute_epochs_(., selected))
 }
@@ -53,6 +54,7 @@ has_missing_epochs <- function(agdb) {
 }
 has_missing_epochs_ <- function(data, epoch_len) {
   epochs <- seq(first(data$timestamp), last(data$timestamp),
-                by = epoch_len)
+    by = epoch_len
+  )
   tibble::tibble(missing = !identical(epochs, data$timestamp))
 }

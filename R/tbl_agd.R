@@ -18,7 +18,7 @@ tbl_agd <- function(data, settings) {
   for (key in names(settings)) {
     attr(data, key) <- settings[[key]]
   }
-  structure(data, class = c("tibble", "tbl_df", "data.frame"))
+  structure(data, class = c("tbl_df", "tbl", "data.frame"))
 }
 
 add_magnitude <- function(data) {

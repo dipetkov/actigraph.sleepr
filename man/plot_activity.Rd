@@ -23,8 +23,8 @@ vertical axis \emph{axis1}).
 }
 \examples{
 data("gtxplus1day")
-sub_gt3x = gtxplus1day \%>\%
-   dplyr::filter(timestamp <= lubridate::as_datetime("2012-06-27 18:00:00"))
+sub_gt3x <- gtxplus1day \%>\%
+  dplyr::filter(timestamp <= lubridate::as_datetime("2012-06-27 18:00:00"))
 
 data <- sub_gt3x \%>\%
   collapse_epochs(60) \%>\%

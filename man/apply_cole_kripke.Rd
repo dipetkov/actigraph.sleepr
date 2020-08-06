@@ -7,8 +7,9 @@
 apply_cole_kripke(agdb)
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an
-\code{epochlength} attribute. The epoch length must be 60 seconds.}
+\item{agdb}{A \code{tibble} (\code{tbl}) of activity data
+(at least) an \code{epochlength} attribute. The epoch length must
+be 60 seconds.}
 }
 \value{
 A \code{tibble} (\code{tbl}) of activity data. A new column
@@ -31,31 +32,6 @@ if necessary.
 The Cole-Kripke algorithm uses the y-axis (axis 1) counts. First epoch
 counts are divided by 100 and any scaled counts over 300 are clipped to 300.
 This transformation is specific to ActiGraph devices. The sleep index (SI)
-=======
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data
-(at least) an \code{epochlength} attribute. The epoch length must
-be 60 seconds.}
-}
-\value{
-A \code{tibble} (\code{tbl}) of activity data. A new
-column \code{sleep} indicates whether each 60s epoch is scored
-as asleep (S) or awake (W).
-}
-\description{
-The Cole-Kripke sleep scoring algorithm is primarily used for
-adult populations as the supporting research was performed on
-subjects ranging from 35 to 65 years of age.
-}
-\details{
-The Cole-Kripke algorithm requires that the activity data is in
-60s epochs and uses a 7-minute window that includes the four
-previous and two future epochs. This function implements the
-algorithm as described in the ActiGraph user manual.
-
-The Cole-Kripke algorithm uses the y-axis (axis 1) counts.
-First epoch counts are divided by 100 and afterwards any
-scaled counts over 300 are set to 300. The sleep index (SI)
->>>>>>> 545b00401120cb10b3280658026d795460f086b8
 is defined as
 
 \code{
@@ -72,8 +48,8 @@ uses a 7-epoch window which includes the four preceding and the two
 subsequent epochs. The time series of activity counts is padded with zeros as
 necessary, at the beginning and at the end.
 
-Finally, the sleep state is awake (W) if the sleep index SI is less than 1;
-otherwise the sleep state is asleep (S).
+Finally, the sleep state is awake (W) if the sleep index SI is less
+than 1; otherwise the sleep state is asleep (S).
 }
 \examples{
 library("dplyr")

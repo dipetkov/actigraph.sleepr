@@ -20,13 +20,14 @@
 #' )
 #' read_agd(file)
 #'
-#' library("tidyverse")
+#' library("dplyr")
+#' library("purrr")
 #'
 #' # Read ActiGraph sleep watch data from the AGD files in a directory
 #' # and bind the data into one data frame indexed by `.filename`.
 #' path <- system.file("extdata", package = "actigraph.sleepr")
 #'
-#' fs::dir_ls(path, glob = "*.agd") %>%
+#' list.files(path, pattern = "*.agd", full.names = TRUE) %>%
 #'   map_dfr(read_agd, .id = ".filename")
 #' @export
 read_agd <- function(file, tz = "UTC") {
@@ -38,7 +39,7 @@ read_agd <- function(file, tz = "UTC") {
 
   agdb <- read_agd_raw(file, tz)
   data <- agdb$data %>%
-    rename_all(tolower) %>%
+    rename_with(tolower) %>%
     rename(timestamp = .data$datatimestamp) %>%
     mutate_if(is.numeric, as.integer)
 
@@ -46,7 +47,7 @@ read_agd <- function(file, tz = "UTC") {
   # columns and so all settings are of type `character`, including the
   # timestamps. I typecast the most salient settings appropriately.
   settings <- agdb$settings %>%
-    rename_all(tolower) %>%
+    rename_with(tolower) %>%
     select(.data$settingname, .data$settingvalue) %>%
     spread(.data$settingname, .data$settingvalue) %>%
     mutate_at(vars(matches("dateOfBirth")), ticks_to_dttm, tz = tz) %>%
@@ -124,7 +125,7 @@ read_agd_raw <- function(file, tz = "UTC") {
       tbl(sql(query)) %>%
       collect(n = Inf) %>%
       select(-one_of(cols)) %>%
-      rename_all(str_replace, "_ts$", "") %>%
+      rename_with(~ sub("_ts$", "", .)) %>%
       mutate_at(vars(cols), cast_dttms)
   }
 

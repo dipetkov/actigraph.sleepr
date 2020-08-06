@@ -44,7 +44,7 @@ complement_periods <- function(periods, epochs, start_var, end_var) {
   combine_epochs_periods(epochs, periods, !!start_var, !!end_var) %>%
     mutate(rev_id = rleid(is.na(.data$period_id))) %>%
     filter(is.na(.data$period_id)) %>%
-    group_by(.data$rev_id, add = TRUE) %>%
+    group_by(.data$rev_id, .add = TRUE) %>%
     summarise(
       period_start = first(.data$timestamp),
       period_end = last(.data$timestamp),
@@ -96,9 +96,6 @@ expand_periods <- function(periods, start_var, end_var,
 }
 expand_periods_ <- function(periods, start_var, end_var,
                             units = "1 min") {
-  timestamp <- NULL
-  rm(list = "timestamp")
-
   start_var <- enquo(start_var)
   end_var <- enquo(end_var)
 
@@ -145,4 +142,9 @@ get_epoch_length <- function(epochs) {
 mode <- function(x) {
   uniqx <- unique(x)
   uniqx[which.max(tabulate(match(x, uniqx)))]
+}
+
+rleid <- function(x) {
+  x <- rle(x)$lengths
+  rep(seq_along(x), times = x)
 }

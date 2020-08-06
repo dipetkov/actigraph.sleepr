@@ -35,11 +35,12 @@ testthat::test_that("read_agd returns a tibble", {
     package = "actigraph.sleepr"
   )
   agdb <- read_agd(file)
-  testthat::expect_s3_class(agdb, "tibble")
+  testthat::expect_s3_class(agdb, "tbl")
 })
 testthat::test_that("Error if file doesn't exist", {
   file <- system.file("extdata", "dummy.agd",
-                      package = "actigraph.sleepr")
+    package = "actigraph.sleepr"
+  )
   testthat::expect_error(read_agd(file))
 })
 
@@ -49,7 +50,7 @@ testthat::test_that("all dplyr verbs work on a tibble", {
     package = "actigraph.sleepr"
   )
   agdb <- read_agd(file) %>%
-    mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2))
+    mutate(magnitude = sqrt(axis1^2 + axis2^2 + axis3^2))
   testthat::expect_true(exists("magnitude", where = agdb))
   agdb <- agdb %>%
     group_by(day = lubridate::day(timestamp)) %>%
@@ -63,11 +64,11 @@ testthat::test_that("group_by works as expected on tibble with time gap", {
   agdb <- read_agd(file) %>%
     collapse_epochs(60) %>%
     filter(lubridate::hour(timestamp) != 0)
-  testthat::expect_true(agdb %>% has_missing_epochs)
+  testthat::expect_true(agdb %>% has_missing_epochs())
   agdb <- agdb %>%
     mutate(date = lubridate::date(timestamp)) %>%
     group_by(date)
-  testthat::expect_false(agdb %>% has_missing_epochs)
+  testthat::expect_false(agdb %>% has_missing_epochs())
 })
 
 testthat::context("Collapse to 60s epochs")
@@ -94,11 +95,15 @@ testthat::test_that("collapse_epochs returns same result as ActiLife 6", {
   }
 })
 testthat::test_that("collapse_epochs errors if unexpected epoch length", {
-  dummy_agdb <- tbl_agd(tibble::tibble(timestamp = 1:12, axis1 = 0),
-                        tibble::tibble(epochlength = 10))
+  dummy_agdb <- tbl_agd(
+    tibble::tibble(timestamp = 1:12, axis1 = 0),
+    tibble::tibble(epochlength = 10)
+  )
   testthat::expect_error(collapse_epochs(dummy_agdb, 75))
-  dummy_agdb <- tbl_agd(tibble::tibble(timestamp = 1:12, axis1 = 0),
-                        tibble::tibble(epochlength = 9))
+  dummy_agdb <- tbl_agd(
+    tibble::tibble(timestamp = 1:12, axis1 = 0),
+    tibble::tibble(epochlength = 9)
+  )
   testthat::expect_error(collapse_epochs(dummy_agdb, 60))
 })
 
@@ -126,19 +131,15 @@ testthat::test_that("combine_epochs_periods adds period id column", {
     apply_sadeh()
   periods <- agdb %>% apply_tudor_locke(min_sleep_period = 60)
   agdb_with_periods <-
-      combine_epochs_periods(agdb, periods, in_bed_time, out_bed_time)
-  
+    combine_epochs_periods(agdb, periods, in_bed_time, out_bed_time)
+
   testthat::expect_true(assertthat::has_name(agdb_with_periods, "period_id"))
-  aa <- agdb
-  attr(aa, "sleep_algorithm") <- NULL
-  testthat::expect_equal(aa, agdb_with_periods %>%
-                           select(- period_id) %>%
-                           arrange(timestamp))
+  testthat::expect_equal(agdb, agdb_with_periods %>% select(-period_id))
 
   x <- agdb_with_periods %>%
-      tidyr::drop_na() %>%
-      count(period_id) %>%
-      pull(.data$n)
+    tidyr::drop_na() %>%
+    count(period_id) %>%
+    pull(.data$n)
   y <- periods %>% pull(.data$duration)
   testthat::expect_identical(x, y + 1L)
 })

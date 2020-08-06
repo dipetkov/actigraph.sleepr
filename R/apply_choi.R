@@ -90,7 +90,8 @@ apply_choi_ <- function(data,
     # as long as (zero, zero) is shorter than spike_tolerance
     mutate(wear = if_else(
       .data$wear == 0L & .data$length < spike_tolerance,
-      1L, .data$wear)) %>%
+      1L, .data$wear
+    )) %>%
     group_by(rleid = rleid(.data$wear)) %>%
     summarise(
       wear = first(.data$wear),
@@ -98,21 +99,27 @@ apply_choi_ <- function(data,
       length = sum(.data$length)
     ) %>%
     # Ignore artifactual movement intervals
-    mutate(wear =
-             if_else(
-               .data$wear == 1L & .data$length <= spike_tolerance &
-                 lead(.data$length, default = 0L) >= min_window_len &
-                 lag(.data$length, default = 0L) >= min_window_len,
-               0L, .data$wear)) %>%
+    mutate(
+      wear =
+        if_else(
+          .data$wear == 1L & .data$length <= spike_tolerance &
+            lead(.data$length, default = 0L) >= min_window_len &
+            lag(.data$length, default = 0L) >= min_window_len,
+          0L, .data$wear
+        )
+    ) %>%
     group_by(rleid = rleid(.data$wear)) %>%
-    summarise(wear = first(.data$wear),
-              timestamp = first(.data$timestamp),
-              length = sum(.data$length)) %>%
-    filter(.data$wear == 0L,
-           # TODO: Filtering if the row_number is 1 or n(),
-           # regardless of the period length, means that
-           # the initial and final non-wear periods can be shorter.
-           .data$length >= min_period_len # | row_number() %in% c(1, n())
+    summarise(
+      wear = first(.data$wear),
+      timestamp = first(.data$timestamp),
+      length = sum(.data$length)
+    ) %>%
+    filter(
+      .data$wear == 0L,
+      # TODO: Filtering if the row_number is 1 or n(),
+      # regardless of the period length, means that
+      # the initial and final non-wear periods can be shorter.
+      .data$length >= min_period_len # | row_number() %in% c(1, n())
     ) %>%
     rename(period_start = .data$timestamp) %>%
     mutate(period_end = .data$period_start +

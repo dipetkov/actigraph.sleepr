@@ -97,12 +97,12 @@ Integration nicely emphasizes a peak of activity just before 6pm.
 With a few lines of code, we can load each AGD file in a directory, collapse from 10s to 60s and save the integrated activity data.
 
 ```{r , eval = TRUE}
-library("tidyverse")
+library("purrr")
 
 # Construct a path to the directory which contains the raw AGD files
 path <- system.file("extdata", package = "actigraph.sleepr")
 
-fs::dir_ls(path, glob = "*.agd") %>%
+list.files(path, pattern = "*.agd", full.names  = TRUE)  %>%
   map_dfr(
     ~ read_agd(.) %>% collapse_epochs(60),
     .id = ".filename"
@@ -144,7 +144,10 @@ plot_activity(agdb_sadeh, axis1, color = "sleep") +
   labs(
     x = "",
     y = "movement (bounded at 300)",
-    title = "For each epoch, Sadeh infers whether the subject is asleep (red) or awake (blue)"
+    title = paste(
+      "For each epoch, Sadeh infers whether",
+      "the subject is asleep (red) or awake (blue)"
+    )
   ) +
   scale_x_datetime(date_labels = "%I%p") +
   guides(color = FALSE, fill = FALSE)
@@ -181,7 +184,10 @@ plot_activity(agdb_colekripke, axis1, color = "sleep") +
   labs(
     x = "",
     y = "movement (bounded at 300)",
-    title = "For each epoch, Cole-Kripke infers whether the subject is asleep (red) or awake (blue)"
+    title = paste(
+      "For each epoch, Cole-Kripke infers whether",
+      "the subject is asleep (red) or awake (blue)"
+    )
   ) +
   scale_x_datetime(date_labels = "%I%p") +
   guides(color = FALSE, fill = FALSE)
@@ -277,8 +283,9 @@ plot_activity_period(
   labs(
     x = "",
     y = "movement",
-    title = paste0(
-      "Tudor-Locke detects sleep periods in a series of sleep-scored epochs (Ws and Ss)\n",
+    title = paste(
+      "Tudor-Locke detects sleep periods in a series of",
+      "sleep-scored epochs (Ws and Ss)\n",
       "Sleep periods, if any, are highlighted as gray rectangles"
     )
   )

@@ -186,53 +186,66 @@ apply_tudor_locke_ <- function(data,
     # First round of `group_by`, `summarise`, `mutate` operations
     # Return the stop/end indices for runs of repeated value
     group_by(rleid = rleid(.data$sleep)) %>%
-    summarise(timestamp = first(.data$timestamp),
-              sleep = first(.data$sleep),
-              duration = n(),
-              nonzero_epochs = sum(.data$axis1 > 0),
-              activity_counts = sum(.data$axis1)) %>%
-    mutate(nb_awakenings = (.data$sleep == "W"),
-           dozings = (.data$sleep == "S"),
-           dozings_1min = (.data$sleep == "S" & .data$duration == 1),
-           total_sleep_time =
-             if_else(
-               .data$sleep == "W" & .data$duration < n_wake_time_end,
-               0L, .data$duration),
-           # Set the state of short runs to NA
-           sleep =
-             if_else(
-               (.data$sleep == "W" & .data$duration < n_wake_time_end) |
-                 (.data$sleep == "S" & .data$duration < n_bedtime_start),
-               NA_character_, .data$sleep),
-           # A special case that I am not sure how to handle:
-           # Leading NAs can't be filled in with `na.locf`.
-           # To be conservative, I will fill in such NAs with W (awake).
-           sleep = if_else(
-             row_number() == 1 & is.na(.data$sleep), "W", .data$sleep),
-           # Fill in NAs with the most recent sleep/awake state
-           sleep = na.locf(.data$sleep)) %>%
+    summarise(
+      timestamp = first(.data$timestamp),
+      sleep = first(.data$sleep),
+      duration = n(),
+      nonzero_epochs = sum(.data$axis1 > 0),
+      activity_counts = sum(.data$axis1)
+    ) %>%
+    mutate(
+      nb_awakenings = (.data$sleep == "W"),
+      dozings = (.data$sleep == "S"),
+      dozings_1min = (.data$sleep == "S" & .data$duration == 1),
+      total_sleep_time =
+        if_else(
+          .data$sleep == "W" & .data$duration < n_wake_time_end,
+          0L, .data$duration
+        ),
+      # Set the state of short runs to NA
+      sleep =
+        if_else(
+          (.data$sleep == "W" & .data$duration < n_wake_time_end) |
+            (.data$sleep == "S" & .data$duration < n_bedtime_start),
+          NA_character_, .data$sleep
+        ),
+      # A special case that I am not sure how to handle:
+      # Leading NAs can't be filled in with `na.locf`.
+      # To be conservative, I will fill in such NAs with W (awake).
+      sleep = if_else(
+        row_number() == 1 & is.na(.data$sleep), "W", .data$sleep
+      ),
+      # Fill in NAs with the most recent sleep/awake state
+      sleep = na.locf(.data$sleep)
+    ) %>%
     # Second round of `group_by`, `summarise`, `mutate` operations
     group_by(rleid = rleid(.data$sleep)) %>%
-    summarise(timestamp = first(.data$timestamp),
-              sleep = first(.data$sleep),
-              activity_counts = sum(.data$activity_counts, na.rm = TRUE),
-              duration = sum(.data$duration),
-              total_sleep_time = sum(.data$total_sleep_time),
-              nonzero_epochs = sum(.data$nonzero_epochs),
-              nb_awakenings = sum(.data$nb_awakenings),
-              dozings = sum(.data$dozings),
-              dozings_1min = sum(.data$dozings_1min)) %>%
-    mutate(fragmentation_index =
-             if_else(.data$dozings > 0,
-                     100 * .data$dozings_1min / .data$dozings, 0),
-           movement_index = 100 * .data$nonzero_epochs / .data$duration,
-           # Set the state of short sleep runs to awake;
-           # no need to set to NA and then fill in the NAs
-           # as here we flip only asleep states to awake
-           sleep =
-             if_else(.data$sleep == "S" &
-                       .data$duration < min_sleep_period,
-                     "W", .data$sleep)) %>%
+    summarise(
+      timestamp = first(.data$timestamp),
+      sleep = first(.data$sleep),
+      activity_counts = sum(.data$activity_counts, na.rm = TRUE),
+      duration = sum(.data$duration),
+      total_sleep_time = sum(.data$total_sleep_time),
+      nonzero_epochs = sum(.data$nonzero_epochs),
+      nb_awakenings = sum(.data$nb_awakenings),
+      dozings = sum(.data$dozings),
+      dozings_1min = sum(.data$dozings_1min)
+    ) %>%
+    mutate(
+      fragmentation_index =
+        if_else(.data$dozings > 0,
+          100 * .data$dozings_1min / .data$dozings, 0
+        ),
+      movement_index = 100 * .data$nonzero_epochs / .data$duration,
+      # Set the state of short sleep runs to awake;
+      # no need to set to NA and then fill in the NAs
+      # as here we flip only asleep states to awake
+      sleep =
+        if_else(.data$sleep == "S" &
+          .data$duration < min_sleep_period,
+        "W", .data$sleep
+        )
+    ) %>%
     # Filter out wake (W) periods as well as sleep periods that
     # fail the min_nonzero_epochs and max_sleep_period criteria
     filter(

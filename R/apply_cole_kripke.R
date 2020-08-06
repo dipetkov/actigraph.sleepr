@@ -112,3 +112,4 @@ actigraph_adjustment <- function(data) {
     mutate(
       count = pmin(.data$axis1 / 100, 300)
     )
+}

@@ -47,8 +47,8 @@ Plot activity values as a time series and periods as polygons.
 \examples{
 data("gtxplus1day")
 
-sub_gt3x = gtxplus1day \%>\%
-   dplyr::filter(timestamp <= lubridate::as_datetime("2012-06-27 18:00:00"))
+sub_gt3x <- gtxplus1day \%>\%
+  dplyr::filter(timestamp <= lubridate::as_datetime("2012-06-27 18:00:00"))
 # Detect sleep periods using Sadeh as the sleep/awake algorithm
 # and Tudor-Locke as the sleep period algorithm
 periods_sleep <- sub_gt3x \%>\%
@@ -56,6 +56,8 @@ periods_sleep <- sub_gt3x \%>\%
   apply_cole_kripke() \%>\%
   apply_tudor_locke(min_sleep_period = 60)
 
-plot_activity_period(sub_gt3x, periods_sleep, axis1,
-                     in_bed_time, out_bed_time)
+plot_activity_period(
+  sub_gt3x, periods_sleep, axis1,
+  in_bed_time, out_bed_time
+)
 }
