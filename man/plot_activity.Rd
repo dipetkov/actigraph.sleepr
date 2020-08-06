@@ -7,16 +7,19 @@
 plot_activity(agdb, var, color = "black", nrow = NULL, ncol = NULL)
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute.}
+\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an
+\code{epochlength} attribute.}
 
 \item{var}{The activity variable (unquoted) to plot on the y-axis.}
 
 \item{color}{Activity line color.}
 
-\item{nrow, ncol}{Number of rows and columns. Relevant only if the activity data is grouped.}
+\item{nrow, ncol}{Number of rows and columns. Relevant only if the activity
+data is grouped.}
 }
 \description{
-Plot a time series of activity values (by default, the counts on the vertical axis \emph{axis1}).
+Plot a time series of activity values (by default, the counts on the
+vertical axis \emph{axis1}).
 }
 \examples{
 library("dplyr")

@@ -7,15 +7,18 @@
 impute_epochs(agdb, ...)
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute.}
+\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an
+\code{epochlength} attribute.}
 
 \item{...}{Comma separated list of unquoted variables.}
 }
 \value{
-A \code{tibble} (\code{tbl}) of activity data. Each variable in \code{...} is imputed.
+A \code{tibble} (\code{tbl}) of activity data. Each variable in
+\code{...} is imputed.
 }
 \description{
-Trim leading and trailing NAs. Fill in the rest of the NAs using cubic spline interpolation.
+Trim leading and trailing NAs. Fill in the rest of the NAs using cubic
+spline interpolation.
 }
 \examples{
 library("dplyr")

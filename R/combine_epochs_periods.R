@@ -1,11 +1,19 @@
 #' Combine epochs with sleep/nonwear periods
 #'
-#' Suppose we have used \code{apply_tudor_locke} to detect sleep periods or \code{apply_troiano}/\code{apply_choi} to detect non-wear periods. It might be useful to combine the epochs data with the periods data, so that each epoch is labeled according to which period it falls into, if any. Then we can easily slice the epochs data by sleep/non-sleep or wear/non-wear.
-#' @param epochs A \code{tibble} (\code{tbl}) of activity data with (at least) a timestamp column.
+#' Suppose we have used \code{apply_tudor_locke} to detect sleep periods or
+#' \code{apply_troiano}/\code{apply_choi} to detect non-wear periods. It might
+#' be useful to combine the epochs data with the periods data, so that each
+#' epoch is labeled according to which period it falls into, if any. Then we
+#' can easily slice the epochs data by sleep/non-sleep or wear/non-wear.
+#' @param epochs A \code{tibble} (\code{tbl}) of activity data with (at least)
+#' a timestamp column.
 #' @param periods A summary \code{tibble} of the (sleep or non-wear) periods.
-#' @param start_var The \code{periods} column which specifies when the periods start.
-#' @param end_var The \code{periods} column which specifies when the periods end.
-#' @return A \code{tibble} of activity data with one additional column, \code{period_id}, which indicates the period each epoch falls into.
+#' @param start_var The \code{periods} column which specifies when the periods
+#' start.
+#' @param end_var The \code{periods} column which specifies when the periods
+#' end.
+#' @return A \code{tibble} of activity data with one additional column,
+#' \code{period_id}, which indicates the period each epoch falls into.
 #' @examples
 #' library("dplyr")
 #' data("gtxplus1day")
@@ -16,16 +24,17 @@
 #' periods <- agdb %>%
 #'   apply_tudor_locke(min_sleep_period = 60)
 #'
-#' agdb_with_periods <- combine_epochs_periods(agdb, periods,
-#'                                             in_bed_time, out_bed_time)
+#' agdb_with_periods <- combine_epochs_periods(
+#'   agdb, periods,
+#'   in_bed_time, out_bed_time
+#' )
 #'
-#' # How many sleep periods were detected and what is their duration, in minutes?
+#' # How many sleep periods were detected and what is their duration (in min)?
 #' periods %>% select(in_bed_time, out_bed_time, duration)
 #' # What is the assignment of epochs to periods?
 #' agdb_with_periods %>% count(period_id)
 #' @export
 combine_epochs_periods <- function(epochs, periods, start_var, end_var) {
-
   start_var <- enquo(start_var)
   end_var <- enquo(end_var)
 

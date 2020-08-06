@@ -17,23 +17,29 @@ plot_activity_period(
 )
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an \code{epochlength} attribute.}
+\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an
+\code{epochlength} attribute.}
 
-\item{periods}{A \code{tibble} of periods with at least two columns \code{start_var} and \code{end_var}.}
+\item{periods}{A \code{tibble} of periods with at least two columns
+\code{start_var} and \code{end_var}.}
 
 \item{act_var}{The activity variable (unquoted) to plot on the y-axis.}
 
-\item{start_var}{The variable (unquoted) which indicates when the time periods start.}
+\item{start_var}{The variable (unquoted) which indicates when the time
+periods start.}
 
-\item{end_var}{The variable (unquoted) which indicates when the time periods end.}
+\item{end_var}{The variable (unquoted) which indicates when the time
+periods end.}
 
 \item{color}{Activity line color.}
 
 \item{fill}{Polygon fill color.}
 
-\item{ncol}{Number of rows and columns. Relevant only if the activity data is grouped.}
+\item{ncol}{Number of rows and columns. Relevant only if the activity
+data is grouped.}
 
-\item{nrow}{Number of rows and columns. Relevant only if the activity data is grouped.}
+\item{nrow}{Number of rows and columns. Relevant only if the activity
+data is grouped.}
 }
 \description{
 Plot activity values as a time series and periods as polygons.
@@ -50,6 +56,8 @@ periods_sleep <- gtxplus1day \%>\%
   apply_cole_kripke() \%>\%
   apply_tudor_locke(min_sleep_period = 60)
 
-plot_activity_period(gtxplus1day, periods_sleep, axis1,
-                     in_bed_time, out_bed_time)
+plot_activity_period(
+  gtxplus1day, periods_sleep, axis1,
+  in_bed_time, out_bed_time
+)
 }

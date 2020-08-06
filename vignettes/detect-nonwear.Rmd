@@ -8,10 +8,11 @@ vignette: >
 ---
 
 ```{r setup, echo = FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
-                      collapse = TRUE, comment = "#>", out.width = "75%",
-                      fig.asp = 1 / 1.6, fig.width = 5, dpi = 600,
-                      fig.retina = NULL)
+knitr::opts_chunk$set(
+  echo = TRUE, warning = FALSE, message = FALSE, collapse = TRUE,
+  comment = "#>", out.width = "75%", fig.asp = 1 / 1.6, fig.width = 5,
+  dpi = 600, fig.retina = NULL
+)
 pckg <- c("actigraph.sleepr", "dplyr", "lubridate", "ggplot2")
 inst <- suppressMessages(lapply(pckg, library, character.only = TRUE))
 theme_set(theme_light())
@@ -21,7 +22,8 @@ The `actigraph.sleepr` package implements two non-wear detection algorithms: Tro
 
 ```{r }
 file_10s <- system.file("extdata", "ActiSleepPlus-RawData-Day01.agd",
-                        package = "actigraph.sleepr")
+  package = "actigraph.sleepr"
+)
 agdb_60s <- read_agd(file_10s) %>%
   collapse_epochs(60) %>%
   mutate(date = lubridate::as_date(timestamp)) %>%
@@ -80,22 +82,29 @@ Or we can flag 24-hour day as invalid if the device was worn only for a short pe
 
 ```{r }
 # Find the periods during which the device was worn
-periods_wear <- complement_periods(periods_nonwear, agdb_60s,
-                                   period_start, period_end)
+periods_wear <- complement_periods(
+  periods_nonwear, agdb_60s,
+  period_start, period_end
+)
 periods_wear
 
 # Label each epoch with the period_id of the wear period it falls in
 # or with NA if the epoch falls outside a wear period
-agdb_wear <- combine_epochs_periods(agdb_60s, periods_wear,
-                                    period_start, period_end)
+agdb_wear <- combine_epochs_periods(
+  agdb_60s, periods_wear,
+  period_start, period_end
+)
 agdb_wear %>% head(5)
 
 # Once we add the wear/nonwear information, it is straightforward to
 # compute summary statistics or join with external minute-by-minute data
 agdb_wear %>%
-  group_by(period_id, add = TRUE) %>%
-  summarise(time_worn = n(),
-            ave_counts = mean(axis1))
+  group_by(period_id, .add = TRUE) %>%
+  summarise(
+    time_worn = n(),
+    ave_counts = mean(axis1),
+    .groups = "drop_last"
+  )
 ```
 
 ### Non-wear detection with the Choi algorithm
@@ -115,8 +124,10 @@ use_magnitude
  : If true, the magnitude of the vector (axis1, axis2, axis3) is used to measure activity; otherwise the axis1 value is used. The default is FALSE.
  
 ```{r }
-periods_nonwear <- agdb_60s %>% apply_choi(min_period_len = 45, 
-                                           min_window_len = 10)
+periods_nonwear <- agdb_60s %>% apply_choi(
+  min_period_len = 45,
+  min_window_len = 10
+)
 periods_nonwear
 ```
 

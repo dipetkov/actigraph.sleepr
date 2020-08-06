@@ -1,8 +1,10 @@
 #' actigraph.sleepr
 #'
-#' This package implements three standard algorithms for sleep detection from ActiGraph data: Sadeh, Cole-Kripke and Tudor-Locke.
+#' This package implements three standard algorithms for sleep detection from
+#' ActiGraph data: Sadeh, Cole-Kripke and Tudor-Locke.
 #'
-#' In addition to the help pages, see the README page on \href{https://github.com/dipetkov/actigraph.sleepr}{github} for examples.
+#' In addition to the help pages, see the README page on
+#' \href{https://github.com/dipetkov/actigraph.sleepr}{github} for examples.
 #'
 #' @name actigraph.sleepr
 #' @docType package

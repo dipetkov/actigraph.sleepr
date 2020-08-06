@@ -8,21 +8,26 @@ vignette: >
 ---
 
 ```{r setup, echo = FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
-                      collapse = TRUE, comment = "#>", out.width = "75%",
-                      fig.asp = 1 / 1.6, fig.width = 5, dpi = 600,
-                      fig.retina = NULL)
+knitr::opts_chunk$set(
+  echo = TRUE, warning = FALSE, message = FALSE, collapse = TRUE,
+  comment = "#>", out.width = "75%", fig.asp = 1 / 1.6, fig.width = 5,
+  dpi = 600, fig.retina = NULL
+)
 pckg <- c("actigraph.sleepr", "dplyr", "tidyr", "lubridate", "ggplot2")
 inst <- suppressMessages(lapply(pckg, library, character.only = TRUE))
-theme_set(theme_light() + 
-            theme(title = element_text(size = 7)))
+theme_set(
+  theme_light() +
+    theme(title = element_text(size = 7))
+)
 ```
 
 The `actigraph.sleepr` package implements three sleep detection algorithms: Sadeh (Sadeh, Sharkey, and Carskadon 1994), Cole-Kripke (Cole et al. 1992) and Tudor-Locke (Tudor-Locke et al. 2014). For illustration, let's use GT3X+ / ActiSleep+ sample data taken from ActiGraph's [online documentation](https://actigraph.desk.com).
 
 ```{r }
-file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
-                        package = "actigraph.sleepr")
+file_10s <- system.file(
+  "extdata", "GT3XPlus-RawData-Day01.agd",
+  package = "actigraph.sleepr"
+)
 ```
 
 ### Read AGD file(s)
@@ -41,15 +46,15 @@ Alternatively, we can use the `read_agd` function to get the raw activity measur
 
 ```{r }
 agdb_10s <- read_agd(file_10s, tz = "UTC")
-attributes(agdb_10s)[-3]
+attributes(agdb_10s)[-2]
 ```
 
 Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select, filter, summarise, group_by, arrange) to manipulate the data. For example, let's compute the magnitude of the three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
 
 ```{r }
-agdb_10s <- agdb_10s %>% 
+agdb_10s <- agdb_10s %>%
   select(timestamp, starts_with("axis")) %>%
-  mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2))
+  mutate(magnitude = sqrt(axis1^2 + axis2^2 + axis3^2))
 agdb_10s %>% head()
 ```
 
@@ -59,8 +64,11 @@ The Sadeh and Cole-Kripke algorithms for converting activity measurements into a
 
 ```{r }
 plot_activity(agdb_10s, axis1) +
-  labs(x = "", y = "movement (vertical direction)", title = 
-         "24 hours of activity measured every 10 seconds") +
+  labs(
+    x = "",
+    y = "movement (vertical direction)",
+    title = "24 hours of activity measured every 10 seconds"
+  ) +
   scale_x_datetime(date_labels = "%I%p")
 ```
 
@@ -74,8 +82,11 @@ agdb_60s
 
 ```{r }
 plot_activity(agdb_60s, axis1) +
-  labs(x = "", y = "movement (vertical direction)", title = 
-         "24 hours of activity data measured every minute") +
+  labs(
+    x = "",
+    y = "movement (vertical direction)",
+    title = "24 hours of activity data measured every minute"
+  ) +
   scale_x_datetime(date_labels = "%I%p")
 ```
 
@@ -85,7 +96,7 @@ Integration nicely emphasizes a peak of activity just before 6pm.
 
 With a few lines of code, we can load each AGD file in a directory, collapse from 10s to 60s and save the integrated activity data.
 
-```{r , eval = FALSE}
+```{r , eval = TRUE}
 library("tidyverse")
 
 # Construct a path to the directory which contains the raw AGD files
@@ -93,9 +104,9 @@ path <- system.file("extdata", package = "actigraph.sleepr")
 
 fs::dir_ls(path, glob = "*.agd") %>%
   map_dfr(
-    ~read_agd(.) %>% collapse_epochs(60),
-    .id = ".filename") %>%
-  write_csv("agd-activity-at-60sec-frequency.csv")
+    ~ read_agd(.) %>% collapse_epochs(60),
+    .id = ".filename"
+  )
 ```
 
 ### Apply the Sadeh algorithm
@@ -130,8 +141,11 @@ The time series of activity counts is padded with zeros as necessary, at the beg
 
 ```{r }
 plot_activity(agdb_sadeh, axis1, color = "sleep") +
-  labs(x = "", y = "movement (bounded at 300)", title =
-       "For each epoch, Sadeh infers whether the subject is asleep (red) or awake (blue)") +
+  labs(
+    x = "",
+    y = "movement (bounded at 300)",
+    title = "For each epoch, Sadeh infers whether the subject is asleep (red) or awake (blue)"
+  ) +
   scale_x_datetime(date_labels = "%I%p") +
   guides(color = FALSE, fill = FALSE)
 ```
@@ -164,8 +178,11 @@ The time series of activity counts is padded with zeros as necessary, at the beg
 
 ```{r }
 plot_activity(agdb_colekripke, axis1, color = "sleep") +
-  labs(x = "", y = "movement (bounded at 300)", title =
-       "For each epoch, Cole-Kripke infers whether the subject is asleep (red) or awake (blue)") +
+  labs(
+    x = "",
+    y = "movement (bounded at 300)",
+    title = "For each epoch, Cole-Kripke infers whether the subject is asleep (red) or awake (blue)"
+  ) +
   scale_x_datetime(date_labels = "%I%p") +
   guides(color = FALSE, fill = FALSE)
 ```
@@ -251,20 +268,29 @@ sleep_fragmentation_index
 Sleep (or any other type of) periods in a time series can be highlighted as rectangles.
 
 ```{r }
-plot_activity_period(agdb_60s, periods_sleep, axis1, 
-                     in_bed_time, out_bed_time, 
-                     fill = "#AAAAAA") +
+plot_activity_period(
+  agdb_60s, periods_sleep, axis1,
+  in_bed_time, out_bed_time,
+  fill = "#AAAAAA"
+) +
   scale_x_datetime(date_labels = "%I%p") +
-  labs(x = "", y = "movement", title = 
-        paste0("Tudor-Locke detects sleep periods in a series of sleep-scored epochs (Ws and Ss)\n",
-               "Sleep periods, if any, are highlighted as gray rectangles"))
+  labs(
+    x = "",
+    y = "movement",
+    title = paste0(
+      "Tudor-Locke detects sleep periods in a series of sleep-scored epochs (Ws and Ss)\n",
+      "Sleep periods, if any, are highlighted as gray rectangles"
+    )
+  )
 ```
 
 Let's find the awake periods, which are the complement of the sleep periods.
  
 ```{r }
-periods_awake <- complement_periods(periods_sleep, agdb_sadeh,
-                                    in_bed_time, out_bed_time)
+periods_awake <- complement_periods(
+  periods_sleep, agdb_sadeh,
+  in_bed_time, out_bed_time
+)
 periods_awake
 ```
 
@@ -274,8 +300,10 @@ Let's combine the epochs and the awake periods. Then we can easily slice the tim
 # Let's label the epochs with a `period_id`, which indicates the awake period
 # that each epoch falls in. The ids are consecutive integers starting from 1.
 # If the epoch is outside an awake period, then `period_id` is NA.
-agdb_awake <- combine_epochs_periods(agdb_sadeh, periods_awake,
-                                     period_start, period_end)
+agdb_awake <- combine_epochs_periods(
+  agdb_sadeh, periods_awake,
+  period_start, period_end
+)
 agdb_awake
 agdb_awake %>% count(period_id)
 ```

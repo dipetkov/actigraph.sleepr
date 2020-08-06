@@ -3,33 +3,28 @@ library("actigraph.sleepr")
 library("dplyr")
 library("readr")
 
-# context("General tests")
-# if (requireNamespace("lintr", quietly = TRUE)) {
-#   context("lints")
-#   test_that("Package Style", {
-#     lintr::expect_lint_free()
-#   })
-# }
-
 context("Read agd files")
 test_that("read_agd returns a tibble", {
   file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
-                      package = "actigraph.sleepr")
+    package = "actigraph.sleepr"
+  )
   agdb <- read_agd(file)
   expect_s3_class(agdb, "tibble")
 })
 test_that("Error if file doesn't exist", {
   file <- system.file("extdata", "dummy.agd",
-                      package = "actigraph.sleepr")
+    package = "actigraph.sleepr"
+  )
   expect_error(read_agd(file))
 })
 
 context("Manipulate agdb data frame")
 test_that("all dplyr verbs work on a tibble", {
   file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
-                      package = "actigraph.sleepr")
+    package = "actigraph.sleepr"
+  )
   agdb <- read_agd(file) %>%
-    mutate(magnitude = sqrt(axis1 ^ 2 + axis2 ^ 2 + axis3 ^ 2))
+    mutate(magnitude = sqrt(axis1^2 + axis2^2 + axis3^2))
   expect_true(exists("magnitude", where = agdb))
   agdb <- agdb %>%
     group_by(day = lubridate::day(timestamp)) %>%
@@ -38,23 +33,26 @@ test_that("all dplyr verbs work on a tibble", {
 })
 test_that("group_by works as expected on tibble with time gap", {
   file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
-                      package = "actigraph.sleepr")
+    package = "actigraph.sleepr"
+  )
   agdb <- read_agd(file) %>%
     collapse_epochs(60) %>%
     filter(lubridate::hour(timestamp) != 0)
-  expect_true(agdb %>% has_missing_epochs)
+  expect_true(agdb %>% has_missing_epochs())
   agdb <- agdb %>%
     mutate(date = lubridate::date(timestamp)) %>%
     group_by(date)
-  expect_false(agdb %>% has_missing_epochs)
+  expect_false(agdb %>% has_missing_epochs())
 })
 
 context("Collapse to 60s epochs")
 test_that("collapse_epochs returns same result as ActiLife 6", {
   agd_file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
-                          package = "actigraph.sleepr")
+    package = "actigraph.sleepr"
+  )
   csv_file <- system.file("extdata", "GT3XPlus-RawData-Day01-10sec60sec.csv",
-                          package = "actigraph.sleepr")
+    package = "actigraph.sleepr"
+  )
   # Read all columns but the first one (the timestamps) as integers
   actilife <- read_csv(csv_file, col_types = "?iiiiiiiii")
   agdb_60s <- read_agd(agd_file) %>%
@@ -71,11 +69,15 @@ test_that("collapse_epochs returns same result as ActiLife 6", {
   }
 })
 test_that("collapse_epochs errors if unexpected epoch length", {
-  dummy_agdb <- tbl_agd(data_frame(timestamp = 1:12, axis1 = 0),
-                        data_frame(epochlength = 10))
+  dummy_agdb <- tbl_agd(
+    data_frame(timestamp = 1:12, axis1 = 0),
+    data_frame(epochlength = 10)
+  )
   expect_error(collapse_epochs(dummy_agdb, 75))
-  dummy_agdb <- tbl_agd(data_frame(timestamp = 1:12, axis1 = 0),
-                        data_frame(epochlength = 9))
+  dummy_agdb <- tbl_agd(
+    data_frame(timestamp = 1:12, axis1 = 0),
+    data_frame(epochlength = 9)
+  )
   expect_error(collapse_epochs(dummy_agdb, 60))
 })
 
@@ -98,15 +100,20 @@ context("Combine epochs and periods")
 test_that("combine_epochs_periods adds period id column", {
   data("gtxplus1day", package = "actigraph.sleepr")
 
-  agdb <- gtxplus1day %>% collapse_epochs(60) %>% apply_sadeh()
+  agdb <- gtxplus1day %>%
+    collapse_epochs(60) %>%
+    apply_sadeh()
   periods <- agdb %>% apply_tudor_locke(min_sleep_period = 60)
   agdb_with_periods <-
     combine_epochs_periods(agdb, periods, in_bed_time, out_bed_time)
 
   expect_true(has_name(agdb_with_periods, "period_id"))
-  expect_equal(agdb, agdb_with_periods %>% select(- period_id))
+  expect_equal(agdb, agdb_with_periods %>% select(-period_id))
 
-  x <- agdb_with_periods %>% drop_na() %>% count(period_id) %>% pull(.data$n)
+  x <- agdb_with_periods %>%
+    drop_na() %>%
+    count(period_id) %>%
+    pull(.data$n)
   y <- periods %>% pull(.data$duration)
   expect_identical(x, y + 1L)
 })
