@@ -7,24 +7,26 @@
 plot_activity(agdb, var, color = "black", nrow = NULL, ncol = NULL)
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least) an
-\code{epochlength} attribute.}
+\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least)
+an \code{epochlength} attribute.}
 
 \item{var}{The activity variable (unquoted) to plot on the y-axis.}
 
 \item{color}{Activity line color.}
 
-\item{nrow, ncol}{Number of rows and columns. Relevant only if the activity
-data is grouped.}
+\item{nrow, ncol}{Number of rows and columns. Relevant only if the
+activity data is grouped.}
 }
 \description{
 Plot a time series of activity values (by default, the counts on the
 vertical axis \emph{axis1}).
 }
 \examples{
-library("dplyr")
 data("gtxplus1day")
-data <- gtxplus1day \%>\%
+sub_gt3x = gtxplus1day \%>\%
+   dplyr::filter(timestamp <= lubridate::as_datetime("2012-06-27 18:00:00"))
+
+data <- sub_gt3x \%>\%
   collapse_epochs(60) \%>\%
   apply_cole_kripke()
 

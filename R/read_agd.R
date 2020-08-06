@@ -1,18 +1,18 @@
 #' Read activity counts from an *.agd file
 #'
-#' Read ActiGraph sleep watch data from a database stored in an AGD file.
-#' Return a tibble.
+#' Read ActiGraph sleep watch data from a database stored in an
+#' AGD file. Return a tibble.
 #' @param file Full path to an agd file to read.
 #' @param tz Time zone to convert DateTime ticks to POSIX time.
-#' @return A \code{tibble} (\code{tbl}) of activity data with at least two
-#' columns: timestamp and axis1 counts. Optional columns include axis2, axis2,
-#' steps, lux and inclinometer indicators (incline off, standing, sitting
-#' and lying). The device settings are stored as attributes, which include
-#' \code{epochlength}.
-#' @references ActiLife 6 User's Manual by the ActiGraph Software Department.
-#' 04/03/2012.
-#' @references \code{covertagd}: R package for converting agd files from
-#' ActiGraph into data.frames.
+#' @return A \code{tibble} (\code{tbl}) of activity data with at
+#' least two columns: timestamp and axis1 counts. Optional columns
+#' include axis2, axis2, steps, lux and inclinometer indicators
+#' (incline off, standing, sitting and lying). The device settings
+#' are stored as attributes, which include \code{epochlength}.
+#' @references ActiLife 6 User's Manual by the ActiGraph Software
+#' Department. 04/03/2012.
+#' @references \code{covertagd}: R package for converting agd files
+#' from ActiGraph into data.frames.
 #' @seealso \code{\link{read_agd_raw}}
 #' @examples
 #' file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
@@ -58,23 +58,23 @@ read_agd <- function(file, tz = "UTC") {
 
 #' Read an *.agd file, with no post-processing
 #'
-#' Read ActiGraph sleep watch data from an SQLite database stored in an AGD
-#' file and return a list with (at least) five tables: data, sleep, filters,
-#' settings, awakenings. The tables have the schema described in the ActiLife
-#' 6 User manual and the timestamps are converted from Unix time format to
-#' human-readable POSIXct representation.
+#' Read ActiGraph sleep watch data from an SQLite database stored in an
+#' AGD file and return a list with (at least) five tables: data, sleep,
+#' filters, settings, awakenings. The tables have the schema described
+#' in the ActiLife 6 User manual and the timestamps are converted from
+#' Unix time format to human-readable POSIXct representation.
 #' @param file Full path to an agd file to read.
 #' @param tz Time zone to convert DateTime ticks to POSIX time.
-#' @return A list of five tables: settings, data, filters, sleep, awakenings
-#' and, if available, capsense.
+#' @return A list of five tables: settings, data, filters, sleep,
+#' awakenings and, if available, capsense.
 #' @details
-#' Some Actigraph devices contain a capacitive sensor to detect monitor removal
-#' when worn against the skin. If that data is available, the return list
-#' includes a capsense table as well.
-#' @references ActiLife 6 User's Manual by the ActiGraph Software Department.
-#' 04/03/2012.
-#' @references \code{covertagd}: R package for converting agd files from
-#' ActiGraph into data.frames.
+#' Some ActiGraph devices contain a capacitive sensor to detect
+#' monitor removal when worn against the skin. If that data is
+#' available, the return list includes a capsense table as well.
+#' @references ActiLife 6 User's Manual by the ActiGraph Software
+#' Department. 04/03/2012.
+#' @references \code{covertagd}: R package for converting agd files
+#' from ActiGraph into data.frames.
 #' @seealso \code{\link{read_agd}}
 #' @examples
 #' file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",

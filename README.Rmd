@@ -17,7 +17,7 @@ bibliography: actigraph.bib
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-### actigraph.sleepr: Sleep and non-wear detection from ActiGraph data
+### `actigraph.sleepr`: Sleep and non-wear detection from ActiGraph data
 
 ```{r , echo = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, 
@@ -30,8 +30,8 @@ The `actigraph.sleepr` package implements three sleep scoring/detection algorith
 ### Installation
 
 ```{r , eval = FALSE}
-library("devtools")
-install_github("dipetkov/actigraph.sleepr")
+# install.packages("remotes")
+remotes::install_github("dipetkov/actigraph.sleepr")
 ```
 
 ### Read AGD file(s)

@@ -2,16 +2,18 @@
 #'
 #' Plot a time series of activity values (by default, the counts on the
 #' vertical axis \emph{axis1}).
-#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least) an
-#' \code{epochlength} attribute.
+#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least)
+#' an \code{epochlength} attribute.
 #' @param var The activity variable (unquoted) to plot on the y-axis.
 #' @param color Activity line color.
-#' @param nrow,ncol Number of rows and columns. Relevant only if the activity
-#' data is grouped.
+#' @param nrow,ncol Number of rows and columns. Relevant only if the
+#' activity data is grouped.
 #' @examples
-#' library("dplyr")
 #' data("gtxplus1day")
-#' data <- gtxplus1day %>%
+#' sub_gt3x = gtxplus1day %>%
+#'    dplyr::filter(timestamp <= lubridate::as_datetime("2012-06-27 18:00:00"))
+#'
+#' data <- sub_gt3x %>%
 #'   collapse_epochs(60) %>%
 #'   apply_cole_kripke()
 #'
@@ -46,27 +48,25 @@ plot_activity <- function(agdb, var, color = "black",
 #' @param periods A \code{tibble} of periods with at least two columns
 #' \code{start_var} and \code{end_var}.
 #' @param act_var The activity variable (unquoted) to plot on the y-axis.
-#' @param start_var The variable (unquoted) which indicates when the time
-#' periods start.
+#' @param start_var The variable (unquoted) which indicates when the
+#' time periods start.
 #' @param end_var The variable (unquoted) which indicates when the time
-#' periods end.
+#'  periods end.
 #' @param fill Polygon fill color.
 #' @examples
-#' library("dplyr")
-#' library("lubridate")
 #' data("gtxplus1day")
 #'
+#' sub_gt3x = gtxplus1day %>%
+#'    dplyr::filter(timestamp <= lubridate::as_datetime("2012-06-27 18:00:00"))
 #' # Detect sleep periods using Sadeh as the sleep/awake algorithm
 #' # and Tudor-Locke as the sleep period algorithm
-#' periods_sleep <- gtxplus1day %>%
+#' periods_sleep <- sub_gt3x %>%
 #'   collapse_epochs(60) %>%
 #'   apply_cole_kripke() %>%
 #'   apply_tudor_locke(min_sleep_period = 60)
 #'
-#' plot_activity_period(
-#'   gtxplus1day, periods_sleep, axis1,
-#'   in_bed_time, out_bed_time
-#' )
+#' plot_activity_period(sub_gt3x, periods_sleep, axis1,
+#'                      in_bed_time, out_bed_time)
 #' @export
 plot_activity_period <- function(agdb, periods, act_var,
                                  start_var, end_var,

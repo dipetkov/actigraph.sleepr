@@ -1,46 +1,56 @@
 Package: actigraph.sleepr
 Type: Package
-Title: Detect Periods of Sleep and Non-Wear from ActiGraph Data
+Title: Detect Periods of Sleep and Non-Wear from 'ActiGraph' Data
 Version: 0.2.0
-Author: Desislava Petkova
-Maintainer: Desislava Petkova <desislavka@gmail.com>
-Description: Reads *.agd files exported from ActiGraph devices; 
-  implements the Troiano and Choi algorithms for detecting periods on non-wear;
-  implements the Sadeh and Cole-Kripke algorithms for detecting asleep/awake state
-  and the Tudor-Locke algorithm to detect sleep periods from asleep/awake states.
+Authors@R: c(person(given = "Desislava",
+           family = "Petkova",
+           email = "desislavka@gmail.com",
+           role = c("aut", "cre"))
+           )
+Description: Reads *.agd files exported from 'ActiGraph' devices; 
+  implements the Troiano <doi:10.1249/mss.0b013e31815a51b3> and 
+  Choi <doi:10.1249/MSS.0b013e3181ed61a3> algorithms for 
+  detecting periods on non-wear;
+  implements the Sadeh <doi:10.1093/sleep/17.3.201> and 
+  Cole-Kripke <doi:10.1093/sleep/15.5.461> algorithms for 
+  detecting asleep/awake state
+  and the Tudor-Locke <doi:10.1139/apnm-2013-0173> algorithm 
+  to detect sleep periods from asleep/awake states.
 URL: http://github.com/dipetkov/actigraph.sleepr
 BugReports: http://github.com/dipetkov/actigraph.sleepr/issues
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 NeedsCompilation: no
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.0
 Depends:
   R (>= 3.2.4),
-  dplyr (>= 1.0.1),
-  tidyr (>= 1.1.1)
 Imports:
-  DBI,
-  Rcpp,
-  RcppRoll,
-  RSQLite,
-  assertthat,
-  data.table,
-  dbplyr,
-  fs,
-  ggplot2,
-  lubridate,
-  purrr,
-  rlang,
-  stringr,
-  tidyverse,
-  zoo
+    DBI,
+    Rcpp,
+    RcppRoll,
+    RSQLite,
+    dplyr (>= 0.7.4),
+    tidyr (>= 0.8.1),
+    assertthat,
+    data.table,
+    dbplyr,
+    ggplot2,
+    lubridate,
+    purrr,
+    rlang,
+    stringr,
+    zoo,
+    magrittr,
+    tibble,
+    tidyselect
 Suggests: 
-  covr,
-  knitr,
-  readr,
-  rmarkdown,
-  testthat,
-  tools
+    covr,
+    knitr,
+    readr,
+    rmarkdown,
+    testthat,
+    tools,
+    lintr
 VignetteBuilder: knitr
 LinkingTo: Rcpp
