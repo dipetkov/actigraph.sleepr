@@ -43,7 +43,7 @@ remotes::install_github("dipetkov/actigraph.sleepr")
 
 ### Read AGD file(s)
 
-An AGD file is an SQLite database file exported by an ActiGraph device. See the [ActiLife 6 User manual](https://www.actigraphcorp.com/support/manuals/actilife-6-manual/). For illustration let's use GT3X+ sample data taken from ActiGraph's online documentation. [The link I downloaded the data from, https://actigraph.desk.com, seems to be currently unavailable.]
+An AGD file is an SQLite database file exported by an ActiGraph device. See the [ActiLife 6 User manual](https://www.actigraphcorp.com/support/manuals/actilife-6-manual/). For illustration let's use one day of sample data recorded by a GT3X+ monitor.
 
 ```{r }
 library("actigraph.sleepr")
@@ -56,17 +56,16 @@ agdb_10s <- read_agd(file_10s)
 The `read_agd` function loads the raw activity measurements into a convenient format: a tibble (data frame) of timestamped activity counts, whose attributes are the device settings. However, further manipulations of the tibble using the `dplyr` verbs (e.g., `mutate`, `inner_join`) might drop these non-standard attributes, i.e., the attributes are not always inherited.
 
 ```{r }
-attributes(agdb_10s)[4:10]
+attributes(agdb_10s)[10:12]
 ```
 
-Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select, filter, summarise, group_by, arrange) to manipulate the data. For example, let's compute the magnitude of the three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
+Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select, filter, summarise, group_by, arrange) to manipulate the data. For example, let's compute the vector magnitude of the three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
 
 ```{r }
 suppressMessages(library("dplyr"))
 agdb_10s <- agdb_10s %>% select(timestamp, starts_with("axis"))
 agdb_10s %>%
-  mutate(magnitude = sqrt(axis1^2 + axis2^2 + axis3^2)) %>%
-  head()
+  mutate(magnitude = sqrt(axis1^2 + axis2^2 + axis3^2))
 ```
 
 ### Reintegrate from 10s to 60s epochs
@@ -81,7 +80,7 @@ agdb_60s
 
 ### Sleep scoring with the Sadeh algorithm
 
-The Sadeh algorithm is primarily used for younger adolescents as the supporting research was performed on children and young adults. It requires 60s epochs and uses an 11-minute window that includes the five previous and five future epochs. The `apply_sadeh` function implements the algorithm as described in the ActiGraph user manual.
+The Sadeh algorithm is primarily used for younger adolescents as the supporting research was performed on children and young adults. It takes 60s epochs and uses an 11-minute window that includes the five previous and five future epochs. The `apply_sadeh` function implements the algorithm as described in the ActiGraph user manual.
 
 ```{r }
 agdb_60s %>% apply_sadeh()
@@ -89,7 +88,7 @@ agdb_60s %>% apply_sadeh()
 
 ### Sleep scoring with the Cole-Kripke algorithm
 
-The Cole-Kripke algorithm is primarily used for adult populations as the supporting research was performed on subjects ranging from 35 to 65 years of age. Like the Sadeh algorithm, it requires 60s epochs and uses a 7-minute window that includes the four previous and two future epochs. The `apply_cole` function implements the algorithm as described in the ActiGraph user manual.
+The Cole-Kripke algorithm is primarily used for adult populations as the supporting research was performed on subjects ranging from 35 to 65 years of age. Like the Sadeh algorithm, it takes 60s epochs and uses a 7-minute window that includes the four previous and two future epochs. The `apply_cole` function implements the algorithm as described in the ActiGraph user manual.
 
 ```{r }
 agdb_60s %>% apply_cole_kripke()

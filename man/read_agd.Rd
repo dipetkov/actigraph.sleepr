@@ -39,11 +39,9 @@ list.files(path, pattern = "*.agd", full.names = TRUE) \%>\%
   map_dfr(read_agd, .id = ".filename")
 }
 \references{
-ActiLife 6 User's Manual by the ActiGraph Software
-Department. 04/03/2012.
-
-\code{covertagd}: R package for converting agd files
-from ActiGraph into data.frames.
+The AGD file format is described in the
+\href{http://actigraphcorp.com/support/manuals/actilife-6-manual/}{
+ActiLife 6 Manual}.
 }
 \seealso{
 \code{\link{read_agd_raw}}

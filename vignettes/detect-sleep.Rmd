@@ -21,7 +21,7 @@ theme_set(
 )
 ```
 
-The `actigraph.sleepr` package implements three sleep detection algorithms: Sadeh (Sadeh, Sharkey, and Carskadon 1994), Cole-Kripke (Cole et al. 1992) and Tudor-Locke (Tudor-Locke et al. 2014). For illustration, let's use GT3X+ / ActiSleep+ sample data taken from ActiGraph's [online documentation](https://actigraph.desk.com).
+The `actigraph.sleepr` package implements three sleep detection algorithms: Sadeh (Sadeh, Sharkey, and Carskadon 1994), Cole-Kripke (Cole et al. 1992) and Tudor-Locke (Tudor-Locke et al. 2014).For illustration let's use one day of sample data recorded by a GT3X+ monitor.
 
 ```{r }
 file_10s <- system.file(
@@ -46,7 +46,7 @@ Alternatively, we can use the `read_agd` function to get the raw activity measur
 
 ```{r }
 agdb_10s <- read_agd(file_10s, tz = "UTC")
-attributes(agdb_10s)[-2]
+attributes(agdb_10s)[10:12]
 ```
 
 Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select, filter, summarise, group_by, arrange) to manipulate the data. For example, let's compute the magnitude of the three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
@@ -55,7 +55,7 @@ Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select
 agdb_10s <- agdb_10s %>%
   select(timestamp, starts_with("axis")) %>%
   mutate(magnitude = sqrt(axis1^2 + axis2^2 + axis3^2))
-agdb_10s %>% head()
+agdb_10s
 ```
 
 ### Reintegrate from 10s to 60s epochs

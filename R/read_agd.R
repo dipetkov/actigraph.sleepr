@@ -9,10 +9,9 @@
 #' include axis2, axis2, steps, lux and inclinometer indicators
 #' (incline off, standing, sitting and lying). The device settings
 #' are stored as attributes, which include \code{epochlength}.
-#' @references ActiLife 6 User's Manual by the ActiGraph Software
-#' Department. 04/03/2012.
-#' @references \code{covertagd}: R package for converting agd files
-#' from ActiGraph into data.frames.
+#' @references The AGD file format is described in the
+#' \href{http://actigraphcorp.com/support/manuals/actilife-6-manual/}{
+#' ActiLife 6 Manual}.
 #' @seealso \code{\link{read_agd_raw}}
 #' @examples
 #' file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",

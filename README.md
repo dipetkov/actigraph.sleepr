@@ -28,10 +28,8 @@ Choi (Choi et al. 2011).
 An AGD file is an SQLite database file exported by an ActiGraph device.
 See the [ActiLife 6 User
 manual](https://www.actigraphcorp.com/support/manuals/actilife-6-manual/).
-For illustration let’s use GT3X+ sample data taken from ActiGraph’s
-online documentation. \[The link I downloaded the data from,
-<a href="https://actigraph.desk.com" class="uri">https://actigraph.desk.com</a>,
-seems to be currently unavailable.\]
+For illustration let’s use one day of sample data recorded by a GT3X+
+monitor.
 
     library("actigraph.sleepr")
     file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
@@ -46,47 +44,40 @@ of the tibble using the `dplyr` verbs (e.g., `mutate`, `inner_join`)
 might drop these non-standard attributes, i.e., the attributes are not
 always inherited.
 
-    attributes(agdb_10s)[4:10]
-    #> $age
-    #> [1] "43"
-    #> 
-    #> $batteryvoltage
-    #> [1] "4.22"
-    #> 
-    #> $culturename
-    #> [1] "English (United States)"
-    #> 
-    #> $dateOfBirth
-    #> [1] "1969-04-17 UTC"
-    #> 
-    #> $datetimeformat
-    #> [1] "M/d/yyyy"
-    #> 
-    #> $decimal
-    #> [1] "."
-    #> 
+    attributes(agdb_10s)[10:12]
     #> $devicename
     #> [1] "GT3XPlus"
+    #> 
+    #> $deviceserial
+    #> [1] "NEO1DXXXXXXXX"
+    #> 
+    #> $deviceversion
+    #> [1] "2.5.0"
 
 Since the data is stored in a tibble, we can use the dplyr verbs
 (mutate, select, filter, summarise, group\_by, arrange) to manipulate
-the data. For example, let’s compute the magnitude of the three-axis
-counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
+the data. For example, let’s compute the vector magnitude of the
+three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 -
+lateral).
 
     suppressMessages(library("dplyr"))
     agdb_10s <- agdb_10s %>% select(timestamp, starts_with("axis"))
     agdb_10s %>%
-      mutate(magnitude = sqrt(axis1^2 + axis2^2 + axis3^2)) %>%
-      head()
-    #> # A tibble: 6 x 5
-    #>   timestamp           axis1 axis2 axis3 magnitude
-    #>   <dttm>              <int> <int> <int>     <dbl>
-    #> 1 2012-06-27 10:54:00   377   397   413      686.
-    #> 2 2012-06-27 10:54:10   465   816  1225     1544.
-    #> 3 2012-06-27 10:54:20   505   444   713      980.
-    #> 4 2012-06-27 10:54:30    73    91   106      158.
-    #> 5 2012-06-27 10:54:40    45    43   115      131.
-    #> 6 2012-06-27 10:54:50     0     0     0        0
+      mutate(magnitude = sqrt(axis1^2 + axis2^2 + axis3^2))
+    #> # A tibble: 8,999 x 5
+    #>    timestamp           axis1 axis2 axis3 magnitude
+    #>    <dttm>              <int> <int> <int>     <dbl>
+    #>  1 2012-06-27 10:54:00   377   397   413      686.
+    #>  2 2012-06-27 10:54:10   465   816  1225     1544.
+    #>  3 2012-06-27 10:54:20   505   444   713      980.
+    #>  4 2012-06-27 10:54:30    73    91   106      158.
+    #>  5 2012-06-27 10:54:40    45    43   115      131.
+    #>  6 2012-06-27 10:54:50     0     0     0        0 
+    #>  7 2012-06-27 10:55:00     0     0     0        0 
+    #>  8 2012-06-27 10:55:10   207   218   270      404.
+    #>  9 2012-06-27 10:55:20     0     0     0        0 
+    #> 10 2012-06-27 10:55:30     0     0     0        0 
+    #> # … with 8,989 more rows
 
 ### Reintegrate from 10s to 60s epochs
 
@@ -118,10 +109,10 @@ that fall into the same 60s epoch.
 ### Sleep scoring with the Sadeh algorithm
 
 The Sadeh algorithm is primarily used for younger adolescents as the
-supporting research was performed on children and young adults. It
-requires 60s epochs and uses an 11-minute window that includes the five
-previous and five future epochs. The `apply_sadeh` function implements
-the algorithm as described in the ActiGraph user manual.
+supporting research was performed on children and young adults. It takes
+60s epochs and uses an 11-minute window that includes the five previous
+and five future epochs. The `apply_sadeh` function implements the
+algorithm as described in the ActiGraph user manual.
 
     agdb_60s %>% apply_sadeh()
     #> # A tibble: 1,500 x 6
@@ -143,8 +134,8 @@ the algorithm as described in the ActiGraph user manual.
 
 The Cole-Kripke algorithm is primarily used for adult populations as the
 supporting research was performed on subjects ranging from 35 to 65
-years of age. Like the Sadeh algorithm, it requires 60s epochs and uses
-a 7-minute window that includes the four previous and two future epochs.
+years of age. Like the Sadeh algorithm, it takes 60s epochs and uses a
+7-minute window that includes the four previous and two future epochs.
 The `apply_cole` function implements the algorithm as described in the
 ActiGraph user manual.
 

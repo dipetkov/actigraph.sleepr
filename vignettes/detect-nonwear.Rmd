@@ -18,7 +18,7 @@ inst <- suppressMessages(lapply(pckg, library, character.only = TRUE))
 theme_set(theme_light())
 ```
 
-The `actigraph.sleepr` package implements two non-wear detection algorithms: Troiano (Troiano et al. 2008) and Choi (Choi et al. 2011). For illustration, let's use GT3X+ / ActiSleep+ sample data taken from ActiGraph's [online documentation](https://actigraph.desk.com). See the [sleep vignette](detect-sleep.html) for details on reading AGD files and collapsing epochs.
+The `actigraph.sleepr` package implements two non-wear detection algorithms: Troiano (Troiano et al. 2008) and Choi (Choi et al. 2011). For illustration let's use one day of sample data recorded by a GT3X+ monitor. See the [sleep vignette](detect-sleep.html) for details on reading AGD files and collapsing epochs.
 
 ```{r }
 file_10s <- system.file("extdata", "ActiSleepPlus-RawData-Day01.agd",
@@ -94,7 +94,7 @@ agdb_wear <- combine_epochs_periods(
   agdb_60s, periods_wear,
   period_start, period_end
 )
-agdb_wear %>% head(5)
+agdb_wear
 
 # Once we add the wear/nonwear information, it is straightforward to
 # compute summary statistics or join with external minute-by-minute data
