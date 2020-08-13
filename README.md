@@ -5,7 +5,6 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sleepr?branch=master&svg=true)](https://ci.appveyor.com/project/dipetkov/actigraph.sleepr)
 [![Build
 Status](https://travis-ci.org/dipetkov/actigraph.sleepr.svg?branch=master)](https://travis-ci.org/dipetkov/actigraph.sleepr)
-[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/actigraph.sleeper)](https://cran.r-project.org/package=actigraph.sleeper)
 [![codecov](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/dipetkov/actigraph.sleepr)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
