@@ -6,6 +6,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sleepr?branch=master&svg=true)](https://ci.appveyor.com/project/dipetkov/actigraph.sleepr)
 [![codecov](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/dipetkov/actigraph.sleepr)
+[![R-CMD-check](https://github.com/dipetkov/actigraph.sleepr/workflows/R-CMD-check/badge.svg)](https://github.com/dipetkov/actigraph.sleepr/actions)
 <!-- badges: end -->
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
