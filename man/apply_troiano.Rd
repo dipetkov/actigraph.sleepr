@@ -58,7 +58,7 @@ from an ActiGraph device. Such intervals are likely to represent
 invalid data and therefore should be excluded from downstream
 analysis. The algorithm formalizes a technique used to analyze the
 2003-2004 NHANES data; the original SAS source code can be found at
-\url{http://riskfactor.cancer.gov/tools/nhanes_pam/}.
+\url{https://riskfactor.cancer.gov/tools/nhanes_pam/}.
 }
 \details{
 The Troiano algorithm specifies that a non-wear period starts with

@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // wle
 IntegerVector wle(NumericVector counts, int act_thresh, int spike_tol, int spike_stop);
 RcppExport SEXP _actigraph_sleepr_wle(SEXP countsSEXP, SEXP act_threshSEXP, SEXP spike_tolSEXP, SEXP spike_stopSEXP) {

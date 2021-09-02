@@ -35,22 +35,30 @@ complement_periods <- function(periods, epochs, start_var, end_var) {
       summarise(
         period_start = first(.data$timestamp),
         period_end = last(.data$timestamp),
-        length = time_length(.data$period_end -
-          .data$period_start, "min")
+        length = time_length(.data$period_end - .data$period_start, "min")
       ))
   }
   start_var <- enquo(start_var)
   end_var <- enquo(end_var)
   combine_epochs_periods(epochs, periods, !!start_var, !!end_var) %>%
-    mutate(rev_id = rleid(is.na(.data$period_id))) %>%
-    filter(is.na(.data$period_id)) %>%
-    group_by(.data$rev_id, .add = TRUE) %>%
+    mutate(
+      rev_id = rleid(is.na(.data$period_id))
+    ) %>%
+    filter(
+      is.na(.data$period_id)
+    ) %>%
+    group_by(
+      .data$rev_id,
+      .add = TRUE
+    ) %>%
     summarise(
       period_start = first(.data$timestamp),
       period_end = last(.data$timestamp),
       length = n()
     ) %>%
-    select(-.data$rev_id)
+    select(
+      -.data$rev_id
+    )
 }
 
 #' Expand a time period into a vector of equally spaced time points
@@ -92,7 +100,9 @@ expand_periods <- function(periods, start_var, end_var,
   start_var <- enquo(start_var)
   end_var <- enquo(end_var)
   periods %>%
-    do(expand_periods_(., !!start_var, !!end_var, units))
+    group_modify(
+      ~ expand_periods_(., !!start_var, !!end_var, units)
+    )
 }
 
 expand_periods_ <- function(periods, start_var, end_var,
@@ -101,13 +111,18 @@ expand_periods_ <- function(periods, start_var, end_var,
   end_var <- enquo(end_var)
 
   periods %>%
-    mutate(period_id = row_number()) %>%
-    mutate(timestamp = map2(
-      !!start_var, !!end_var, expand_timestamp,
-      units
-    )) %>%
-    select(.data$period_id, .data$timestamp) %>%
-    unnest(cols = .data$timestamp)
+    mutate(
+      period_id = row_number(),
+      timestamp = map2(
+        !!start_var, !!end_var, expand_timestamp, units
+      )
+    ) %>%
+    select(
+      .data$period_id, .data$timestamp
+    ) %>%
+    unnest(
+      cols = .data$timestamp
+    )
 }
 
 #' Guess the epoch length (in seconds) from the timestamp column

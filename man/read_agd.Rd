@@ -40,7 +40,7 @@ list.files(path, pattern = "*.agd", full.names = TRUE) \%>\%
 }
 \references{
 The AGD file format is described in the
-\href{http://actigraphcorp.com/support/manuals/actilife-6-manual/}{
+\href{https://actigraphcorp.com/support/manuals/actilife-6-manual/}{
 ActiLife 6 Manual}.
 }
 \seealso{

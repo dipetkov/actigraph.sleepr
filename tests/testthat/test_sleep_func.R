@@ -28,7 +28,7 @@ test_that("apply_tudor_locke returns a tibble", {
     collapse_epochs(60) %>%
     apply_sadeh() %>%
     apply_tudor_locke()
-  expect_s3_class(periods, "tibble")
+  expect_s3_class(periods, "tbl")
 })
 test_that("apply_tudor_locke return same result as ActiLife 6", {
   agd_file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",

@@ -32,7 +32,7 @@ file_10s <- system.file(
 
 ### Read AGD file(s)
 
-An AGD file is an SQLite database file exported by an ActiGraph device, which contains five tables: settings, data, sleep, awakenings and filters. The sleep and awakenings tables are empty unless the ActiLife tool has been used to analyze the activity counts to detect sleep. See the [ActiLife 6 User manual](http://actigraphcorp.com/support/manuals/actilife-6-manual/).
+An AGD file is an SQLite database file exported by an ActiGraph device, which contains five tables: settings, data, sleep, awakenings and filters. The sleep and awakenings tables are empty unless the ActiLife tool has been used to analyze the activity counts to detect sleep. See the [ActiLife 6 User manual](https://actigraphcorp.com/support/manuals/actilife-6-manual/).
 
 We can load all five tables as a list using the `read_agd_raw` function.
 

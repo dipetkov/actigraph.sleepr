@@ -48,23 +48,17 @@ apply_choi <- function(agdb,
   assert_that(min_window_len >= spike_tolerance)
 
   nonwear <- agdb %>%
-    do(apply_choi_(
-      ., min_period_len, min_window_len,
-      spike_tolerance, use_magnitude
-    ))
-  nonwear <-
-    structure(nonwear,
-      class = c("tibble", "tbl_df", "data.frame"),
-      nonwear_algorithm = "Choi",
-      min_period_len = min_period_len,
-      min_window_len = min_window_len,
-      spike_tolerance = spike_tolerance,
-      use_magnitude = use_magnitude
+    group_modify(
+      ~ apply_choi_(
+        ., min_period_len, min_window_len, spike_tolerance, use_magnitude
+      )
     )
 
-  if (is.grouped_df(agdb)) {
-    nonwear <- nonwear %>% group_by(!!!groups(agdb))
-  }
+  attr(nonwear, "nonwear_algorithm") <- "Choi"
+  attr(nonwear, "min_period_len") <- min_period_len
+  attr(nonwear, "min_window_len") <- min_window_len
+  attr(nonwear, "spike_tolerance") <- spike_tolerance
+  attr(nonwear, "use_magnitude") <- use_magnitude
 
   nonwear
 }
@@ -78,9 +72,11 @@ apply_choi_ <- function(data,
     add_magnitude() %>%
     mutate(
       count = if (use_magnitude) .data$magnitude else .data$axis1,
-      wear = if_else(.data$count == 0, 0L, 1L)
+      wear = as.integer(.data$count > 0)
     ) %>%
-    group_by(rleid = rleid(.data$wear)) %>%
+    group_by(
+      rleid = rleid(.data$wear)
+    ) %>%
     summarise(
       wear = first(.data$wear),
       timestamp = first(.data$timestamp),
@@ -88,11 +84,15 @@ apply_choi_ <- function(data,
     ) %>%
     # Let (spike, zero, zero, spike) -> (spike of length 4)
     # as long as (zero, zero) is shorter than spike_tolerance
-    mutate(wear = if_else(
-      .data$wear == 0L & .data$length < spike_tolerance,
-      1L, .data$wear
-    )) %>%
-    group_by(rleid = rleid(.data$wear)) %>%
+    mutate(
+      wear = if_else(
+        .data$wear == 0L & .data$length < spike_tolerance,
+        1L, .data$wear
+      )
+    ) %>%
+    group_by(
+      rleid = rleid(.data$wear)
+    ) %>%
     summarise(
       wear = first(.data$wear),
       timestamp = first(.data$timestamp),
@@ -100,15 +100,16 @@ apply_choi_ <- function(data,
     ) %>%
     # Ignore artifactual movement intervals
     mutate(
-      wear =
-        if_else(
-          .data$wear == 1L & .data$length <= spike_tolerance &
-            lead(.data$length, default = 0L) >= min_window_len &
-            lag(.data$length, default = 0L) >= min_window_len,
-          0L, .data$wear
-        )
+      wear = if_else(
+        .data$wear == 1L & .data$length <= spike_tolerance &
+          lead(.data$length, default = 0L) >= min_window_len &
+          lag(.data$length, default = 0L) >= min_window_len,
+        0L, .data$wear
+      )
     ) %>%
-    group_by(rleid = rleid(.data$wear)) %>%
+    group_by(
+      rleid = rleid(.data$wear)
+    ) %>%
     summarise(
       wear = first(.data$wear),
       timestamp = first(.data$timestamp),
@@ -121,8 +122,10 @@ apply_choi_ <- function(data,
       # the initial and final non-wear periods can be shorter.
       .data$length >= min_period_len # | row_number() %in% c(1, n())
     ) %>%
-    rename(period_start = .data$timestamp) %>%
-    mutate(period_end = .data$period_start +
-      duration(.data$length, "mins")) %>%
-    select(.data$period_start, .data$period_end, .data$length)
+    mutate(
+      period_end = .data$timestamp + duration(.data$length, "mins")
+    ) %>%
+    select(
+      period_start = .data$timestamp, .data$period_end, .data$length
+    )
 }

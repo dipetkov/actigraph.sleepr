@@ -10,7 +10,7 @@
 #' (incline off, standing, sitting and lying). The device settings
 #' are stored as attributes, which include \code{epochlength}.
 #' @references The AGD file format is described in the
-#' \href{http://actigraphcorp.com/support/manuals/actilife-6-manual/}{
+#' \href{https://actigraphcorp.com/support/manuals/actilife-6-manual/}{
 #' ActiLife 6 Manual}.
 #' @seealso \code{\link{read_agd_raw}}
 #' @examples
@@ -37,21 +37,30 @@ read_agd <- function(file, tz = "UTC") {
   }
 
   agdb <- read_agd_raw(file, tz)
-  data <- agdb$data %>%
+  data <- agdb[["data"]] %>%
     rename_with(tolower) %>%
-    rename(timestamp = .data$datatimestamp) %>%
-    mutate_if(is.numeric, as.integer)
+    rename(
+      timestamp = .data$datatimestamp
+    ) %>%
+    mutate(
+      across(where(is.numeric), as.integer)
+    )
 
   # The settings are stored in a table with settingName, settingValue
   # columns and so all settings are of type `character`, including the
   # timestamps. I typecast the most salient settings appropriately.
-  settings <- agdb$settings %>%
+  settings <- agdb[["settings"]] %>%
     rename_with(tolower) %>%
-    select(.data$settingname, .data$settingvalue) %>%
-    spread(.data$settingname, .data$settingvalue) %>%
-    mutate_at(vars(matches("dateOfBirth")), ticks_to_dttm, tz = tz) %>%
-    mutate_at(vars(ends_with("time")), ticks_to_dttm, tz = tz) %>%
-    mutate_at(vars(starts_with("epoch")), as.integer)
+    pivot_wider(
+      id_cols = c(),
+      names_from = "settingname",
+      values_from = "settingvalue"
+    ) %>%
+    mutate(
+      across(matches("dateOfBirth"), ticks_to_dttm, tz = tz),
+      across(ends_with("time"), ticks_to_dttm, tz = tz),
+      across(starts_with("epoch"), as.integer)
+    )
 
   tbl_agd(data, settings)
 }
@@ -93,7 +102,7 @@ read_agd_raw <- function(file, tz = "UTC") {
   tables_agd <- db %>%
     tbl(sql(query)) %>%
     collect()
-  tables_agd <- tables_agd$name
+  tables_agd <- tables_agd[["name"]]
   tables_required <- c("data", "sleep", "awakenings", "filters", "settings")
   assert_that(all(tables_required %in% tables_agd))
 
@@ -123,9 +132,15 @@ read_agd_raw <- function(file, tz = "UTC") {
     db %>%
       tbl(sql(query)) %>%
       collect(n = Inf) %>%
-      select(-one_of(cols)) %>%
-      rename_with(~ sub("_ts$", "", .)) %>%
-      mutate_at(vars(cols), cast_dttms)
+      select(
+        -any_of(cols)
+      ) %>%
+      rename_with(
+        ~ sub("_ts$", "", .)
+      ) %>%
+      mutate(
+        across(all_of(cols), cast_dttms)
+      )
   }
 
   settings <- db %>%

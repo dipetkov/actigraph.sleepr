@@ -60,8 +60,12 @@
 
 apply_sadeh <- function(agdb) {
   check_args_sleep_scores(agdb, "Sadeh")
+
   attr(agdb, "sleep_algorithm") <- "Sadeh"
-  agdb %>% do(apply_sadeh_(.))
+
+  agdb %>% group_modify(
+    ~ apply_sadeh_(.)
+  )
 }
 
 apply_sadeh_ <- function(data) {

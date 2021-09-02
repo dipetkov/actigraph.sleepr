@@ -22,15 +22,23 @@ impute_epochs <- function(agdb, ...) {
     return(agdb)
   }
 
-  agdb %>% do(impute_epochs_(., selected))
+  agdb %>%
+    group_modify(
+      ~ impute_epochs_(., selected)
+    )
 }
 impute_epochs_ <- function(data, selected) {
   impute <- function(x) pmax(round(na.spline(x)), 0)
+
   data %>%
-    select_at(c("timestamp", selected)) %>%
+    select(timestamp, !!!selected) %>%
     na.trim() %>%
-    inner_join(data, by = c("timestamp", selected)) %>%
-    mutate_at(selected, impute)
+    inner_join(data,
+      by = c("timestamp", selected)
+    ) %>%
+    mutate(
+      across(all_of(selected), impute)
+    )
 }
 #' Checks whether there are gaps in the time series
 #'
@@ -48,11 +56,16 @@ has_missing_epochs <- function(agdb) {
     return(TRUE)
   }
 
-  epoch_len <- get_epoch_length(agdb)
-  agdb <- agdb %>% do(has_missing_epochs_(., epoch_len))
+  agdb <- agdb %>%
+    group_modify(
+      ~ has_missing_epochs_(.)
+    )
   any(agdb$missing)
 }
-has_missing_epochs_ <- function(data, epoch_len) {
+
+has_missing_epochs_ <- function(data) {
+  epoch_len <- get_epoch_length(data)
+
   epochs <- seq(first(data$timestamp), last(data$timestamp),
     by = epoch_len
   )

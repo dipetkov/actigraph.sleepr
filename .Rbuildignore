@@ -8,3 +8,4 @@ actigraph\.bib$
 ^data-raw$
 ^codecov\.yml$
 ^cran-comments\.md$
+^\.github$

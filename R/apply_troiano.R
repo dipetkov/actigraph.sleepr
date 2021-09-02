@@ -5,7 +5,7 @@
 #' invalid data and therefore should be excluded from downstream
 #' analysis. The algorithm formalizes a technique used to analyze the
 #' 2003-2004 NHANES data; the original SAS source code can be found at
-#' \url{http://riskfactor.cancer.gov/tools/nhanes_pam/}.
+#' \url{https://riskfactor.cancer.gov/tools/nhanes_pam/}.
 #' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least)
 #' an \code{epochlength} attribute. The epoch length must be 60 seconds.
 #' @param activity_threshold Highest activity level to be considered
@@ -67,39 +67,36 @@ apply_troiano <- function(agdb,
 
   if (endat_nnz_seq) {
     nonwear <- agdb %>%
-      do(apply_troiano_seq_(
-        ., activity_threshold,
-        min_period_len, max_nonzero_count,
-        spike_tolerance,
-        spike_stoplevel,
-        use_magnitude
-      ))
+      group_modify(
+        ~ apply_troiano_seq_(
+          ., activity_threshold,
+          min_period_len, max_nonzero_count,
+          spike_tolerance,
+          spike_stoplevel,
+          use_magnitude
+        )
+      )
   } else {
     nonwear <- agdb %>%
-      do(apply_troiano_nonseq_(
-        ., activity_threshold,
-        min_period_len, max_nonzero_count,
-        spike_tolerance,
-        spike_stoplevel,
-        use_magnitude
-      ))
+      group_modify(
+        ~ apply_troiano_nonseq_(
+          ., activity_threshold,
+          min_period_len, max_nonzero_count,
+          spike_tolerance,
+          spike_stoplevel,
+          use_magnitude
+        )
+      )
   }
-  nonwear <-
-    structure(nonwear,
-      class = c("tibble", "tbl_df", "data.frame"),
-      nonwear_algorithm = "Troiano",
-      min_period_len = min_period_len,
-      max_nonzero_count = max_nonzero_count,
-      spike_tolerance = spike_tolerance,
-      spike_stoplevel = spike_stoplevel,
-      activity_threshold = activity_threshold,
-      endat_nnz_seq = endat_nnz_seq,
-      use_magnitude = use_magnitude
-    )
 
-  if (is.grouped_df(agdb)) {
-    nonwear <- nonwear %>% group_by(!!!groups(agdb))
-  }
+  attr(nonwear, "nonwear_algorithm") <- "Troiano"
+  attr(nonwear, "min_period_len") <- min_period_len
+  attr(nonwear, "max_nonzero_count") <- max_nonzero_count
+  attr(nonwear, "spike_tolerance") <- spike_tolerance
+  attr(nonwear, "spike_stoplevel") <- spike_stoplevel
+  attr(nonwear, "activity_threshold") <- activity_threshold
+  attr(nonwear, "endat_nnz_seq") <- endat_nnz_seq
+  attr(nonwear, "use_magnitude") <- use_magnitude
 
   nonwear
 }
@@ -114,30 +111,36 @@ apply_troiano_seq_ <- function(data,
     add_magnitude() %>%
     mutate(
       count = if (use_magnitude) .data$magnitude else .data$axis1,
-      wear = if_else(.data$count <= activity_threshold |
-        .data$count > max_nonzero_count, 0L, 1L),
-      wear = if_else(.data$count > spike_stoplevel, 2L, .data$wear)
+      wear = case_when(
+        .data$count > spike_stoplevel ~ 2L,
+        .data$count > activity_threshold &
+          .data$count <= max_nonzero_count ~ 1L,
+        TRUE ~ 0L
+      )
     ) %>%
-    group_by(rleid = rleid(.data$wear)) %>%
+    group_by(
+      rleid = rleid(.data$wear)
+    ) %>%
     summarise(
       wear = first(.data$wear),
       timestamp = first(.data$timestamp),
       length = n()
     ) %>%
     mutate(
-      wear = if_else(.data$wear == 1L &
-        lead(.data$wear, default = 1L) == 0L &
-        .data$length <= spike_tolerance,
-      NA_integer_, .data$wear
+      wear = if_else(
+        .data$wear == 1L &
+          lead(.data$wear, default = 1L) == 0L &
+          .data$length <= spike_tolerance,
+        NA_integer_, .data$wear
       ),
       # Since `na.locf` can't impute leading NAs, fill in those with 1s
-      wear = if_else(row_number() == 1 & is.na(.data$wear),
-        1L, .data$wear
-      ),
+      wear = if_else(row_number() == 1 & is.na(.data$wear), 1L, .data$wear),
       # Fill in NAs with the most recent zero/nonzero wear state
       wear = na.locf(.data$wear)
     ) %>%
-    group_by(rleid = rleid(.data$wear)) %>%
+    group_by(
+      rleid = rleid(.data$wear)
+    ) %>%
     summarise(
       wear = first(.data$wear),
       timestamp = first(.data$timestamp),
@@ -147,10 +150,12 @@ apply_troiano_seq_ <- function(data,
       .data$wear == 0L,
       .data$length >= min_period_len
     ) %>%
-    rename(period_start = .data$timestamp) %>%
-    mutate(period_end = .data$period_start +
-      duration(.data$length, "mins")) %>%
-    select(.data$period_start, .data$period_end, .data$length)
+    mutate(
+      period_end = .data$timestamp + duration(.data$length, "mins")
+    ) %>%
+    select(
+      period_start = .data$timestamp, .data$period_end, .data$length
+    )
 }
 
 apply_troiano_nonseq_ <- function(data,
@@ -162,29 +167,30 @@ apply_troiano_nonseq_ <- function(data,
   data %>%
     add_magnitude() %>%
     mutate(
-      count =
-        if (use_magnitude) .data$magnitude else as.numeric(.data$axis1),
-      count =
-        if_else(.data$count > max_nonzero_count, 0, .data$count),
+      count = if (use_magnitude) .data$magnitude else .data$axis1,
+      count = if_else(.data$count > max_nonzero_count, 0L, .data$count),
       length = wle(
-        .data$count, activity_threshold,
-        spike_tolerance, spike_stoplevel
+        .data$count, activity_threshold, spike_tolerance, spike_stoplevel
       )
     ) %>%
-    filter(.data$length >= min_period_len) %>%
-    rename(period_start = .data$timestamp) %>%
-    select(.data$period_start, .data$length) %>%
-    mutate(
-      period_end =
-        .data$period_start + duration(.data$length, "mins")
+    filter(
+      .data$length >= min_period_len
+    ) %>%
+    select(
+      period_start = .data$timestamp, .data$length
     ) %>%
     mutate(
-      a = time_length(.data$period_start -
-        first(.data$period_start), "min"),
-      b = time_length(.data$period_end -
-        first(.data$period_start), "min")
+      period_end = .data$period_start + duration(.data$length, "mins")
+    ) %>%
+    mutate(
+      a = time_length(.data$period_start - first(.data$period_start), "min"),
+      b = time_length(.data$period_end - first(.data$period_start), "min")
     ) %>%
     # Remove periods which overlap with previous periods
-    filter(overlap(.data$a, .data$b)) %>%
-    select(.data$period_start, .data$period_end, .data$length)
+    filter(
+      overlap(.data$a, .data$b)
+    ) %>%
+    select(
+      .data$period_start, .data$period_end, .data$length
+    )
 }

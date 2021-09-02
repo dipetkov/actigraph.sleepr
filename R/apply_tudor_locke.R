@@ -126,26 +126,21 @@ apply_tudor_locke <- function(agdb,
   # * n_bedtime_start + n_wake_time_end < min_sleep_period
 
   sleep <- agdb %>%
-    do(apply_tudor_locke_(
-      ., n_bedtime_start, n_wake_time_end,
-      min_sleep_period, max_sleep_period,
-      min_nonzero_epochs
-    ))
-  sleep <-
-    structure(sleep,
-      class = c("tibble", "tbl_df", "data.frame"),
-      sleep_algorithm = attr(agdb, "sleep_algorithm"),
-      period_algorithm = "Tudor-Locke",
-      n_bedtime_start = n_bedtime_start,
-      n_wake_time_end = n_wake_time_end,
-      min_sleep_period = min_sleep_period,
-      max_sleep_period = max_sleep_period,
-      min_nonzero_epochs = min_nonzero_epochs
+    group_modify(
+      ~ apply_tudor_locke_(
+        ., n_bedtime_start, n_wake_time_end,
+        min_sleep_period, max_sleep_period,
+        min_nonzero_epochs
+      )
     )
 
-  if (is.grouped_df(agdb)) {
-    sleep <- sleep %>% group_by(!!!groups(agdb))
-  }
+  attr(sleep, "sleep_algorithm") <- attr(agdb, "sleep_algorithm")
+  attr(sleep, "period_algorithm") <- "Tudor-Locke"
+  attr(sleep, "n_bedtime_start") <- n_bedtime_start
+  attr(sleep, "n_wake_time_end") <- n_wake_time_end
+  attr(sleep, "min_sleep_period") <- min_sleep_period
+  attr(sleep, "max_sleep_period") <- max_sleep_period
+  attr(sleep, "min_nonzero_epochs") <- min_nonzero_epochs
 
   sleep
 }
@@ -185,7 +180,9 @@ apply_tudor_locke_ <- function(data,
   data %>%
     # First round of `group_by`, `summarise`, `mutate` operations
     # Return the stop/end indices for runs of repeated value
-    group_by(rleid = rleid(.data$sleep)) %>%
+    group_by(
+      rleid = rleid(.data$sleep)
+    ) %>%
     summarise(
       timestamp = first(.data$timestamp),
       sleep = first(.data$sleep),
@@ -197,18 +194,16 @@ apply_tudor_locke_ <- function(data,
       nb_awakenings = (.data$sleep == "W"),
       dozings = (.data$sleep == "S"),
       dozings_1min = (.data$sleep == "S" & .data$duration == 1),
-      total_sleep_time =
-        if_else(
-          .data$sleep == "W" & .data$duration < n_wake_time_end,
-          0L, .data$duration
-        ),
+      total_sleep_time = if_else(
+        .data$sleep == "W" & .data$duration < n_wake_time_end,
+        0L, .data$duration
+      ),
       # Set the state of short runs to NA
-      sleep =
-        if_else(
-          (.data$sleep == "W" & .data$duration < n_wake_time_end) |
-            (.data$sleep == "S" & .data$duration < n_bedtime_start),
-          NA_character_, .data$sleep
-        ),
+      sleep = if_else(
+        (.data$sleep == "W" & .data$duration < n_wake_time_end) |
+          (.data$sleep == "S" & .data$duration < n_bedtime_start),
+        NA_character_, .data$sleep
+      ),
       # A special case that I am not sure how to handle:
       # Leading NAs can't be filled in with `na.locf`.
       # To be conservative, I will fill in such NAs with W (awake).
@@ -219,7 +214,9 @@ apply_tudor_locke_ <- function(data,
       sleep = na.locf(.data$sleep)
     ) %>%
     # Second round of `group_by`, `summarise`, `mutate` operations
-    group_by(rleid = rleid(.data$sleep)) %>%
+    group_by(
+      rleid = rleid(.data$sleep)
+    ) %>%
     summarise(
       timestamp = first(.data$timestamp),
       sleep = first(.data$sleep),
@@ -232,19 +229,17 @@ apply_tudor_locke_ <- function(data,
       dozings_1min = sum(.data$dozings_1min)
     ) %>%
     mutate(
-      fragmentation_index =
-        if_else(.data$dozings > 0,
-          100 * .data$dozings_1min / .data$dozings, 0
-        ),
+      fragmentation_index = if_else(
+        .data$dozings > 0, 100 * .data$dozings_1min / .data$dozings, 0
+      ),
       movement_index = 100 * .data$nonzero_epochs / .data$duration,
       # Set the state of short sleep runs to awake;
       # no need to set to NA and then fill in the NAs
       # as here we flip only asleep states to awake
-      sleep =
-        if_else(.data$sleep == "S" &
-          .data$duration < min_sleep_period,
+      sleep = if_else(
+        .data$sleep == "S" & .data$duration < min_sleep_period,
         "W", .data$sleep
-        )
+      )
     ) %>%
     # Filter out wake (W) periods as well as sleep periods that
     # fail the min_nonzero_epochs and max_sleep_period criteria
@@ -256,34 +251,32 @@ apply_tudor_locke_ <- function(data,
     # That's it. The rest are trivial manipulations to compute
     # various sleep quality metrics.
     mutate(
-      out_bed_time =
-        .data$timestamp + duration(.data$duration, "mins"),
+      out_bed_time = .data$timestamp + duration(.data$duration, "mins"),
       sleep_fragmentation_index =
         .data$movement_index + .data$fragmentation_index,
-      wake_after_onset =
-        .data$duration - .data$total_sleep_time,
-      ave_awakening =
-        if_else(.data$nb_awakenings > 0,
-          .data$wake_after_onset / .data$nb_awakenings, 0
-        ),
-      efficiency = 100 * .data$total_sleep_time / .data$duration,
-      onset = .data$timestamp, latency = 0
-    ) %>%
-    rename(in_bed_time = .data$timestamp) %>%
-    select(
-      .data$in_bed_time, .data$out_bed_time, .data$onset, .data$latency,
-      .data$efficiency, .data$duration, .data$activity_counts,
-      .data$nonzero_epochs, .data$total_sleep_time,
-      .data$wake_after_onset, .data$nb_awakenings, .data$ave_awakening,
-      .data$movement_index, .data$fragmentation_index,
-      .data$sleep_fragmentation_index
-    ) %>%
-    mutate_at(
-      vars(
-        .data$latency, .data$activity_counts, .data$nonzero_epochs,
-        .data$duration, .data$total_sleep_time,
-        .data$wake_after_onset, .data$nb_awakenings
+      wake_after_onset = .data$duration - .data$total_sleep_time,
+      ave_awakening = if_else(
+        .data$nb_awakenings > 0, .data$wake_after_onset / .data$nb_awakenings, 0
       ),
-      as.integer
+      efficiency = 100 * .data$total_sleep_time / .data$duration,
+      onset = .data$timestamp,
+      latency = 0
+    ) %>%
+    select(
+      in_bed_time = .data$timestamp, .data$out_bed_time, .data$onset,
+      .data$latency, .data$efficiency, .data$duration, .data$activity_counts,
+      .data$nonzero_epochs, .data$total_sleep_time, .data$wake_after_onset,
+      .data$nb_awakenings, .data$ave_awakening, .data$movement_index,
+      .data$fragmentation_index, .data$sleep_fragmentation_index
+    ) %>%
+    mutate(
+      across(
+        c(
+          .data$latency, .data$activity_counts, .data$nonzero_epochs,
+          .data$duration, .data$total_sleep_time, .data$wake_after_onset,
+          .data$nb_awakenings
+        ),
+        as.integer
+      )
     )
 }

@@ -11,7 +11,7 @@ test_that("apply_troiano returns a tibble", {
   agdb_10s <- read_agd(file)
   agdb_60s <- collapse_epochs(agdb_10s, 60)
   agdb_nonwear <- apply_troiano(agdb_60s)
-  expect_s3_class(agdb_nonwear, "tibble")
+  expect_s3_class(agdb_nonwear, "tbl")
 })
 test_that("apply_troiano return same result as ActiLife 6", {
   agd_file <-

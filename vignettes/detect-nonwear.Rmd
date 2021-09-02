@@ -36,7 +36,7 @@ Long stretches that consist almost entirely of zero counts (zero epochs) suggest
 
 ### Non-wear detection with the Troiano algorithm
 
-The Troiano algorithm for detecting periods of non-wear formalizes a technique used to analyze the 2003-2004 NHANES data; the original SAS source code can be found at http://riskfactor.cancer.gov/tools/nhanes_pam/. The method has some flexibility as a non-wear period can contain a few nonzero epochs of artifactual movement (spikes).
+The Troiano algorithm for detecting periods of non-wear formalizes a technique used to analyze the 2003-2004 NHANES data; the original SAS source code can be found at https://riskfactor.cancer.gov/tools/nhanes_pam/. The method has some flexibility as a non-wear period can contain a few nonzero epochs of artifactual movement (spikes).
 
 activity_threshold
  : Highest activity level to be considered "zero"; an epoch with activity exceeding the threshold is considered a "spike". The default threshold is 0.

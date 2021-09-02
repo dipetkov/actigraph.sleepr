@@ -24,17 +24,24 @@ plot_activity <- function(agdb, var, color = "black",
                           nrow = NULL, ncol = NULL) {
   var <- enquo(var)
   if (color %in% names(agdb)) {
-    p <- ggplot(agdb, aes_string("timestamp", quo_text(var),
-      color = color, fill = color
-    )) +
+    p <- agdb %>%
+      ggplot(
+        aes(timestamp, !!var, fill = !!ensym(color))
+      ) +
       geom_col()
   } else {
-    p <- ggplot(agdb, aes_string("timestamp", quo_text(var))) +
-      geom_col(color = color, fill = color)
+    p <- agdb %>%
+      ggplot(
+        aes(timestamp, !!var)
+      ) +
+      geom_col(
+        fill = color
+      )
   }
   if (is.grouped_df(agdb)) {
     p <- p +
-      facet_wrap(as.character(groups(agdb)),
+      facet_wrap(
+        group_vars(agdb),
         nrow = nrow, ncol = ncol,
         scales = "free_x"
       )
@@ -77,15 +84,17 @@ plot_activity_period <- function(agdb, periods, act_var,
   act_var <- enquo(act_var)
   start_var <- enquo(start_var)
   end_var <- enquo(end_var)
-  plot_activity(agdb, !!act_var,
-    color = color,
-    nrow = nrow, ncol = ncol
-  ) +
+  p <-
+    plot_activity(
+      agdb, !!act_var,
+      color = color, nrow = nrow, ncol = ncol
+    )
+  p +
     geom_rect(
       data = periods,
-      aes_string(
-        xmin = quo_text(start_var), ymin = 0,
-        xmax = quo_text(end_var), ymax = Inf
+      aes(
+        xmin = !!start_var, ymin = 0,
+        xmax = !!end_var, ymax = Inf
       ),
       inherit.aes = FALSE,
       fill = fill, alpha = 0.2

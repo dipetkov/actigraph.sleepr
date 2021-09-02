@@ -54,10 +54,14 @@
 #' @export
 apply_cole_kripke <- function(agdb) {
   check_args_sleep_scores(agdb, "Cole-Kripke")
+
   attr(agdb, "sleep_algorithm") <- "Cole-Kripke"
+
   agdb %>%
     actigraph_adjustment() %>%
-    do(apply_cole_kripke_1min_(.))
+    group_modify(
+      ~ apply_cole_kripke_1min_(.)
+    )
 }
 
 # The optimal parameters for the mean activity per minute.

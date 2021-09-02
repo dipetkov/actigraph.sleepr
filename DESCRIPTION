@@ -16,8 +16,8 @@ Description: Reads *.agd files exported from 'ActiGraph' devices;
   detecting asleep/awake state
   and the Tudor-Locke <doi:10.1139/apnm-2013-0173> algorithm 
   to detect sleep periods from asleep/awake states.
-URL: http://github.com/dipetkov/actigraph.sleepr
-BugReports: http://github.com/dipetkov/actigraph.sleepr/issues
+URL: https://github.com/dipetkov/actigraph.sleepr
+BugReports: https://github.com/dipetkov/actigraph.sleepr/issues
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
@@ -30,10 +30,10 @@ Imports:
     Rcpp,
     RcppRoll,
     RSQLite,
+    dbplyr,
     dplyr (>= 1.0.1),
     tidyr (>= 1.1.1),
     assertthat,
-    dbplyr,
     ggplot2,
     lubridate,
     purrr,

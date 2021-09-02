@@ -46,8 +46,10 @@
 collapse_epochs <- function(agdb, epoch_len_out,
                             use_incomplete = TRUE) {
   check_args_collapse_method(agdb, epoch_len_out)
-  collapse_factor <- epoch_len_out / get_epoch_length(agdb)
-  if (collapse_factor == 1) {
+
+  epoch_len_in <- get_epoch_length(agdb)
+
+  if (epoch_len_out == epoch_len_in) {
     return(agdb)
   }
 
@@ -57,30 +59,28 @@ collapse_epochs <- function(agdb, epoch_len_out,
   # epochs at the start/end of the time series
 
   agdb %>%
-    do(collapse_epochs_(., collapse_factor, use_incomplete))
+    group_modify(
+      ~ collapse_epochs_(., epoch_len_out / epoch_len_in, use_incomplete)
+    )
 }
 
 collapse_epochs_ <- function(data, collapse_factor, use_incomplete) {
 
   # Exclude lux which is summarised by `floor(mean(lux))`
-  selected <- intersect(
-    colnames(data),
-    c(
-      "axis1", "axis2", "axis3", "steps",
-      "inclineoff", "inclinestanding",
-      "inclinesitting", "inclinelying"
-    )
+  vars_to_sum <- c(
+    "axis1", "axis2", "axis3", "steps", "inclineoff", "inclinestanding",
+    "inclinesitting", "inclinelying"
   )
 
-  data <- data %>%
-    select_at(vars("timestamp", selected)) %>%
-    mutate(timestamp = floor_date(.data$timestamp, "mins"), n = 1L) %>%
+  data %>%
+    mutate(
+      across(.data$timestamp, floor_date, unit = "min")
+    ) %>%
     group_by(.data$timestamp) %>%
-    summarise_all(sum)
-
-  if (!use_incomplete) {
-    data <- data %>% filter(.data$n == collapse_factor)
-  }
-
-  data %>% select(-n)
+    when(
+      use_incomplete ~ ., ~ filter(., n() == collapse_factor)
+    ) %>%
+    summarise(
+      across(any_of(vars_to_sum), sum)
+    )
 }
