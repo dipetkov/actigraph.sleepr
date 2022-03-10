@@ -104,7 +104,7 @@ apply_sadeh_ <- function(data) {
 
   data %>%
     mutate(
-      count = pmin(.data$axis1, 300),
+      count = pmin(.data$axis1 / 100, 300),
       sleep = (
         7.601
         - 0.065 * roll_avg(.data$count)
