@@ -2,8 +2,7 @@
 % Please edit documentation in R/tbl_agd.R
 \name{tbl_agd}
 \alias{tbl_agd}
-\title{A \code{tibble} (\code{tbl}) of activity data exported by an
-ActiGraph device}
+\title{A \code{tibble} of activity data exported by an ActiGraph device}
 \usage{
 tbl_agd(data, settings)
 }
@@ -13,6 +12,5 @@ tbl_agd(data, settings)
 \item{settings}{A data frame of device settings.}
 }
 \description{
-This \code{tbl} has several attributes, most importantly -
-\code{epochlength}.
+This tibble has several attributes, most importantly, \code{epochlength}.
 }

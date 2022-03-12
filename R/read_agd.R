@@ -4,15 +4,14 @@
 #' AGD file. Return a tibble.
 #' @param file Full path to an agd file to read.
 #' @param tz Time zone to convert DateTime ticks to POSIX time.
-#' @return A \code{tibble} (\code{tbl}) of activity data with at
+#' @return A `tibble` of activity data with at
 #' least two columns: timestamp and axis1 counts. Optional columns
 #' include axis2, axis2, steps, lux and inclinometer indicators
 #' (incline off, standing, sitting and lying). The device settings
-#' are stored as attributes, which include \code{epochlength}.
-#' @references The AGD file format is described in the
-#' \href{https://actigraphcorp.com/support/manuals/actilife-6-manual/}{
-#' ActiLife 6 Manual}.
-#' @seealso \code{\link{read_agd_raw}}
+#' are stored as attributes, which include `epochlength`.
+#' @references The AGD file format is described in the ActiLife 6 Manual.
+#' <https://actigraphcorp.com/support/manuals/actilife-6-manual/>
+#' @seealso [read_agd_raw()]
 #' @examples
 #' file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
 #'   package = "actigraph.sleepr"
@@ -82,9 +81,9 @@ read_agd <- function(file, tz = "UTC") {
 #' available, the return list includes a capsense table as well.
 #' @references ActiLife 6 User's Manual by the ActiGraph Software
 #' Department. 04/03/2012.
-#' @references \code{covertagd}: R package for converting agd files
+#' @references `covertagd`: R package for converting agd files
 #' from ActiGraph into data.frames.
-#' @seealso \code{\link{read_agd}}
+#' @seealso [read_agd()]
 #' @examples
 #' file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
 #'   package = "actigraph.sleepr"

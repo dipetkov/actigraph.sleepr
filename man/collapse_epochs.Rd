@@ -7,33 +7,26 @@
 collapse_epochs(agdb, epoch_len_out, use_incomplete = TRUE)
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of
-activity data (at least)
-an \code{epochlength} attribute.}
+\item{agdb}{A \code{tibble} of activity data with an \code{epochlength} attribute.}
 
-\item{epoch_len_out}{Output (longer) epoch length in
-seconds, must be
+\item{epoch_len_out}{Output (longer) epoch length in seconds, must be
 exact multiple of the input epoch length. Currently only
 \code{epoch_len_out} = 60 is supported.}
 
-\item{use_incomplete}{logical. Set to \code{TRUE} to
-follow ActiLife
-convention, which collapses all observed epochs
-even if they are
+\item{use_incomplete}{logical. Set to \code{TRUE} to follow ActiLife
+convention, which collapses all observed epochs even if they are
 incomplete.}
 }
 \value{
-A \code{tibble} (\code{tbl}) of activity
-data collapsed into
-one-minute epochs.
+A \code{tibble} of activity data collapsed into one-minute epochs.
 }
 \description{
 Collapse post-filtered activity counts into
- larger epoch "buckets".
+larger epoch "buckets".
 }
 \details{
 Activity counts cannot be reintegrated into shorter epochs, e.g.,
-60s -> 10s. Currently, \code{collapse_epochs} integrates into 60s
+60s -> 10s. Currently, \code{\link[=collapse_epochs]{collapse_epochs()}} integrates into 60s
 epochs only. This is not general but is sufficient for sleep
 analysis because the standard Sadeh and Cole-Kripke sleep algorithms
 were developed for 60s epoch data.

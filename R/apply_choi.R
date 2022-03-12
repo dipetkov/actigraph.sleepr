@@ -4,8 +4,8 @@
 #' data from an ActiGraph device. Such intervals are likely to
 #' represent invalid data and therefore should be excluded from
 #' downstream analysis.
-#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least)
-#'  an \code{epochlength} attribute. The epoch length must be 60 seconds.
+#' @param agdb A `tibble` of activity data with an `epochlength` attribute.
+#' The epoch length must be 60 seconds.
 #' @inheritParams apply_troiano
 #' @param min_period_len Minimum number of consecutive "zero" epochs
 #' to start a non-wear period. The default is 90.
@@ -15,21 +15,20 @@
 #' @details
 #' The Choi algorithm extends the Troiano algorithm by requiring that
 #' short spikes of artifactual movement during a non-wear period are
-#'  preceded and followed by \code{min_window_len} consecutive "zero"
-#'  epochs.
+#' preceded and followed by `min_window_len` consecutive "zero" epochs.
 #'
 #' This implementation of the algorithm expects that the epochs are 60
 #' second long.
-#' @return A summary \code{tibble} of the detected non-wear periods.
+#' @return A summary `tibble` of the detected non-wear periods.
 #' If the activity data is grouped, then non-wear periods are
 #' detected separately for each group.
 #' @references L Choi, Z Liu, CE Matthews and MS Buchowski.
 #' Validation of accelerometer wear and nonwear time classification
-#' algorithm. \emph{Medicine & Science in Sports & Exercise},
+#' algorithm. *Medicine & Science in Sports & Exercise*,
 #' 43(2):357–364, 2011.
 #' @references ActiLife 6 User's Manual by the ActiGraph Software
 #' Department. 04/03/2012.
-#' @seealso \code{\link{apply_troiano}}, \code{\link{collapse_epochs}}
+#' @seealso [apply_troiano()], [collapse_epochs()]
 #' @examples
 #' library("dplyr")
 #' data("gtxplus1day")

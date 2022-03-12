@@ -6,10 +6,10 @@
 \title{actigraph.sleepr}
 \description{
 This package implements three standard algorithms for sleep
- detection from ActiGraph data: Sadeh, Cole-Kripke and Tudor-Locke.
+detection from ActiGraph data: Sadeh, Cole-Kripke and Tudor-Locke.
 }
 \details{
-In addition to the help pages, see the README page on
-\href{https://github.com/dipetkov/actigraph.sleepr}{github}
+In addition to the help pages, see the
+\href{https://github.com/dipetkov/actigraph.sleepr}{README}
 for examples.
 }

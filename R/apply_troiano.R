@@ -5,47 +5,47 @@
 #' invalid data and therefore should be excluded from downstream
 #' analysis. The algorithm formalizes a technique used to analyze the
 #' 2003-2004 NHANES data; the original SAS source code can be found at
-#' \url{https://riskfactor.cancer.gov/tools/nhanes_pam/}.
-#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least)
-#' an \code{epochlength} attribute. The epoch length must be 60 seconds.
+#' <https://riskfactor.cancer.gov/tools/nhanes_pam/>.
+#' @param agdb A `tibble` of activity data with an `epochlength` attribute.
+#' The epoch length must be 60 seconds.
 #' @param activity_threshold Highest activity level to be considered
 #' "zero"; an epoch with activity exceeding the threshold is considered
 #' a "spike". The default threshold is 0.
 #' @param min_period_len Minimum number of consecutive "zero" epoch to
 #' start a non-wear period. The default is 60.
 #' @param max_nonzero_count Epochs with activity greater than
-#' \code{max_nonzero_count} are labeled as "zero". The default is Inf.
+#' `max_nonzero_count` are labeled as "zero". The default is Inf.
 #' @param spike_tolerance Also known as artifactual movement interval.
-#' At most \code{spike_tolerance} "nonzero" epochs can occur in sequence
+#' At most `spike_tolerance` "nonzero" epochs can occur in sequence
 #' during a non-wear period without interrupting it. The default is 2.
-#' @param spike_stoplevel An activity spike that exceeds \code{spike_stoplevel}
-#'  counts ends a non-wear period, even if the spike tolerance has not been
-#'  reached. The default is 100.
+#' @param spike_stoplevel An activity spike that exceeds `spike_stoplevel`
+#' counts ends a non-wear period, even if the spike tolerance has not been
+#' reached. The default is 100.
 #' @param use_magnitude Logical. If true, the magnitude of the vector
 #' (axis1, axis2, axis3) is used to measure activity; otherwise the axis1
 #' value is used. The default is FALSE.
 #' @param endat_nnz_seq Logical. If true, a non-wear period ends with a run
-#' of nonzero epochs that is longer than \code{spike_tolerance}. This
-#' corresponds to the option \emph{"Require consecutive epochs outside of
-#' the activity threshold"} in ActiLife's Wear Time Validation menu.
-#' The default is \code{TRUE}.
+#' of nonzero epochs that is longer than `spike_tolerance`. This
+#' corresponds to the option *"Require consecutive epochs outside of
+#' the activity threshold"* in ActiLife's Wear Time Validation menu.
+#' The default is `TRUE`.
 #' @details
 #' The Troiano algorithm specifies that a non-wear period starts with
-#' \code{min_period_len} consecutive epochs/minutes of "zero" activity
-#' and ends with more than \code{spike_tolerance} epochs/minutes of
+#' `min_period_len` consecutive epochs/minutes of "zero" activity
+#' and ends with more than `spike_tolerance` epochs/minutes of
 #' "nonzero" activity.
 #'
 #' This implementation of the algorithm expects 60s epochs.
-#' @return A summary \code{tibble} of the detected non-wear periods.
+#' @return A summary `tibble` of the detected non-wear periods.
 #' If the activity data is grouped, then non-wear periods are detected
 #' separately for each group.
 #' @references RP Troiano, D Berrigan, KW Dodd, LC Mâsse, T Tilert and
 #' M McDowell. Physical activity in the united states measured by
-#' accelerometer. \emph{Medicine & Science in Sports & Exercise},
+#' accelerometer. *Medicine & Science in Sports & Exercise*,
 #' 40(1):181–188, 2008.
 #' @references ActiLife 6 User's Manual by the ActiGraph Software
 #' Department. 04/03/2012.
-#' @seealso \code{\link{apply_choi}}, \code{\link{collapse_epochs}}
+#' @seealso [apply_choi()], [collapse_epochs()]
 #' @examples
 #' library("dplyr")
 #' data("gtxplus1day")

@@ -62,10 +62,9 @@ attributes(agdb_10s)[10:12]
 ```
 
 Since the data is stored in a tibble, we can use the dplyr verbs
-(mutate, select, filter, summarise, group\_by, arrange) to manipulate
-the data. For example, let’s compute the vector magnitude of the
-three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 -
-lateral).
+(mutate, select, filter, summarise, group_by, arrange) to manipulate the
+data. For example, let’s compute the vector magnitude of the three-axis
+counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
 
 ``` r
 suppressMessages(library("dplyr"))

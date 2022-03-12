@@ -7,14 +7,12 @@
 impute_epochs(agdb, ...)
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least)
-an \code{epochlength} attribute.}
+\item{agdb}{A \code{tibble} of activity data with an \code{epochlength} attribute.}
 
 \item{...}{Comma separated list of unquoted variables.}
 }
 \value{
-A \code{tibble} (\code{tbl}) of activity data. Each variable
-in \code{...} is imputed.
+A\code{tibble} of activity data. Each variable in \code{...} is imputed.
 }
 \description{
 Trim leading and trailing NAs. Fill in the rest of the NAs using
@@ -29,5 +27,5 @@ gtxplus1day \%>\%
   impute_epochs(axis1)
 }
 \seealso{
-\code{\link[zoo]{na.spline}}, \code{\link[zoo]{na.trim}}
+\code{\link[zoo:na.approx]{zoo::na.spline()}}, \code{\link[zoo:na.trim]{zoo::na.trim()}}
 }

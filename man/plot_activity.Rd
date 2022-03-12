@@ -7,8 +7,7 @@
 plot_activity(agdb, var, color = "black", nrow = NULL, ncol = NULL)
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least)
-an \code{epochlength} attribute.}
+\item{agdb}{A \code{tibble} of activity data.}
 
 \item{var}{The activity variable (unquoted) to plot on the y-axis.}
 

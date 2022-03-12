@@ -2,22 +2,21 @@
 #'
 #' Find the complement of a set of time periods in a set of epochs.
 #' For illustration, let's use integers instead of time periods and
-#' epochs. Suppose we have two intervals/periods, \code{\{[1, 3], [8, 10]\}};
-#' their complement in the set \code{\{[0, ..., 12]\}} is
-#' \code{\{[0, 0], [4, 7], [11, 12]\}}.
+#' epochs. Suppose we have two intervals/periods, `{[1,3], [8,10]}`;
+#' their complement in the set `{[0, ..., 12]}` is `{[0,0], [4,7], [11,12]}`.
 #' @param periods A data frame with at least two columns,
-#' \code{start_var} and \code{end_var}, which are the first
+#' `start_var` and `end_var` which are the first
 #' and the last epoch in a set of time periods, e.g. sleep
 #' periods or (non)wear periods.
 #' @param epochs A data frame with at least one column,
-#' \code{timestamp}, which contains POSIXct objects.
+#' `timestamp`, which contains POSIXct objects.
 #' @param start_var The variable (unquoted) which indicates
 #' when the time periods start.
 #' @param end_var The variable (unquoted) which indicates when
 #' the time periods end.
 #' @return A data frame of time periods with three columns:
-#' \code{period_id} (a sequential identifier), \code{start_var}
-#' (first epoch in period) and \code{end_var} (last epoch in period).
+#' `period_id` (a sequential identifier), `start_var`
+#' (first epoch in period) and `end_var` (last epoch in period).
 #' @examples
 #' library("lubridate")
 #' library("dplyr")
@@ -68,7 +67,7 @@ complement_periods <- function(periods, epochs, start_var, end_var) {
 #' @param start The start time, as a POSIXct object.
 #' @param end The end time, as a POSIXct object.
 #' @param units The time unit as a characters string.
-#' The default is \code{"1 min"}.
+#' The default is `"1 min"`.
 #' @examples
 #' start <- as.POSIXct("2017-01-01")
 #' end <- as.POSIXct("2017-01-01 01:00:00")
@@ -84,8 +83,7 @@ expand_timestamp <- function(start, end, units = "1 min") {
 
 #' Expand time periods into a data frame of equally spaced time points
 #' @inheritParams complement_periods
-#' @param units The time unit as a characters string.
-#' The default is \code{"1 min"}.
+#' @param units The time unit as a characters string. The default is `"1 min"`.
 #' @examples
 #' library("dplyr")
 #' data("gtxplus1day")
@@ -126,8 +124,8 @@ expand_periods_ <- function(periods, start_var, end_var,
 }
 
 #' Guess the epoch length (in seconds) from the timestamp column
-#' @param epochs A data frame with at least one column,
-#' \code{timestamp}, which contains POSIXct objects.
+#' @param epochs A data frame with at least one column, `timestamp`,
+#' which contains POSIXct objects.
 #' @examples
 #' data("gtxplus1day")
 #'

@@ -7,8 +7,8 @@
 get_epoch_length(epochs)
 }
 \arguments{
-\item{epochs}{A data frame with at least one column,
-\code{timestamp}, which contains POSIXct objects.}
+\item{epochs}{A data frame with at least one column, \code{timestamp},
+which contains POSIXct objects.}
 }
 \description{
 Guess the epoch length (in seconds) from the timestamp column

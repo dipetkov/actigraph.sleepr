@@ -7,16 +7,14 @@
 has_missing_epochs(agdb)
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least)
-an \code{epochlength} attribute.}
+\item{agdb}{A \code{tibble} of activity data with an \code{epochlength} attribute.}
 }
 \value{
-True or false.
+\code{TRUE} or \code{FALSE}
 }
 \description{
-The timestamps in the agd time series should run from
-\code{first(timestamp)} to \code{last(timestamp)} in increments of
-\code{epochlength} seconds. This function checks whether this holds
-or not. If the data is grouped (e.g., by subject), the check is
-performed for each group separately.
+The timestamps in the agd time series should run from \code{first(timestamp)} to
+\code{last(timestamp)} in increments of \code{epochlength} seconds. This function
+checks whether this holds or not. If the data is grouped (e.g., by subject),
+the check is performed for each group separately.
 }

@@ -2,26 +2,19 @@
 #'
 #' Collapse post-filtered activity counts into
 #'  larger epoch "buckets".
-#' @param agdb A \code{tibble} (\code{tbl}) of
-#' activity data (at least)
-#' an \code{epochlength} attribute.
-#' @param epoch_len_out Output (longer) epoch length in
-#' seconds, must be
+#' @param agdb A `tibble` of activity data with an `epochlength` attribute.
+#' @param epoch_len_out Output (longer) epoch length in seconds, must be
 #' exact multiple of the input epoch length. Currently only
-#' \code{epoch_len_out} = 60 is supported.
-#' @param use_incomplete logical. Set to \code{TRUE} to
-#' follow ActiLife
-#' convention, which collapses all observed epochs
-#' even if they are
+#' `epoch_len_out` = 60 is supported.
+#' @param use_incomplete logical. Set to `TRUE` to follow ActiLife
+#' convention, which collapses all observed epochs even if they are
 #' incomplete.
-#' @return A \code{tibble} (\code{tbl}) of activity
-#' data collapsed into
-#' one-minute epochs.
+#' @return A `tibble` of activity data collapsed into one-minute epochs.
 #' @references ActiLife 6 User's Manual by the
 #' ActiGraph Software Department. 04/03/2012.
 #' @details
 #' Activity counts cannot be reintegrated into shorter epochs, e.g.,
-#' 60s -> 10s. Currently, \code{collapse_epochs} integrates into 60s
+#' 60s -> 10s. Currently, [collapse_epochs()] integrates into 60s
 #' epochs only. This is not general but is sufficient for sleep
 #' analysis because the standard Sadeh and Cole-Kripke sleep algorithms
 #' were developed for 60s epoch data.

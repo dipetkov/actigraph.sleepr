@@ -12,7 +12,7 @@ read_agd(file, tz = "UTC")
 \item{tz}{Time zone to convert DateTime ticks to POSIX time.}
 }
 \value{
-A \code{tibble} (\code{tbl}) of activity data with at
+A \code{tibble} of activity data with at
 least two columns: timestamp and axis1 counts. Optional columns
 include axis2, axis2, steps, lux and inclinometer indicators
 (incline off, standing, sitting and lying). The device settings
@@ -39,10 +39,9 @@ list.files(path, pattern = "*.agd", full.names = TRUE) \%>\%
   map_dfr(read_agd, .id = ".filename")
 }
 \references{
-The AGD file format is described in the
-\href{https://actigraphcorp.com/support/manuals/actilife-6-manual/}{
-ActiLife 6 Manual}.
+The AGD file format is described in the ActiLife 6 Manual.
+\url{https://actigraphcorp.com/support/manuals/actilife-6-manual/}
 }
 \seealso{
-\code{\link{read_agd_raw}}
+\code{\link[=read_agd_raw]{read_agd_raw()}}
 }

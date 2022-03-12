@@ -7,14 +7,12 @@
 apply_cole_kripke(agdb)
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data
-(at least) an \code{epochlength} attribute. The epoch length must
-be 60 seconds.}
+\item{agdb}{A \code{tibble} of activity data with an \code{epochlength} attribute.
+The epoch length must be 60 seconds.}
 }
 \value{
-A \code{tibble} (\code{tbl}) of activity data. A new column
-\code{sleep} indicates whether each 60s epoch is scored as asleep (S)
-or awake (W).
+A \code{tibble} of activity data. A new column \code{sleep} indicates
+whether each 60s epoch is scored as asleep (S) or awake (W).
 }
 \description{
 The Cole-Kripke sleep scoring algorithm is primarily used for adult
@@ -24,29 +22,25 @@ ranging from 35 to 65 years of age.
 \details{
 The original paper proposes three versions of the Cole-Kripke algorithm,
 optimized for 1-minute, 30-second and 10-second epochs. Here only the 1-min
-version is implemented and therefore the \code{apply_cole_kripke} function
-requires that the activity data is in 60s epochs. Use the
-\code{\link{collapse_epochs}} function to modify higher-frequency data,
-if necessary.
+version is implemented and therefore the \code{\link[=apply_cole_kripke]{apply_cole_kripke()}} function
+requires that the activity data is in 60s epochs. Use the \code{\link[=collapse_epochs]{collapse_epochs()}}
+function to modify higher-frequency data, if necessary.
 
 The Cole-Kripke algorithm uses the y-axis (axis 1) counts. First epoch
 counts are divided by 100 and any scaled counts over 300 are clipped to 300.
 This transformation is specific to ActiGraph devices. The sleep index (SI)
-is defined as
-
-\code{
-.001 * (106 * epoch_prev(4) + 54 * epoch_prev(3) +
+is defined as\preformatted{.001 * (106 * epoch_prev(4) + 54 * epoch_prev(3) +
          58 * epoch_prev(2) + 76 * epoch_prev(1) +
         230 * epoch +
          74 * epoch_next(1) + 67 * epoch_next(2))
 }
 
-where at epoch \code{t}, \code{epoch_prev(i)} is the scaled activity count
-\code{i} epochs before \code{t}. Similarly, \code{epoch_next(i)} is the
-scaled activity count \code{i} epochs before \code{t}. That is, the algorithm
-uses a 7-epoch window which includes the four preceding and the two
-subsequent epochs. The time series of activity counts is padded with zeros as
-necessary, at the beginning and at the end.
+where at epoch \code{t}, \code{epoch_prev(i)} is the scaled activity count \code{i} epochs
+\emph{before} \code{t}. Similarly, \code{epoch_next(i)} is the scaled activity count \code{i}
+epochs \emph{after} \code{t}. That is, the algorithm  uses a 7-epoch window which
+includes the four preceding and the two subsequent epochs. The time series
+of activity counts is padded with zeros as necessary, at the beginning and
+at the end.
 
 Finally, the sleep state is awake (W) if the sleep index SI is less
 than 1; otherwise the sleep state is asleep (S).
@@ -68,6 +62,5 @@ ActiLife 6 User's Manual by the ActiGraph Software
 Department. 04/03/2012.
 }
 \seealso{
-\code{\link{collapse_epochs}}, \code{\link{apply_sadeh}},
-\code{\link{apply_tudor_locke}}
+\code{\link[=collapse_epochs]{collapse_epochs()}}, \code{\link[=apply_sadeh]{apply_sadeh()}}, \code{\link[=apply_tudor_locke]{apply_tudor_locke()}}
 }

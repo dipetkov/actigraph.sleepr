@@ -13,8 +13,8 @@ apply_choi(
 )
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least)
-an \code{epochlength} attribute. The epoch length must be 60 seconds.}
+\item{agdb}{A \code{tibble} of activity data with an \code{epochlength} attribute.
+The epoch length must be 60 seconds.}
 
 \item{min_period_len}{Minimum number of consecutive "zero" epochs
 to start a non-wear period. The default is 90.}
@@ -45,8 +45,7 @@ downstream analysis.
 \details{
 The Choi algorithm extends the Troiano algorithm by requiring that
 short spikes of artifactual movement during a non-wear period are
- preceded and followed by \code{min_window_len} consecutive "zero"
- epochs.
+preceded and followed by \code{min_window_len} consecutive "zero" epochs.
 
 This implementation of the algorithm expects that the epochs are 60
 second long.
@@ -69,5 +68,5 @@ ActiLife 6 User's Manual by the ActiGraph Software
 Department. 04/03/2012.
 }
 \seealso{
-\code{\link{apply_troiano}}, \code{\link{collapse_epochs}}
+\code{\link[=apply_troiano]{apply_troiano()}}, \code{\link[=collapse_epochs]{collapse_epochs()}}
 }

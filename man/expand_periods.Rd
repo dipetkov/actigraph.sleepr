@@ -8,7 +8,7 @@ expand_periods(periods, start_var, end_var, units = "1 min")
 }
 \arguments{
 \item{periods}{A data frame with at least two columns,
-\code{start_var} and \code{end_var}, which are the first
+\code{start_var} and \code{end_var} which are the first
 and the last epoch in a set of time periods, e.g. sleep
 periods or (non)wear periods.}
 
@@ -18,8 +18,7 @@ when the time periods start.}
 \item{end_var}{The variable (unquoted) which indicates when
 the time periods end.}
 
-\item{units}{The time unit as a characters string.
-The default is \code{"1 min"}.}
+\item{units}{The time unit as a characters string. The default is \code{"1 min"}.}
 }
 \description{
 Expand time periods into a data frame of equally spaced time points

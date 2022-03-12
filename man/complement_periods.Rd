@@ -8,7 +8,7 @@ complement_periods(periods, epochs, start_var, end_var)
 }
 \arguments{
 \item{periods}{A data frame with at least two columns,
-\code{start_var} and \code{end_var}, which are the first
+\code{start_var} and \code{end_var} which are the first
 and the last epoch in a set of time periods, e.g. sleep
 periods or (non)wear periods.}
 
@@ -29,9 +29,8 @@ A data frame of time periods with three columns:
 \description{
 Find the complement of a set of time periods in a set of epochs.
 For illustration, let's use integers instead of time periods and
-epochs. Suppose we have two intervals/periods, \code{\{[1, 3], [8, 10]\}};
-their complement in the set \code{\{[0, ..., 12]\}} is
-\code{\{[0, 0], [4, 7], [11, 12]\}}.
+epochs. Suppose we have two intervals/periods, \verb{\{[1,3], [8,10]\}};
+their complement in the set \verb{\{[0, ..., 12]\}} is \verb{\{[0,0], [4,7], [11,12]\}}.
 }
 \examples{
 library("lubridate")

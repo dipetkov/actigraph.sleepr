@@ -1,20 +1,19 @@
 #' Combine epochs with sleep/nonwear periods
 #'
-#' Suppose we have used \code{apply_tudor_locke} to detect sleep periods
-#' or \code{apply_troiano}/\code{apply_choi} to detect non-wear periods.
+#' Suppose we have used [apply_tudor_locke()] to detect sleep periods
+#' or [apply_troiano()]/[apply_choi()] to detect non-wear periods.
 #' It might be useful to combine the epochs data with the periods data, so
 #' that each epoch is labeled according to which period it falls into, if
 #' any. Then we can easily slice the epochs data by sleep/non-sleep or
 #' wear/non-wear.
-#' @param epochs A \code{tibble} (\code{tbl}) of activity data with
-#' (at least) a timestamp column.
-#' @param periods A summary \code{tibble} of the (sleep or non-wear) periods.
-#' @param start_var The \code{periods} column which specifies when the
+#' @param epochs A `tibble` of activity data with a `timestamp` column.
+#' @param periods A summary `tibble` of the (sleep or non-wear) periods.
+#' @param start_var The `periods` column which specifies when the
 #' periods start.
-#' @param end_var The \code{periods} column which specifies when the
+#' @param end_var The `periods` column which specifies when the
 #' periods end.
-#' @return A \code{tibble} of activity data with one additional column,
-#' \code{period_id}, which indicates the period each epoch falls into.
+#' @return A `tibble` of activity data with one additional column,
+#' `period_id`, which indicates the period each epoch falls into.
 #' @examples
 #' library("dplyr")
 #' data("gtxplus1day")

@@ -4,8 +4,8 @@
 #' each period, computes sleep quality metrics such as total minutes in
 #'  bed, total sleep time, number and average length of awakenings,
 #'  movement and fragmentation index.
-#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least)
-#' an \code{epochlength} attribute. The epoch length must be 60 seconds.
+#' @param agdb A `tibble` of activity data with an `epochlength` attribute.
+#' The epoch length must be 60 seconds.
 #' Each epoch should be scored as asleep (S) or awake (W), using the Sadeh,
 #' the Cole-Kripke or a custom algorithm.
 #' @param n_bedtime_start Bedtime definition, in minutes. The default is 5.
@@ -16,7 +16,7 @@
 #' The default is 1440 (24 hours).
 #' @param min_nonzero_epochs Minimum number of epochs with non-zero
 #' activity. The default is 0.
-#' @return A summary \code{tibble} of the detected sleep periods.
+#' @return A summary `tibble` of the detected sleep periods.
 #' If the activity data is grouped, then sleep periods are detected
 #' separately for each group.
 #' \describe{
@@ -49,17 +49,17 @@
 #' @details
 #' Once each one-minute epoch is labeled as asleep (S) or awake (W),
 #' we can use the Tudor-Locke algorithm to detect periods of
-#' \emph{bedtime} and \emph{sleep time}. By definition, \emph{sleep time} <
-#' \emph{bedtime} since one can be in bed and not sleeping.
+#' *bedtime* and *sleep time*. By definition, *sleep time* <
+#' *bedtime* since one can be in bed and not sleeping.
 #'
-#' Bedtime is (the first minute of) \code{n_bedtime_start} consecutive
+#' Bedtime is (the first minute of) `n_bedtime_start` consecutive
 #' epochs/minutes labeled asleep (S). Similarly, wake time is
-#' (the first minute of) of \code{n_wake_time_end} consecutive
+#' (the first minute of) of `n_wake_time_end` consecutive
 #' epochs/minutes labeled awake (W), after a period of sleep.
 #' The block of time between bedtime and wake time is one sleep
-#' period, if the time elapsed is at least \code{min_sleep_period}
+#' period, if the time elapsed is at least `min_sleep_period`
 #' minutes. There can be multiple sleep periods in 24 hours but a
-#' sleep period cannot be longer than \code{max_sleep_period} minutes.
+#' sleep period cannot be longer than `max_sleep_period` minutes.
 #'
 #' For each sleep period, the algorithm calculates several measures of
 #' sleep quality such as time asleep and time awake, number and average
@@ -67,25 +67,23 @@
 #'
 #' This implementation of the Tudor-Locke algorithm detects all the sleep
 #' periods that ActiLife detects and, in some cases, it detects
-#' \emph{additional} sleep periods. There are (at least) two such cases:
-#' \enumerate{
-#'   \item{ActiLife filters out some sleep periods with \emph{exactly}
-#'   \code{min_nonzero_epochs} nonzero epochs. Alternatively, ActiLife
+#' *additional* sleep periods. There are (at least) two such cases:
+#' 1. ActiLife filters out some sleep periods with *exactly*
+#'   `min_nonzero_epochs` nonzero epochs. Alternatively, ActiLife
 #'   computes the number of nonzero epochs in a sleep period differently
-#'   and sometimes underestimates \code{nonzero_epochs} compared to
-#'   \code{apply_tudor_locke}.}
-#'   \item{ActiLife filters out sleep periods that end when the activity
-#'   data ends, i.e., when the \code{out_bed_time} is also the final
-#'   timestamp in the \code{agdb} table.}
-#' }
+#'   and sometimes underestimates `nonzero_epochs` compared to
+#'   [apply_tudor_locke()].
+#' 2. ActiLife filters out sleep periods that end when the activity
+#'   data ends, i.e., when the `out_bed_time` is also the final
+#'   timestamp in the `agdb` table.
 #' @references C Tudor-Locke, TV Barreira, JM Schuna Jr, EF Mire and
 #' PT Katzmarzyk. Fully automated waist-worn accelerometer algorithm
 #' for detecting children's sleep-period time separate from 24-h
-#' physical activity or sedentary behaviors. \emph{Applied Physiology},
+#' physical activity or sedentary behaviors. *Applied Physiology*,
 #'  Nutrition, and Metabolism, 39(1):53–57, 2014.
 #' @references ActiLife 6 User's Manual by the ActiGraph Software
 #' Department. 04/03/2012.
-#' @seealso \code{\link{apply_sadeh}}, \code{\link{apply_cole_kripke}}
+#' @seealso [apply_sadeh()], [apply_cole_kripke()]
 #' @examples
 #' library("dplyr")
 #' library("lubridate")

@@ -1,8 +1,6 @@
-#' A \code{tibble} (\code{tbl}) of activity data exported by an
-#' ActiGraph device
+#' A `tibble` of activity data exported by an ActiGraph device
 #'
-#' This \code{tbl} has several attributes, most importantly -
-#' \code{epochlength}.
+#' This tibble has several attributes, most importantly, `epochlength`.
 #' @param data A data frame of raw activity counts.
 #' @param settings A data frame of device settings.
 #' @export

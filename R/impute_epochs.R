@@ -2,12 +2,10 @@
 #'
 #' Trim leading and trailing NAs. Fill in the rest of the NAs using
 #' cubic spline interpolation.
-#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least)
-#' an \code{epochlength} attribute.
+#' @param agdb A `tibble` of activity data with an `epochlength` attribute.
 #' @param ... Comma separated list of unquoted variables.
-#' @return A \code{tibble} (\code{tbl}) of activity data. Each variable
-#' in \code{...} is imputed.
-#' @seealso \code{\link[zoo]{na.spline}}, \code{\link[zoo]{na.trim}}
+#' @return A`tibble` of activity data. Each variable in `...` is imputed.
+#' @seealso [zoo::na.spline()], [zoo::na.trim()]
 #' @examples
 #' library("dplyr")
 #' data("gtxplus1day")
@@ -42,14 +40,12 @@ impute_epochs_ <- function(data, selected) {
 }
 #' Checks whether there are gaps in the time series
 #'
-#' The timestamps in the agd time series should run from
-#' \code{first(timestamp)} to \code{last(timestamp)} in increments of
-#' \code{epochlength} seconds. This function checks whether this holds
-#' or not. If the data is grouped (e.g., by subject), the check is
-#' performed for each group separately.
-#' @param agdb A \code{tibble} (\code{tbl}) of activity data (at least)
-#' an \code{epochlength} attribute.
-#' @return True or false.
+#' The timestamps in the agd time series should run from `first(timestamp)` to
+#' `last(timestamp)` in increments of `epochlength` seconds. This function
+#' checks whether this holds or not. If the data is grouped (e.g., by subject),
+#' the check is performed for each group separately.
+#' @param agdb A `tibble` of activity data with an `epochlength` attribute.
+#' @return `TRUE` or `FALSE`
 #' @export
 has_missing_epochs <- function(agdb) {
   if (anyNA(agdb$timestamp)) {

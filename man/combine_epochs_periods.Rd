@@ -7,8 +7,7 @@
 combine_epochs_periods(epochs, periods, start_var, end_var)
 }
 \arguments{
-\item{epochs}{A \code{tibble} (\code{tbl}) of activity data with
-(at least) a timestamp column.}
+\item{epochs}{A \code{tibble} of activity data with a \code{timestamp} column.}
 
 \item{periods}{A summary \code{tibble} of the (sleep or non-wear) periods.}
 
@@ -23,8 +22,8 @@ A \code{tibble} of activity data with one additional column,
 \code{period_id}, which indicates the period each epoch falls into.
 }
 \description{
-Suppose we have used \code{apply_tudor_locke} to detect sleep periods
-or \code{apply_troiano}/\code{apply_choi} to detect non-wear periods.
+Suppose we have used \code{\link[=apply_tudor_locke]{apply_tudor_locke()}} to detect sleep periods
+or \code{\link[=apply_troiano]{apply_troiano()}}/\code{\link[=apply_choi]{apply_choi()}} to detect non-wear periods.
 It might be useful to combine the epochs data with the periods data, so
 that each epoch is labeled according to which period it falls into, if
 any. Then we can easily slice the epochs data by sleep/non-sleep or

@@ -41,5 +41,5 @@ Department. 04/03/2012.
 from ActiGraph into data.frames.
 }
 \seealso{
-\code{\link{read_agd}}
+\code{\link[=read_agd]{read_agd()}}
 }

@@ -16,8 +16,8 @@ apply_troiano(
 )
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least)
-an \code{epochlength} attribute. The epoch length must be 60 seconds.}
+\item{agdb}{A \code{tibble} of activity data with an \code{epochlength} attribute.
+The epoch length must be 60 seconds.}
 
 \item{activity_threshold}{Highest activity level to be considered
 "zero"; an epoch with activity exceeding the threshold is considered
@@ -86,5 +86,5 @@ ActiLife 6 User's Manual by the ActiGraph Software
 Department. 04/03/2012.
 }
 \seealso{
-\code{\link{apply_choi}}, \code{\link{collapse_epochs}}
+\code{\link[=apply_choi]{apply_choi()}}, \code{\link[=collapse_epochs]{collapse_epochs()}}
 }

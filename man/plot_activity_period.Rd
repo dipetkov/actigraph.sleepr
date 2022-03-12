@@ -17,8 +17,7 @@ plot_activity_period(
 )
 }
 \arguments{
-\item{agdb}{A \code{tibble} (\code{tbl}) of activity data (at least)
-an \code{epochlength} attribute.}
+\item{agdb}{A \code{tibble} of activity data.}
 
 \item{periods}{A \code{tibble} of periods with at least two columns
 \code{start_var} and \code{end_var}.}
