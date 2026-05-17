@@ -6,7 +6,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 [![R-CMD-check](https://github.com/dipetkov/actigraph.sleepr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dipetkov/actigraph.sleepr/actions/workflows/R-CMD-check.yaml)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sleepr?branch=master&svg=true)](https://ci.appveyor.com/project/dipetkov/actigraph.sleepr)
-[![codecov](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/dipetkov/actigraph.sleepr)
+[![codecov](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://app.codecov.io/gh/dipetkov/actigraph.sleepr)
 <!-- badges: end -->
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -14,10 +14,10 @@ Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sl
 ### `actigraph.sleepr`: Sleep and non-wear detection from ActiGraph data
 
 The `actigraph.sleepr` package implements three sleep scoring/detection
-algorithms: Sadeh (Sadeh, Sharkey, and Carskadon 1994), Cole-Kripke
-(Cole et al. 1992) and Tudor-Locke (Tudor-Locke et al. 2014) as well as
-two non-wear detection algorithms: Troiano (Troiano et al. 2008) and
-Choi (Choi et al. 2011).
+algorithms: Sadeh (Sadeh et al. 1994), Cole-Kripke (Cole et al. 1992)
+and Tudor-Locke (Tudor-Locke et al. 2014) as well as two non-wear
+detection algorithms: Troiano (Troiano et al. 2008) and Choi (Choi et
+al. 2011).
 
 ### Installation
 
@@ -29,10 +29,9 @@ remotes::install_github("dipetkov/actigraph.sleepr")
 ### Read AGD file(s)
 
 An AGD file is an SQLite database file exported by an ActiGraph device.
-See the [ActiLife 6 User
-manual](https://www.actigraphcorp.com/support/manuals/actilife-6-manual/).
-For illustration let’s use one day of sample data recorded by a GT3X+
-monitor.
+See the ActiLife 6 User’s Manual by the ActiGraph Software Department,
+04/03/2012 (Document SFT12DOC13, Revision A). For illustration let’s use
+one day of sample data recorded by a GT3X+ monitor.
 
 ``` r
 library("actigraph.sleepr")
@@ -40,6 +39,20 @@ file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
   package = "actigraph.sleepr"
 )
 agdb_10s <- read_agd(file_10s)
+#> Warning: There was 1 warning in `mutate()`.
+#> ℹ In argument: `across(matches("dateOfBirth"), ticks_to_dttm, tz = tz)`.
+#> Caused by warning:
+#> ! The `...` argument of `across()` is deprecated as of dplyr 1.1.0.
+#> Supply arguments directly to `.fns` through an anonymous function instead.
+#>
+#>   # Previously
+#>   across(a:b, mean, na.rm = TRUE)
+#>
+#>   # Now
+#>   across(a:b, \(x) mean(x, na.rm = TRUE))
+#> ℹ The deprecated feature was likely used in the actigraph.sleepr package.
+#>   Please report the issue at
+#>   <https://github.com/dipetkov/actigraph.sleepr/issues>.
 ```
 
 The `read_agd` function loads the raw activity measurements into a
@@ -99,6 +112,14 @@ that fall into the same 60s epoch.
 ``` r
 # Collapse epochs from 10 sec to 60 sec by summing
 agdb_60s <- agdb_10s %>% collapse_epochs(60)
+#> Warning: `when()` was deprecated in purrr 1.0.0.
+#> ℹ Please use `if` instead.
+#> ℹ The deprecated feature was likely used in the actigraph.sleepr package.
+#>   Please report the issue at
+#>   <https://github.com/dipetkov/actigraph.sleepr/issues>.
+#> This warning is displayed once per session.
+#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+#> generated.
 agdb_60s
 #> # A tibble: 1,500 × 4
 #>    timestamp           axis1 axis2 axis3
@@ -220,8 +241,7 @@ agdb_60s %>% apply_choi()
 
 ### References
 
-<div id="refs" class="references csl-bib-body hanging-indent"
-entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 
 <div id="ref-Choi:2011aa" class="csl-entry">
 
