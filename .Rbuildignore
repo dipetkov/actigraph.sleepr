@@ -13,3 +13,4 @@ actigraph\.bib$
 ^\.claude$
 ^doc$
 ^Meta$
+^CRAN-SUBMISSION$
