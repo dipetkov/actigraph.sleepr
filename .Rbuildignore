@@ -11,3 +11,5 @@ actigraph\.bib$
 ^\.github$
 ^\.positai$
 ^\.claude$
+^doc$
+^Meta$

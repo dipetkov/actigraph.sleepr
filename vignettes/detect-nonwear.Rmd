@@ -10,8 +10,7 @@ vignette: >
 ```{r setup, echo = FALSE}
 knitr::opts_chunk$set(
   echo = TRUE, warning = FALSE, message = FALSE, collapse = TRUE,
-  comment = "#>", out.width = "75%", fig.asp = 1 / 1.6, fig.width = 5,
-  dpi = 600, fig.retina = NULL
+  comment = "#>", out.width = "75%", fig.asp = 1 / 1.6, fig.width = 5
 )
 pckg <- c("actigraph.sleepr", "dplyr", "lubridate", "ggplot2")
 inst <- suppressMessages(lapply(pckg, library, character.only = TRUE))

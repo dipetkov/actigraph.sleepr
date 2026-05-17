@@ -1,3 +1,9 @@
+# actigraph.sleepr 0.3.0
+
+* First CRAN submission.
+* Read `*.agd` files directly via `DBI` and `RSQLite`, removing the
+  dependency on `dbplyr` (#16, @muschellij2).
+
 # actigraph.sleepr 0.2.0
 
 * Fixes bugs and updates to `dplyr` and `tidyr`.
