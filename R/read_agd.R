@@ -101,8 +101,8 @@ read_agd_raw <- function(file, tz = "UTC") {
   tables_agd <- db %>%
     DBI::dbGetQuery(statement = query)
   # %>%
-    # tbl(sql(query)) %>%
-    # collect()
+  # tbl(sql(query)) %>%
+  # collect()
   tables_agd <- tables_agd[["name"]]
   tables_required <- c("data", "sleep", "awakenings", "filters", "settings")
   assert_that(all(tables_required %in% tables_agd))
@@ -147,8 +147,8 @@ read_agd_raw <- function(file, tz = "UTC") {
 
   settings <- db %>%
     DBI::dbReadTable("settings")
-    # tbl("settings") %>%
-    # collect()
+  # tbl("settings") %>%
+  # collect()
   data <- select_dttms("data", "dataTimestamp")
   sleep <- select_dttms("sleep", c(
     "inBedTimestamp",
