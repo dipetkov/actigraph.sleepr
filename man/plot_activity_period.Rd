@@ -34,10 +34,7 @@ periods end.}
 
 \item{fill}{Polygon fill color.}
 
-\item{ncol}{Number of rows and columns. Relevant only if the
-activity data is grouped.}
-
-\item{nrow}{Number of rows and columns. Relevant only if the
+\item{nrow, ncol}{Number of rows and columns. Relevant only if the
 activity data is grouped.}
 }
 \description{

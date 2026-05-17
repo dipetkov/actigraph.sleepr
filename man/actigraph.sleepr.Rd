@@ -2,6 +2,7 @@
 % Please edit documentation in R/actigraph.sleepr-package.R
 \docType{package}
 \name{actigraph.sleepr}
+\alias{actigraph.sleepr-package}
 \alias{actigraph.sleepr}
 \title{actigraph.sleepr}
 \description{
@@ -12,4 +13,16 @@ detection from ActiGraph data: Sadeh, Cole-Kripke and Tudor-Locke.
 In addition to the help pages, see the
 \href{https://github.com/dipetkov/actigraph.sleepr}{README}
 for examples.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/dipetkov/actigraph.sleepr}
+  \item Report bugs at \url{https://github.com/dipetkov/actigraph.sleepr/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Desislava Petkova \email{desislavka@gmail.com}
+
 }

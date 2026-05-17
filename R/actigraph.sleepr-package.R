@@ -8,7 +8,6 @@
 #' for examples.
 #'
 #' @name actigraph.sleepr
-#' @docType package
 #' @useDynLib actigraph.sleepr, .registration = TRUE
 #' @import dplyr ggplot2
 #' @importFrom assertthat assert_that has_name noNA
@@ -18,6 +17,6 @@
 #' @importFrom zoo na.locf na.trim na.spline
 #' @importFrom RcppRoll roll_mean roll_sd roll_sum
 #' @importFrom lubridate duration ymd_hms time_length is.POSIXct floor_date
-NULL
+"_PACKAGE"
 
 globalVariables(c(".", "timestamp", "where"))

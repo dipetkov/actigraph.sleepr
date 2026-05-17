@@ -3,7 +3,7 @@
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![R-CMD-check](https://github.com/dipetkov/actigraph.sleepr/workflows/R-CMD-check/badge.svg)](https://github.com/dipetkov/actigraph.sleepr/actions)
+[![R-CMD-check](https://github.com/dipetkov/actigraph.sleepr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dipetkov/actigraph.sleepr/actions/workflows/R-CMD-check.yaml)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sleepr?branch=master&svg=true)](https://ci.appveyor.com/project/dipetkov/actigraph.sleepr)
 [![codecov](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/dipetkov/actigraph.sleepr)
@@ -84,7 +84,7 @@ agdb_10s %>%
 #>  8 2012-06-27 10:55:10   207   218   270      404.
 #>  9 2012-06-27 10:55:20     0     0     0        0 
 #> 10 2012-06-27 10:55:30     0     0     0        0 
-#> # … with 8,989 more rows
+#> # ℹ 8,989 more rows
 ```
 
 ### Reintegrate from 10s to 60s epochs
@@ -113,7 +113,7 @@ agdb_60s
 #>  8 2012-06-27 11:01:00     0     0     0
 #>  9 2012-06-27 11:02:00     0     0     0
 #> 10 2012-06-27 11:03:00     0     0     0
-#> # … with 1,490 more rows
+#> # ℹ 1,490 more rows
 ```
 
 ### Sleep scoring with the Sadeh algorithm
@@ -139,7 +139,7 @@ agdb_60s %>% apply_sadeh()
 #>  8 2012-06-27 11:01:00     0     0     0     0 S    
 #>  9 2012-06-27 11:02:00     0     0     0     0 S    
 #> 10 2012-06-27 11:03:00     0     0     0     0 S    
-#> # … with 1,490 more rows
+#> # ℹ 1,490 more rows
 ```
 
 ### Sleep scoring with the Cole-Kripke algorithm
@@ -166,7 +166,7 @@ agdb_60s %>% apply_cole_kripke()
 #>  8 2012-06-27 11:01:00     0     0     0  0    S    
 #>  9 2012-06-27 11:02:00     0     0     0  0    S    
 #> 10 2012-06-27 11:03:00     0     0     0  0    S    
-#> # … with 1,490 more rows
+#> # ℹ 1,490 more rows
 ```
 
 ### Sleep period detection with the Tudor-Locke algorithm
@@ -185,7 +185,7 @@ agdb_60s %>%
 #>   in_bed_time         out_bed_time        onset               latency efficiency
 #>   <dttm>              <dttm>              <dttm>                <int>      <dbl>
 #> 1 2012-06-28 00:03:00 2012-06-28 07:38:00 2012-06-28 00:03:00       0       97.1
-#> # … with 10 more variables: duration <int>, activity_counts <int>,
+#> # ℹ 10 more variables: duration <int>, activity_counts <int>,
 #> #   nonzero_epochs <int>, total_sleep_time <int>, wake_after_onset <int>,
 #> #   nb_awakenings <int>, ave_awakening <dbl>, movement_index <dbl>,
 #> #   fragmentation_index <dbl>, sleep_fragmentation_index <dbl>
@@ -220,7 +220,8 @@ agdb_60s %>% apply_choi()
 
 ### References
 
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
 <div id="ref-Choi:2011aa" class="csl-entry">
 
