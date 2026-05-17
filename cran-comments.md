@@ -15,3 +15,10 @@
 ## Notes for CRAN
 
 This is the first CRAN submission of `actigraph.sleepr`.
+
+The "Possibly misspelled words in DESCRIPTION" check flags the following terms,
+which are intentional:
+
+* Choi, Kripke, Sadeh, Troiano — author surnames of the cited algorithms
+  (Choi 2011, Cole-Kripke 1992, Sadeh 1994, Troiano 2008).
+* agd — the file extension used by ActiGraph devices for activity count exports.
