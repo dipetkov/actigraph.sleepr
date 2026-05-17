@@ -8,3 +8,5 @@ vignettes/*.html
 src/*.gcda
 src/*.gcno
 src/*.o.tmp
+.positai
+.claude

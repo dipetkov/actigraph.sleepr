@@ -9,3 +9,5 @@ actigraph\.bib$
 ^codecov\.yml$
 ^cran-comments\.md$
 ^\.github$
+^\.positai$
+^\.claude$
