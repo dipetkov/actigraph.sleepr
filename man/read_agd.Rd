@@ -39,8 +39,9 @@ list.files(path, pattern = "*.agd", full.names = TRUE) \%>\%
   map_dfr(read_agd, .id = ".filename")
 }
 \references{
-The AGD file format is described in the ActiLife 6 Manual.
-\url{https://actigraphcorp.com/support/manuals/actilife-6-manual/}
+The AGD file format is described in the ActiLife 6 User's
+Manual by the ActiGraph Software Department, 04/03/2012
+(Document SFT12DOC13, Revision A).
 }
 \seealso{
 \code{\link[=read_agd_raw]{read_agd_raw()}}

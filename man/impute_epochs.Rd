@@ -27,5 +27,5 @@ gtxplus1day \%>\%
   impute_epochs(axis1)
 }
 \seealso{
-\code{\link[zoo:na.approx]{zoo::na.spline()}}, \code{\link[zoo:na.trim]{zoo::na.trim()}}
+\code{\link[zoo:na.spline]{zoo::na.spline()}}, \code{\link[zoo:na.trim]{zoo::na.trim()}}
 }

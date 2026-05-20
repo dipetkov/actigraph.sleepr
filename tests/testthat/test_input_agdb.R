@@ -1,4 +1,3 @@
-
 library("actigraph.sleepr")
 library("dplyr")
 library("readr")

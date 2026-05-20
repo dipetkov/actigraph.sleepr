@@ -1,7 +1,8 @@
-linters: with_defaults(
-    trailing_blank_lines_linter = NULL, # 2
-    object_name_linter = NULL, # 1
-    dummy_linter = NULL
+linters: linters_with_defaults(
+    trailing_blank_lines_linter = NULL,
+    object_name_linter = NULL,
+    indentation_linter = NULL,
+    pipe_consistency_linter = pipe_consistency_linter(pipe = "%>%")
   )
 exclusions: list(
     "R/RcppExports.R",

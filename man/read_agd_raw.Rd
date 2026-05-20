@@ -35,7 +35,7 @@ str(read_agd_raw(file))
 }
 \references{
 ActiLife 6 User's Manual by the ActiGraph Software
-Department. 04/03/2012.
+Department, 04/03/2012 (Document SFT12DOC13, Revision A).
 
 \code{covertagd}: R package for converting agd files
 from ActiGraph into data.frames.
