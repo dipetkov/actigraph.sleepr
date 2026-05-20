@@ -25,4 +25,9 @@ Useful links:
 \author{
 \strong{Maintainer}: Desislava Petkova \email{desislavka@gmail.com}
 
+Authors:
+\itemize{
+  \item Desislava Petkova \email{desislavka@gmail.com}
+}
+
 }

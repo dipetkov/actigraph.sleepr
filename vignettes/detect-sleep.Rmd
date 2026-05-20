@@ -10,8 +10,7 @@ vignette: >
 ```{r setup, echo = FALSE}
 knitr::opts_chunk$set(
   echo = TRUE, warning = FALSE, message = FALSE, collapse = TRUE,
-  comment = "#>", out.width = "75%", fig.asp = 1 / 1.6, fig.width = 5,
-  dpi = 600, fig.retina = NULL
+  comment = "#>", out.width = "75%", fig.asp = 1 / 1.6, fig.width = 5
 )
 pckg <- c("actigraph.sleepr", "dplyr", "tidyr", "lubridate", "ggplot2")
 inst <- suppressMessages(lapply(pckg, library, character.only = TRUE))
@@ -32,7 +31,7 @@ file_10s <- system.file(
 
 ### Read AGD file(s)
 
-An AGD file is an SQLite database file exported by an ActiGraph device, which contains five tables: settings, data, sleep, awakenings and filters. The sleep and awakenings tables are empty unless the ActiLife tool has been used to analyze the activity counts to detect sleep. See the [ActiLife 6 User manual](https://actigraphcorp.com/support/manuals/actilife-6-manual/).
+An AGD file is an SQLite database file exported by an ActiGraph device, which contains five tables: settings, data, sleep, awakenings and filters. The sleep and awakenings tables are empty unless the ActiLife tool has been used to analyze the activity counts to detect sleep. See the ActiLife 6 User's Manual by the ActiGraph Software Department, 04/03/2012 (Document SFT12DOC13, Revision A).
 
 We can load all five tables as a list using the `read_agd_raw` function.
 
@@ -102,7 +101,7 @@ library("purrr")
 # Construct a path to the directory which contains the raw AGD files
 path <- system.file("extdata", package = "actigraph.sleepr")
 
-list.files(path, pattern = "*.agd", full.names  = TRUE)  %>%
+list.files(path, pattern = "*.agd", full.names = TRUE) %>%
   map_dfr(
     ~ read_agd(.) %>% collapse_epochs(60),
     .id = ".filename"

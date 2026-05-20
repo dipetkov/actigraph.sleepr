@@ -9,8 +9,9 @@
 #' include axis2, axis2, steps, lux and inclinometer indicators
 #' (incline off, standing, sitting and lying). The device settings
 #' are stored as attributes, which include `epochlength`.
-#' @references The AGD file format is described in the ActiLife 6 Manual.
-#' <https://actigraphcorp.com/support/manuals/actilife-6-manual/>
+#' @references The AGD file format is described in the ActiLife 6 User's
+#' Manual by the ActiGraph Software Department, 04/03/2012
+#' (Document SFT12DOC13, Revision A).
 #' @seealso [read_agd_raw()]
 #' @examples
 #' file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
@@ -80,7 +81,7 @@ read_agd <- function(file, tz = "UTC") {
 #' monitor removal when worn against the skin. If that data is
 #' available, the return list includes a capsense table as well.
 #' @references ActiLife 6 User's Manual by the ActiGraph Software
-#' Department. 04/03/2012.
+#' Department, 04/03/2012 (Document SFT12DOC13, Revision A).
 #' @references `covertagd`: R package for converting agd files
 #' from ActiGraph into data.frames.
 #' @seealso [read_agd()]
@@ -100,9 +101,6 @@ read_agd_raw <- function(file, tz = "UTC") {
   query <- "SELECT name FROM sqlite_master WHERE type = 'table'"
   tables_agd <- db %>%
     DBI::dbGetQuery(statement = query)
-  # %>%
-    # tbl(sql(query)) %>%
-    # collect()
   tables_agd <- tables_agd[["name"]]
   tables_required <- c("data", "sleep", "awakenings", "filters", "settings")
   assert_that(all(tables_required %in% tables_agd))
@@ -132,8 +130,6 @@ read_agd_raw <- function(file, tz = "UTC") {
     query <- paste0(query, " * FROM ", table)
     db %>%
       DBI::dbGetQuery(statement = query) %>%
-      # tbl(sql(query)) %>%
-      # collect(n = Inf) %>%
       select(
         -any_of(cols)
       ) %>%
@@ -147,8 +143,6 @@ read_agd_raw <- function(file, tz = "UTC") {
 
   settings <- db %>%
     DBI::dbReadTable("settings")
-    # tbl("settings") %>%
-    # collect()
   data <- select_dttms("data", "dataTimestamp")
   sleep <- select_dttms("sleep", c(
     "inBedTimestamp",

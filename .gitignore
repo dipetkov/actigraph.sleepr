@@ -9,3 +9,7 @@ src/*.gcda
 src/*.gcno
 src/*.o.tmp
 .positai
+.claude
+/doc/
+/Meta/
+

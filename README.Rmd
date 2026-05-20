@@ -18,7 +18,7 @@ rvers <- gsub(".*(\\d+.\\d+.\\d+).*", "\\1", rm)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![R-CMD-check](https://github.com/dipetkov/actigraph.sleepr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dipetkov/actigraph.sleepr/actions/workflows/R-CMD-check.yaml)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sleepr?branch=master&svg=true)](https://ci.appveyor.com/project/dipetkov/actigraph.sleepr)
-[![codecov](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/dipetkov/actigraph.sleepr)
+[![codecov](https://codecov.io/gh/dipetkov/actigraph.sleepr/branch/master/graph/badge.svg)](https://app.codecov.io/gh/dipetkov/actigraph.sleepr)
 <!-- badges: end -->
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -44,7 +44,7 @@ remotes::install_github("dipetkov/actigraph.sleepr")
 
 ### Read AGD file(s)
 
-An AGD file is an SQLite database file exported by an ActiGraph device. See the [ActiLife 6 User manual](https://www.actigraphcorp.com/support/manuals/actilife-6-manual/). For illustration let's use one day of sample data recorded by a GT3X+ monitor.
+An AGD file is an SQLite database file exported by an ActiGraph device. See the ActiLife 6 User's Manual by the ActiGraph Software Department, 04/03/2012 (Document SFT12DOC13, Revision A). For illustration let's use one day of sample data recorded by a GT3X+ monitor.
 
 ```{r }
 library("actigraph.sleepr")

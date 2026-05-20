@@ -58,7 +58,6 @@ collapse_epochs <- function(agdb, epoch_len_out,
 }
 
 collapse_epochs_ <- function(data, collapse_factor, use_incomplete) {
-
   # Exclude lux which is summarised by `floor(mean(lux))`
   vars_to_sum <- c(
     "axis1", "axis2", "axis3", "steps", "inclineoff", "inclinestanding",

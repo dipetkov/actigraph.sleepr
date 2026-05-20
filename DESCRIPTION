@@ -1,7 +1,7 @@
 Package: actigraph.sleepr
 Type: Package
 Title: Detect Periods of Sleep and Non-Wear from 'ActiGraph' Data
-Version: 0.2.1
+Version: 0.3.0
 Authors@R: c(person(given = "Desislava",
                     family = "Petkova",
                      email = "desislavka@gmail.com",
@@ -25,8 +25,8 @@ BugReports: https://github.com/dipetkov/actigraph.sleepr/issues
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
-NeedsCompilation: no
 Roxygen: list(markdown = TRUE)
+RoxygenNote: 8.0.0
 Depends:
     R (>= 3.2.4)
 Imports:
@@ -44,13 +44,12 @@ Imports:
     magrittr,
     tibble,
     tidyselect
-Suggests: 
+Suggests:
     covr,
     knitr,
     readr,
     rmarkdown,
     testthat,
-    tools,
     lintr
 VignetteBuilder: knitr
 LinkingTo: Rcpp
