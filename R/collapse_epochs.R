@@ -67,7 +67,7 @@ collapse_epochs_ <- function(data, collapse_factor, use_incomplete) {
 
   data %>%
     mutate(
-      across(.data$timestamp, floor_date, unit = "min")
+      across(.data$timestamp, \(x) floor_date(x, unit = "min"))
     ) %>%
     group_by(.data$timestamp) %>%
     when(
