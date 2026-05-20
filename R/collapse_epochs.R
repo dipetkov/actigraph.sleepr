@@ -69,8 +69,7 @@ collapse_epochs_ <- function(data, collapse_factor, use_incomplete) {
       across(.data$timestamp, \(x) floor_date(x, unit = "min"))
     ) %>%
     group_by(.data$timestamp)
-  if (use_incomplete) {
-    # change in purrr::when
+  if (!use_incomplete) {
     data = data %>%
       filter(n() == collapse_factor)
   }
