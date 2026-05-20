@@ -64,14 +64,17 @@ collapse_epochs_ <- function(data, collapse_factor, use_incomplete) {
     "inclinesitting", "inclinelying"
   )
 
-  data %>%
+  data = data %>%
     mutate(
       across(.data$timestamp, \(x) floor_date(x, unit = "min"))
     ) %>%
-    group_by(.data$timestamp) %>%
-    when(
-      use_incomplete ~ ., ~ filter(., n() == collapse_factor)
-    ) %>%
+    group_by(.data$timestamp)
+  if (use_incomplete) {
+    # change in purrr::when
+    data = data %>%
+      filter(n() == collapse_factor)
+  }
+  data %>%
     summarise(
       across(any_of(vars_to_sum), sum)
     )
