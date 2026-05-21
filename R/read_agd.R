@@ -57,8 +57,8 @@ read_agd <- function(file, tz = "UTC") {
       values_from = "settingvalue"
     ) %>%
     mutate(
-      across(matches("dateOfBirth"), \(x) ticks_to_dttm(x, tz = tz)),
-      across(ends_with("time"), \(x) ticks_to_dttm(x, tz = tz)),
+      across(matches("dateOfBirth"), function(x) ticks_to_dttm(x, tz = tz)),
+      across(ends_with("time"), function(x) ticks_to_dttm(x, tz = tz)),
       across(starts_with("epoch"), as.integer)
     )
 
