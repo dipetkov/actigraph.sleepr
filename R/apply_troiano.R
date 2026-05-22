@@ -154,7 +154,7 @@ apply_troiano_seq_ <- function(data,
       period_end = .data$timestamp + duration(.data$length, "mins")
     ) %>%
     select(
-      period_start = .data$timestamp, .data$period_end, .data$length
+      period_start = timestamp, period_end, length
     )
 }
 
@@ -177,7 +177,7 @@ apply_troiano_nonseq_ <- function(data,
       .data$length >= min_period_len
     ) %>%
     select(
-      period_start = .data$timestamp, .data$length
+      period_start = timestamp, length
     ) %>%
     mutate(
       period_end = .data$period_start + duration(.data$length, "mins")
@@ -191,6 +191,6 @@ apply_troiano_nonseq_ <- function(data,
       overlap(.data$a, .data$b)
     ) %>%
     select(
-      .data$period_start, .data$period_end, .data$length
+      period_start, period_end, length
     )
 }

@@ -56,7 +56,7 @@ complement_periods <- function(periods, epochs, start_var, end_var) {
       length = n()
     ) %>%
     select(
-      -.data$rev_id
+      -rev_id
     )
 }
 
@@ -122,10 +122,10 @@ expand_periods_ <- function(periods, start_var, end_var,
       )
     ) %>%
     select(
-      .data$period_id, .data$timestamp
+      period_id, timestamp
     ) %>%
     unnest(
-      cols = .data$timestamp
+      cols = timestamp
     )
 }
 

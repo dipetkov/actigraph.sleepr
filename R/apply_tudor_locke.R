@@ -266,19 +266,19 @@ apply_tudor_locke_ <- function(data,
     )
   result <- result %>%
     select(
-      in_bed_time = .data$timestamp, .data$out_bed_time, .data$onset,
-      .data$latency, .data$efficiency, .data$duration, .data$activity_counts,
-      .data$nonzero_epochs, .data$total_sleep_time, .data$wake_after_onset,
-      .data$nb_awakenings, .data$ave_awakening, .data$movement_index,
-      .data$fragmentation_index, .data$sleep_fragmentation_index
+      in_bed_time = timestamp, out_bed_time, onset,
+      latency, efficiency, duration, activity_counts,
+      nonzero_epochs, total_sleep_time, wake_after_onset,
+      nb_awakenings, ave_awakening, movement_index,
+      fragmentation_index, sleep_fragmentation_index
     )
   result <- result %>%
     mutate(
       across(
         c(
-          .data$latency, .data$activity_counts, .data$nonzero_epochs,
-          .data$duration, .data$total_sleep_time, .data$wake_after_onset,
-          .data$nb_awakenings
+          latency, activity_counts, nonzero_epochs,
+          duration, total_sleep_time, wake_after_onset,
+          nb_awakenings
         ),
         as.integer
       )
