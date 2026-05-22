@@ -10,6 +10,11 @@ get_epoch_length(epochs)
 \item{epochs}{A data frame with at least one column, \code{timestamp},
 which contains POSIXct objects.}
 }
+\value{
+A single numeric value: the epoch length in seconds, inferred
+from the spacing between consecutive timestamps. Throws an error if
+the timestamps are not equally spaced.
+}
 \description{
 Guess the epoch length (in seconds) from the timestamp column
 }

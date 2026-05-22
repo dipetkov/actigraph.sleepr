@@ -68,6 +68,8 @@ complement_periods <- function(periods, epochs, start_var, end_var) {
 #' @param end The end time, as a POSIXct object.
 #' @param units The time unit as a characters string.
 #' The default is `"1 min"`.
+#' @return A POSIXct vector of equally spaced time points starting at
+#' `start`, ending no later than `end`, and separated by `units`.
 #' @examples
 #' start <- as.POSIXct("2017-01-01")
 #' end <- as.POSIXct("2017-01-01 01:00:00")
@@ -84,6 +86,10 @@ expand_timestamp <- function(start, end, units = "1 min") {
 #' Expand time periods into a data frame of equally spaced time points
 #' @inheritParams complement_periods
 #' @param units The time unit as a characters string. The default is `"1 min"`.
+#' @return A data frame (tibble) with two columns: `period_id`, a
+#' sequential identifier of the input period, and `timestamp`, a
+#' POSIXct vector of time points within that period spaced by `units`.
+#' Any grouping of `periods` is preserved.
 #' @examples
 #' library("dplyr")
 #' data("gtxplus1day")
@@ -126,6 +132,9 @@ expand_periods_ <- function(periods, start_var, end_var,
 #' Guess the epoch length (in seconds) from the timestamp column
 #' @param epochs A data frame with at least one column, `timestamp`,
 #' which contains POSIXct objects.
+#' @return A single numeric value: the epoch length in seconds, inferred
+#' from the spacing between consecutive timestamps. Throws an error if
+#' the timestamps are not equally spaced.
 #' @examples
 #' data("gtxplus1day")
 #'

@@ -3,6 +3,9 @@
 #' This tibble has several attributes, most importantly, `epochlength`.
 #' @param data A data frame of raw activity counts.
 #' @param settings A data frame of device settings.
+#' @return A tibble (class `c("tbl_df", "tbl", "data.frame")`) containing
+#' the rows of `data`, with each column of `settings` attached as an
+#' attribute on the returned object (notably `epochlength`).
 #' @export
 tbl_agd <- function(data, settings) {
   assert_that(

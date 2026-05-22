@@ -11,6 +11,11 @@ tbl_agd(data, settings)
 
 \item{settings}{A data frame of device settings.}
 }
+\value{
+A tibble (class \code{c("tbl_df", "tbl", "data.frame")}) containing
+the rows of \code{data}, with each column of \code{settings} attached as an
+attribute on the returned object (notably \code{epochlength}).
+}
 \description{
 This tibble has several attributes, most importantly, \code{epochlength}.
 }

@@ -20,6 +20,12 @@ the time periods end.}
 
 \item{units}{The time unit as a characters string. The default is \code{"1 min"}.}
 }
+\value{
+A data frame (tibble) with two columns: \code{period_id}, a
+sequential identifier of the input period, and \code{timestamp}, a
+POSIXct vector of time points within that period spaced by \code{units}.
+Any grouping of \code{periods} is preserved.
+}
 \description{
 Expand time periods into a data frame of equally spaced time points
 }
