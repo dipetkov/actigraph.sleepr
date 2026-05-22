@@ -30,4 +30,9 @@ Authors:
   \item Desislava Petkova \email{desislavka@gmail.com}
 }
 
+Other contributors:
+\itemize{
+  \item John Muschelli [contributor]
+}
+
 }

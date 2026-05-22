@@ -13,7 +13,7 @@
 #' @importFrom assertthat assert_that has_name noNA
 #' @importFrom rlang .data quo_text is_scalar_integerish
 #' @importFrom tidyr pivot_wider unnest
-#' @importFrom purrr map map2 when
+#' @importFrom purrr map map2
 #' @importFrom zoo na.locf na.trim na.spline
 #' @importFrom RcppRoll roll_mean roll_sd roll_sum
 #' @importFrom lubridate duration ymd_hms time_length is.POSIXct floor_date

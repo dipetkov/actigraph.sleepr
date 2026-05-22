@@ -32,7 +32,7 @@
 read_agd <- function(file, tz = "UTC") {
   ticks_to_dttm <- function(ticks, tz) {
     as.POSIXct(as.numeric(ticks) / 1e7,
-      origin = "0001-01-01 00:00:00", tz
+      origin = "0001-01-01 00:00:00", tz = tz
     )
   }
 
@@ -57,8 +57,8 @@ read_agd <- function(file, tz = "UTC") {
       values_from = "settingvalue"
     ) %>%
     mutate(
-      across(matches("dateOfBirth"), ticks_to_dttm, tz = tz),
-      across(ends_with("time"), ticks_to_dttm, tz = tz),
+      across(matches("dateOfBirth"), function(x) ticks_to_dttm(x, tz = tz)),
+      across(ends_with("time"), function(x) ticks_to_dttm(x, tz = tz)),
       across(starts_with("epoch"), as.integer)
     )
 
