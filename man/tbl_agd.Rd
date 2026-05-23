@@ -7,15 +7,20 @@
 tbl_agd(data, settings)
 }
 \arguments{
-\item{data}{A data frame of raw activity counts.}
+\item{data}{A \code{tibble} of raw activity counts.}
 
-\item{settings}{A data frame of device settings.}
+\item{settings}{A \code{tibble} of device settings.}
 }
 \value{
-A tibble (class \code{c("tbl_df", "tbl", "data.frame")}) containing
-the rows of \code{data}, with each column of \code{settings} attached as an
-attribute on the returned object (notably \code{epochlength}).
+A \code{tibble} of activity data. It has a time index, \code{timestamp},
+one or more activity value columns, and attributes holding settings
+such as \code{epochlength}.
 }
 \description{
 This tibble has several attributes, most importantly, \code{epochlength}.
+}
+\examples{
+data("gtxplus1day")
+gtxplus1day
+attr(gtxplus1day, "epochlength")
 }

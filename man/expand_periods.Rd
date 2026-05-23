@@ -2,12 +2,12 @@
 % Please edit documentation in R/utils.R
 \name{expand_periods}
 \alias{expand_periods}
-\title{Expand time periods into a data frame of equally spaced time points}
+\title{Expand time periods into a \code{tibble} of equally spaced time points}
 \usage{
 expand_periods(periods, start_var, end_var, units = "1 min")
 }
 \arguments{
-\item{periods}{A data frame with at least two columns,
+\item{periods}{A \code{tibble} with at least two columns,
 \code{start_var} and \code{end_var} which are the first
 and the last epoch in a set of time periods, e.g. sleep
 periods or (non)wear periods.}
@@ -21,13 +21,12 @@ the time periods end.}
 \item{units}{The time unit as a characters string. The default is \code{"1 min"}.}
 }
 \value{
-A data frame (tibble) with two columns: \code{period_id}, a
-sequential identifier of the input period, and \code{timestamp}, a
-POSIXct vector of time points within that period spaced by \code{units}.
-Any grouping of \code{periods} is preserved.
+A \code{tibble} with two columns: \code{period_id} identifies the input period
+and \code{timestamp} is a POSIXct vector of time points within that period,
+equally spaced by \code{units}. Any grouping of \code{periods} is preserved.
 }
 \description{
-Expand time periods into a data frame of equally spaced time points
+Expand time periods into a \code{tibble} of equally spaced time points
 }
 \examples{
 library("dplyr")

@@ -7,13 +7,13 @@
 get_epoch_length(epochs)
 }
 \arguments{
-\item{epochs}{A data frame with at least one column, \code{timestamp},
+\item{epochs}{A \code{tibble} with at least one column, \code{timestamp},
 which contains POSIXct objects.}
 }
 \value{
-A single numeric value: the epoch length in seconds, inferred
-from the spacing between consecutive timestamps. Throws an error if
-the timestamps are not equally spaced.
+The epoch length in seconds, inferred from the spacing between
+consecutive timestamps. Throws an error if the time points are not
+equally spaced.
 }
 \description{
 Guess the epoch length (in seconds) from the timestamp column

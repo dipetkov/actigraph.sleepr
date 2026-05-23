@@ -38,9 +38,8 @@ periods end.}
 activity data is grouped.}
 }
 \value{
-A \code{ggplot} object: a column plot of activity values overlaid
-with semi-transparent rectangles spanning each period from
-\code{start_var} to \code{end_var}.
+A \code{ggplot} object. It shows the activity values as a time series
+and each period as a rectangle from \code{start_var} to \code{end_var}.
 }
 \description{
 Plot activity values as a time series and periods as polygons.

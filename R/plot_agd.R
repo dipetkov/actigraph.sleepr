@@ -7,8 +7,8 @@
 #' @param color Activity line color.
 #' @param nrow,ncol Number of rows and columns. Relevant only if the
 #' activity data is grouped.
-#' @return A `ggplot` object: a column plot of `var` against `timestamp`,
-#' faceted by group when `agdb` is grouped.
+#' @return A `ggplot` object. It shows the activity values in column `var`
+#' as a time series, faceted by group when the input `agdb` is grouped.
 #' @examples
 #' data("gtxplus1day")
 #' sub_gt3x <- gtxplus1day %>%
@@ -49,6 +49,7 @@ plot_activity <- function(agdb, var, color = "black",
   }
   p + theme_light() + labs(x = "time")
 }
+
 #' Plot activity and periods
 #'
 #' Plot activity values as a time series and periods as polygons.
@@ -61,9 +62,8 @@ plot_activity <- function(agdb, var, color = "black",
 #' @param end_var The variable (unquoted) which indicates when the time
 #'  periods end.
 #' @param fill Polygon fill color.
-#' @return A `ggplot` object: a column plot of activity values overlaid
-#' with semi-transparent rectangles spanning each period from
-#' `start_var` to `end_var`.
+#' @return A `ggplot` object. It shows the activity values as a time series
+#' and each period as a rectangle from `start_var` to `end_var`.
 #' @examples
 #' data("gtxplus1day")
 #'
