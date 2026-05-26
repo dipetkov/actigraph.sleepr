@@ -125,6 +125,6 @@ apply_choi_ <- function(data,
       period_end = .data$timestamp + duration(.data$length, "mins")
     ) %>%
     select(
-      period_start = .data$timestamp, .data$period_end, .data$length
+      period_start = "timestamp", "period_end", "length"
     )
 }

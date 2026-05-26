@@ -37,6 +37,10 @@ periods end.}
 \item{nrow, ncol}{Number of rows and columns. Relevant only if the
 activity data is grouped.}
 }
+\value{
+A \code{ggplot} object. It shows the activity values as a time series
+and each period as a rectangle from \code{start_var} to \code{end_var}.
+}
 \description{
 Plot activity values as a time series and periods as polygons.
 }

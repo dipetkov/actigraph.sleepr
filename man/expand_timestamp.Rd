@@ -14,6 +14,10 @@ expand_timestamp(start, end, units = "1 min")
 \item{units}{The time unit as a characters string.
 The default is \code{"1 min"}.}
 }
+\value{
+A POSIXct vector of equally spaced time points starting at
+\code{start}, ending no later than \code{end}, and separated by \code{units}.
+}
 \description{
 Given the start time and the end time of a period, expand it into a
 vector of equally spaced time points.

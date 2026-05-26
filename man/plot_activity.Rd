@@ -16,6 +16,10 @@ plot_activity(agdb, var, color = "black", nrow = NULL, ncol = NULL)
 \item{nrow, ncol}{Number of rows and columns. Relevant only if the
 activity data is grouped.}
 }
+\value{
+A \code{ggplot} object. It shows the activity values in column \code{var}
+as a time series, faceted by group when the input \code{agdb} is grouped.
+}
 \description{
 Plot a time series of activity values (by default, the counts on the
 vertical axis \emph{axis1}).

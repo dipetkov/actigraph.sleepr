@@ -1,8 +1,15 @@
 #' A `tibble` of activity data exported by an ActiGraph device
 #'
 #' This tibble has several attributes, most importantly, `epochlength`.
-#' @param data A data frame of raw activity counts.
-#' @param settings A data frame of device settings.
+#' @param data A `tibble` of raw activity counts.
+#' @param settings A `tibble` of device settings.
+#' @return A `tibble` of activity data. It has a time index, `timestamp`,
+#' one or more activity value columns, and attributes holding settings
+#' such as `epochlength`.
+#' @examples
+#' data("gtxplus1day")
+#' gtxplus1day
+#' attr(gtxplus1day, "epochlength")
 #' @export
 tbl_agd <- function(data, settings) {
   assert_that(

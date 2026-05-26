@@ -4,17 +4,17 @@
 #' For illustration, let's use integers instead of time periods and
 #' epochs. Suppose we have two intervals/periods, `{[1,3], [8,10]}`;
 #' their complement in the set `{[0, ..., 12]}` is `{[0,0], [4,7], [11,12]}`.
-#' @param periods A data frame with at least two columns,
+#' @param periods A `tibble` with at least two columns,
 #' `start_var` and `end_var` which are the first
 #' and the last epoch in a set of time periods, e.g. sleep
 #' periods or (non)wear periods.
-#' @param epochs A data frame with at least one column,
+#' @param epochs A `tibble` with at least one column,
 #' `timestamp`, which contains POSIXct objects.
 #' @param start_var The variable (unquoted) which indicates
 #' when the time periods start.
 #' @param end_var The variable (unquoted) which indicates when
 #' the time periods end.
-#' @return A data frame of time periods with three columns:
+#' @return A `tibble` of time periods with three columns:
 #' `period_id` (a sequential identifier), `start_var`
 #' (first epoch in period) and `end_var` (last epoch in period).
 #' @examples
@@ -56,7 +56,7 @@ complement_periods <- function(periods, epochs, start_var, end_var) {
       length = n()
     ) %>%
     select(
-      -.data$rev_id
+      -"rev_id"
     )
 }
 
@@ -68,6 +68,8 @@ complement_periods <- function(periods, epochs, start_var, end_var) {
 #' @param end The end time, as a POSIXct object.
 #' @param units The time unit as a characters string.
 #' The default is `"1 min"`.
+#' @return A POSIXct vector of equally spaced time points starting at
+#' `start`, ending no later than `end`, and separated by `units`.
 #' @examples
 #' start <- as.POSIXct("2017-01-01")
 #' end <- as.POSIXct("2017-01-01 01:00:00")
@@ -81,9 +83,12 @@ expand_timestamp <- function(start, end, units = "1 min") {
   seq(start, end, by = units)
 }
 
-#' Expand time periods into a data frame of equally spaced time points
+#' Expand time periods into a `tibble` of equally spaced time points
 #' @inheritParams complement_periods
 #' @param units The time unit as a characters string. The default is `"1 min"`.
+#' @return A `tibble` with two columns: `period_id` identifies the input period
+#' and `timestamp` is a POSIXct vector of time points within that period,
+#' equally spaced by `units`. Any grouping of `periods` is preserved.
 #' @examples
 #' library("dplyr")
 #' data("gtxplus1day")
@@ -116,16 +121,19 @@ expand_periods_ <- function(periods, start_var, end_var,
       )
     ) %>%
     select(
-      .data$period_id, .data$timestamp
+      "period_id", "timestamp"
     ) %>%
     unnest(
-      cols = .data$timestamp
+      cols = timestamp
     )
 }
 
 #' Guess the epoch length (in seconds) from the timestamp column
-#' @param epochs A data frame with at least one column, `timestamp`,
+#' @param epochs A `tibble` with at least one column, `timestamp`,
 #' which contains POSIXct objects.
+#' @return The epoch length in seconds, inferred from the spacing between
+#' consecutive timestamps. Throws an error if the time points are not
+#' equally spaced.
 #' @examples
 #' data("gtxplus1day")
 #'

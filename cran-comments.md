@@ -12,9 +12,18 @@
 
 0 errors | 0 warnings | 0 notes
 
-## Notes for CRAN
+## Resubmission
 
-This is the first CRAN submission of `actigraph.sleepr`.
+This is a resubmission of `actigraph.sleepr` in response to the reviewer
+comments on version 0.3.0. Changes:
+
+* Removed single quotes around `ActiGraph` in the Title and Description fields.
+* Added `\value{}` to the .Rd files of the following functions: `expand_periods`,
+  `expand_timestamp`, `get_epoch_length`, `plot_activity`, `plot_activity_period`,
+  `tbl_agd` and `pipe.Rd`.
+* References in the Description field are in `authors (year) <doi:...>` form.
+
+## Notes for CRAN
 
 The "Possibly misspelled words in DESCRIPTION" check flags the following terms,
 which are intentional:

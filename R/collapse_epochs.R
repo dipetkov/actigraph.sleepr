@@ -64,13 +64,13 @@ collapse_epochs_ <- function(data, collapse_factor, use_incomplete) {
     "inclinesitting", "inclinelying"
   )
 
-  data = data %>%
+  data <- data %>%
     mutate(
-      across(.data$timestamp, function(x) floor_date(x, unit = "min"))
+      across(timestamp, function(x) floor_date(x, unit = "min"))
     ) %>%
     group_by(.data$timestamp)
   if (!use_incomplete) {
-    data = data %>%
+    data <- data %>%
       filter(n() == collapse_factor)
   }
   data %>%

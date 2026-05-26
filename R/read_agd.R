@@ -40,7 +40,7 @@ read_agd <- function(file, tz = "UTC") {
   data <- agdb[["data"]] %>%
     rename_with(tolower) %>%
     rename(
-      timestamp = .data$datatimestamp
+      timestamp = "datatimestamp"
     ) %>%
     mutate(
       across(where(is.numeric), as.integer)

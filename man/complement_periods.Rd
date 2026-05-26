@@ -7,12 +7,12 @@
 complement_periods(periods, epochs, start_var, end_var)
 }
 \arguments{
-\item{periods}{A data frame with at least two columns,
+\item{periods}{A \code{tibble} with at least two columns,
 \code{start_var} and \code{end_var} which are the first
 and the last epoch in a set of time periods, e.g. sleep
 periods or (non)wear periods.}
 
-\item{epochs}{A data frame with at least one column,
+\item{epochs}{A \code{tibble} with at least one column,
 \code{timestamp}, which contains POSIXct objects.}
 
 \item{start_var}{The variable (unquoted) which indicates
@@ -22,7 +22,7 @@ when the time periods start.}
 the time periods end.}
 }
 \value{
-A data frame of time periods with three columns:
+A \code{tibble} of time periods with three columns:
 \code{period_id} (a sequential identifier), \code{start_var}
 (first epoch in period) and \code{end_var} (last epoch in period).
 }

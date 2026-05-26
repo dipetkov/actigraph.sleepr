@@ -11,14 +11,14 @@ Authors@R: c(person(given = "Desislava",
                   family = "Muschelli",
                   role = c("ctb"))
            )
-Description: Reads *.agd files exported from 'ActiGraph' devices; 
-  implements the Troiano <doi:10.1249/mss.0b013e31815a51b3> and 
-  Choi <doi:10.1249/MSS.0b013e3181ed61a3> algorithms for 
+Description: Reads *.agd files exported from ActiGraph devices;
+  implements the Troiano (2008) <doi:10.1249/mss.0b013e31815a51b3> and
+  Choi (2011) <doi:10.1249/MSS.0b013e3181ed61a3> algorithms for
   detecting periods on non-wear;
-  implements the Sadeh <doi:10.1093/sleep/17.3.201> and 
-  Cole-Kripke <doi:10.1093/sleep/15.5.461> algorithms for 
+  implements the Sadeh (1994) <doi:10.1093/sleep/17.3.201> and
+  Cole-Kripke (1992) <doi:10.1093/sleep/15.5.461> algorithms for
   detecting asleep/awake state
-  and the Tudor-Locke <doi:10.1139/apnm-2013-0173> algorithm 
+  and the Tudor-Locke (2014) <doi:10.1139/apnm-2013-0173> algorithm
   to detect sleep periods from asleep/awake states.
 URL: https://github.com/dipetkov/actigraph.sleepr
 BugReports: https://github.com/dipetkov/actigraph.sleepr/issues
