@@ -1,3 +1,7 @@
+# actigraph.sleepr 0.3.1
+
+* Added new tests and fixes for spelling.
+  
 # actigraph.sleepr 0.3.0
 
 * First CRAN submission.
