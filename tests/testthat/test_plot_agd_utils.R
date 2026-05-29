@@ -86,7 +86,9 @@ test_that("apply_cole_kripke errors on invalid inputs", {
   expect_error(apply_cole_kripke(bad_epoch), "60sec epochs")
 
   missing_ts <- tibble(
-    timestamp = c(start, start + 60, NA, start + 180, start + 240, start + 300, start + 360),
+    timestamp = c(
+      start, start + 60, NA, start + 180, start + 240, start + 300, start + 360
+    ),
     axis1 = rep(1, 7)
   )
   expect_error(apply_cole_kripke(missing_ts), "Missing timestamps")
@@ -133,7 +135,7 @@ test_that("expand_timestamp returns a regular sequence and validates inputs", {
   expect_error(expand_timestamp(1, end))
 })
 
-test_that("expand_periods expands each interval into equally spaced timestamps", {
+test_that("expand_periods expands intervals into equally spaced timestamps", {
   start <- as.POSIXct("2020-01-01 00:00:00", tz = "UTC")
   periods <- tibble(
     start = start + c(0, 180),
@@ -176,7 +178,10 @@ test_that("get_epoch_length infers the spacing and validates timestamps", {
   epochs <- tibble(timestamp = start + 60 * 0:4)
 
   expect_equal(get_epoch_length(epochs), 60)
-  expect_error(get_epoch_length(tibble(axis1 = 1:5)), "Tibble has no timestamp column")
+  expect_error(
+    get_epoch_length(tibble(axis1 = 1:5)),
+    "Tibble has no timestamp column"
+  )
 
   irregular <- tibble(timestamp = start + c(0, 60, 120, 240))
   expect_error(get_epoch_length(irregular), "Failed to determine epoch length")
@@ -185,6 +190,8 @@ test_that("get_epoch_length infers the spacing and validates timestamps", {
 test_that("mode and rleid helpers return the expected values", {
   expect_equal(actigraph.sleepr:::mode(c(1, 2, 2, 3)), 2)
   expect_equal(actigraph.sleepr:::mode(c(1, 1, 2, 2)), 1)
-  expect_equal(actigraph.sleepr:::rleid(c(TRUE, TRUE, FALSE, FALSE, TRUE)), c(1, 1, 2, 2, 3))
+  expect_equal(
+    actigraph.sleepr:::rleid(c(TRUE, TRUE, FALSE, FALSE, TRUE)),
+    c(1, 1, 2, 2, 3)
+  )
 })
-
