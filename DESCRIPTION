@@ -1,7 +1,7 @@
 Package: actigraph.sleepr
 Type: Package
-Title: Detect Periods of Sleep and Non-Wear in ActiGraph Data
-Version: 0.3.1
+Title: Detect Periods of Sleep and Non-Wear in 'ActiGraph' Data
+Version: 0.3.2
 Authors@R: c(person(given = "Desislava",
                     family = "Petkova",
                      email = "desislavka@gmail.com",
@@ -11,7 +11,7 @@ Authors@R: c(person(given = "Desislava",
                   family = "Muschelli",
                   role = c("ctb"))
            )
-Description: Reads *.agd files exported from ActiGraph devices;
+Description: Reads *.agd files exported from 'ActiGraph' devices;
   implements the Troiano (2008) <doi:10.1249/mss.0b013e31815a51b3> and
   Choi (2011) <doi:10.1249/MSS.0b013e3181ed61a3> algorithms for
   detecting periods on non-wear;
