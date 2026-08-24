@@ -1,3 +1,8 @@
+# actigraph.sleepr 0.4.0
+
+* Added Webster rescoring for Cole-Kripke.
+* Added Oakley sleep algorithm.
+
 # actigraph.sleepr 0.3.1
 
 * Added new tests and fixes for spelling.

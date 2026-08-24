@@ -33,7 +33,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-The `actigraph.sleepr` package implements three sleep scoring/detection algorithms: Sadeh [@Sadeh:1994aa], Cole-Kripke [@Cole:1992aa] and Tudor-Locke [@Tudor-Locke:2014aa] as well as two non-wear detection algorithms: Troiano [@Troiano:2008aa] and Choi [@Choi:2011aa].
+The `actigraph.sleepr` package implements four sleep scoring/detection algorithms: Sadeh [@Sadeh:1994aa], Cole-Kripke [@Cole:1992aa], Oakley [@Oakley:1997aa], and Tudor-Locke [@Tudor-Locke:2014aa], as well as two non-wear detection algorithms: Troiano [@Troiano:2008aa] and Choi [@Choi:2011aa].
 
 ### Installation
 

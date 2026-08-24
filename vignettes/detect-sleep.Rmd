@@ -20,7 +20,15 @@ theme_set(
 )
 ```
 
-The `actigraph.sleepr` package implements three sleep detection algorithms: Sadeh (Sadeh, Sharkey, and Carskadon 1994), Cole-Kripke (Cole et al. 1992) and Tudor-Locke (Tudor-Locke et al. 2014).For illustration let's use one day of sample data recorded by a GT3X+ monitor.
+The `actigraph.sleepr` package implements four sleep detection algorithms: Sadeh (Sadeh, Sharkey, and Carskadon 1994), Cole-Kripke (Cole et al. 1992), Oakley (Oakley 1997), and Tudor-Locke (Tudor-Locke et al. 2014). For illustration let's use one day of sample data recorded by a GT3X+ monitor.
+
+### Choosing a wrist algorithm
+
+Oakley is appropriate for wrist data: it was developed and validated for the Actiwatch wrist activity monitoring system (Oakley 1997). Its count scale and threshold come from Actiwatch software, so it should be used only when those inputs are comparable to the originating device/software.
+
+The Scripps Clinic algorithm is also a wrist-actigraphy method: its original publication is explicitly titled *Wrist actigraphic scoring for sleep laboratory patients* (Kripke et al. 2010). It is not implemented here because its published calibration and weighting scheme should be carried over only with compatible wrist-device counts.
+
+The Condor Sleep Model is not an appropriate general-purpose choice for ActiGraph wrist data. It was developed by Condor Instrument for its ActTrust devices, not for ActiGraph or Actiwatch counts; applying it to another device would require a device-specific validation.
 
 ```{r }
 file_10s <- system.file(
