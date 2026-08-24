@@ -11,8 +11,7 @@ apply_cole_kripke(agdb, rescoring = FALSE)
 The epoch length must be 60 seconds.}
 
 \item{rescoring}{Logical; apply Webster's rescoring rules to the initial
-Cole-Kripke scores. The default, \code{FALSE}, preserves the original
-Cole-Kripke output and the historical behavior of this function.}
+Cole-Kripke scores (default: \code{FALSE}).}
 }
 \value{
 A \code{tibble} of activity data. A new column \code{sleep} indicates

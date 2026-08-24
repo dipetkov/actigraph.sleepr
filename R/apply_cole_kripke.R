@@ -5,8 +5,7 @@
 #' ranging from 35 to 65 years of age.
 #' @inheritParams apply_sadeh
 #' @param rescoring Logical; apply Webster's rescoring rules to the initial
-#'   Cole-Kripke scores. The default, `FALSE`, preserves the original
-#'   Cole-Kripke output and the historical behavior of this function.
+#'   Cole-Kripke scores (default: `FALSE`).
 #' @return A `tibble` of activity data. A new column `sleep` indicates
 #' whether each 60s epoch is scored as asleep (S) or awake (W).
 #' @details
