@@ -18,6 +18,73 @@ test_that("apply_sadeh/apply_cole_kripke return same result as ActiLife 6", {
   expect_identical(agdb_colkrip$sleep, actilife$`cole-kripke`)
 })
 
+test_that("apply_oakley uses the published weights at supported epoch lengths", {
+  make_epochs <- function(epoch_length, counts) {
+    tibble(
+      timestamp = as.POSIXct("2020-01-01", tz = "UTC") +
+        seq_along(counts) * epoch_length,
+      axis1 = counts
+    )
+  }
+
+  expect_identical(
+    apply_oakley(make_epochs(60, c(100, 0, 0, 0, 0)), threshold = 10)$sleep,
+    c("W", "W", "S", "S", "S")
+  )
+  expect_identical(
+    apply_oakley(make_epochs(30, c(20, 0, 0, 0, 0)), threshold = 1)$sleep,
+    c("W", "W", "W", "S", "S")
+  )
+  expect_identical(
+    apply_oakley(make_epochs(15, c(10, rep(0, 8))), threshold = 1)$sleep,
+    c("W", "W", "W", "W", "W", "S", "S", "S", "S")
+  )
+  expect_identical(
+    apply_oakley(make_epochs(120, c(10, 0, 0)), threshold = 1)$sleep,
+    c("W", "W", "S")
+  )
+})
+
+test_that("apply_oakley supports the Actiwatch automatic threshold", {
+  epochs <- tibble(
+    timestamp = as.POSIXct("2020-01-01", tz = "UTC") + 0:3 * 60,
+    axis1 = c(4, 0, 8, 0)
+  )
+  result <- apply_oakley(epochs, threshold = "automatic")
+
+  # Threshold = 0.88888 * 12 / (2 mobile minutes) = 5.33328.
+  expect_identical(result$sleep, c("S", "S", "W", "S"))
+  expect_identical(attr(result, "sleep_algorithm"), "Oakley")
+  expect_error(
+    apply_oakley(mutate(epochs, axis1 = 0), threshold = "automatic"),
+    "no mobile epochs"
+  )
+})
+
+test_that("Webster rescoring implements all five published rules", {
+  expect_identical(webster_rescore(c(rep("W", 4), "S")), rep("W", 5))
+  expect_identical(webster_rescore(c(rep("W", 10), rep("S", 3))),
+    rep("W", 13))
+  expect_identical(webster_rescore(c(rep("W", 15), rep("S", 4))),
+    rep("W", 19))
+  expect_identical(webster_rescore(c(rep("W", 10), rep("S", 6), rep("W", 10))),
+    rep("W", 26))
+  expect_identical(webster_rescore(c(rep("W", 20), rep("S", 10), rep("W", 20))),
+    rep("W", 50))
+})
+
+test_that("Cole-Kripke rescoring is opt-in", {
+  epochs <- tibble(
+    timestamp = as.POSIXct("2020-01-01", tz = "UTC") + 0:20 * 60,
+    axis1 = c(rep(1000, 4), rep(0, 17))
+  )
+  unrescored <- apply_cole_kripke(epochs)
+  rescored <- apply_cole_kripke(epochs, rescoring = TRUE)
+
+  expect_identical(unrescored$sleep[9], "S")
+  expect_identical(rescored$sleep[9], "W")
+})
+
 context("Period detection algorithm")
 test_that("apply_tudor_locke returns a tibble", {
   file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",

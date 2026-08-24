@@ -4,11 +4,15 @@
 \alias{apply_cole_kripke}
 \title{Apply the Cole-Kripke algorithm}
 \usage{
-apply_cole_kripke(agdb)
+apply_cole_kripke(agdb, rescoring = FALSE)
 }
 \arguments{
 \item{agdb}{A \code{tibble} of activity data with an \code{epochlength} attribute.
 The epoch length must be 60 seconds.}
+
+\item{rescoring}{Logical; apply Webster's rescoring rules to the initial
+Cole-Kripke scores. The default, \code{FALSE}, preserves the original
+Cole-Kripke output and the historical behavior of this function.}
 }
 \value{
 A \code{tibble} of activity data. A new column \code{sleep} indicates
@@ -44,8 +48,15 @@ includes the four preceding and the two subsequent epochs. The time series
 of activity counts is padded with zeros as necessary, at the beginning and
 at the end.
 
-Finally, the sleep state is awake (W) if the sleep index SI is less
-than 1; otherwise the sleep state is asleep (S).
+Finally, the sleep state is asleep (S) if the sleep index SI is less
+than 1; otherwise the sleep state is awake (W).
+
+Set \code{rescoring = TRUE} to apply Webster's rules to the initial scores:
+the first 1, 3, or 4 sleep minutes after respectively 4, 10, or 15 wake
+minutes are rescored awake; sleep runs of at most 6 minutes surrounded by
+10 wake minutes on both sides, and runs of at most 10 minutes surrounded by
+20 wake minutes on both sides, are also rescored awake. These rules are
+applied simultaneously to the initial scores, as in pyActigraphy.
 }
 \examples{
 library("dplyr")
@@ -59,6 +70,10 @@ gtxplus1day \%>\%
 RJ Cole, DF Kripke, W Gruen, DJ Mullaney and JC Gillin.
 Automatic sleep/wake identification from wrist activity.
 \emph{Sleep}, 15(5):461–469, 1992.
+
+JB Webster, DF Kripke, S Messin, DJ Mullaney and G Wyborney.
+An activity-based sleep monitor system for ambulatory use.
+\emph{Sleep}, 5(4):389–399, 1982. \url{https://doi.org/10.1093/sleep/5.4.389}.
 
 ActiLife 6 User's Manual by the ActiGraph Software
 Department. 04/03/2012.

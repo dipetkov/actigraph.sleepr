@@ -13,11 +13,11 @@ Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sl
 
 ### `actigraph.sleepr`: Sleep and non-wear detection from ActiGraph data
 
-The `actigraph.sleepr` package implements three sleep scoring/detection
-algorithms: Sadeh (Sadeh et al. 1994), Cole-Kripke (Cole et al. 1992)
-and Tudor-Locke (Tudor-Locke et al. 2014) as well as two non-wear
-detection algorithms: Troiano (Troiano et al. 2008) and Choi (Choi et
-al. 2011).
+The `actigraph.sleepr` package implements four sleep scoring/detection
+algorithms: Sadeh (Sadeh et al. 1994), Cole-Kripke (Cole et al. 1992),
+Oakley (Oakley 1997), and Tudor-Locke (Tudor-Locke et al. 2014), as well as
+two non-wear detection algorithms: Troiano (Troiano et al. 2008) and Choi
+(Choi et al. 2011).
 
 ### Installation
 
