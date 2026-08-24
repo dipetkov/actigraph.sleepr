@@ -12,6 +12,27 @@ test_that("apply_troiano returns a tibble", {
   agdb_nonwear <- apply_troiano(agdb_60s)
   expect_s3_class(agdb_nonwear, "tbl")
 })
+test_that("apply_troiano uses vector magnitude when requested", {
+  epochs <- tbl_agd(
+    tibble::tibble(
+      timestamp = as.POSIXct("2020-01-01 00:00:00", tz = "UTC") + 60 * 0:8,
+      axis1 = 0,
+      axis2 = c(rep(0, 3), rep(1, 3), rep(0, 3)),
+      axis3 = 0
+    ),
+    tibble::tibble(epochlength = 60)
+  )
+
+  nonwear <- apply_troiano(
+    epochs,
+    min_period_len = 3,
+    use_magnitude = TRUE
+  )
+
+  expect_equal(nonwear$period_start, epochs$timestamp[c(1, 7)])
+  expect_equal(nonwear$length, c(3L, 3L))
+  expect_true(attr(nonwear, "use_magnitude"))
+})
 test_that("apply_troiano return same result as ActiLife 6", {
   agd_file <-
     system.file("extdata", "GT3XPlus-RawData-Day01.agd",
@@ -69,6 +90,28 @@ test_that("apply_troiano return same result as ActiLife 6", {
 
       actisleepr_periods
     })
+})
+test_that("apply_choi uses vector magnitude when requested", {
+  epochs <- tbl_agd(
+    tibble::tibble(
+      timestamp = as.POSIXct("2020-01-01 00:00:00", tz = "UTC") + 60 * 0:8,
+      axis1 = 0,
+      axis2 = c(rep(0, 3), rep(1, 3), rep(0, 3)),
+      axis3 = 0
+    ),
+    tibble::tibble(epochlength = 60)
+  )
+
+  nonwear <- apply_choi(
+    epochs,
+    min_period_len = 3,
+    min_window_len = 3,
+    use_magnitude = TRUE
+  )
+
+  expect_equal(nonwear$period_start, epochs$timestamp[c(1, 7)])
+  expect_equal(nonwear$length, c(3L, 3L))
+  expect_true(attr(nonwear, "use_magnitude"))
 })
 test_that("apply_choi return same result as ActiLife 6", {
   agd_file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
