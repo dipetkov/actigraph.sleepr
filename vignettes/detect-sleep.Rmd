@@ -49,14 +49,14 @@ agdb_10s_raw <- read_agd_raw(file_10s, tz = "UTC")
 names(agdb_10s_raw)
 ```
 
-Alternatively, we can use the `read_agd` function to get the raw activity measurements in a more convenient format: a `dplyr` data frame (a tibble) of timestamped activity counts, whose attributes are the device settings. However, further manipulations of the tibble using the `dplyr` verbs (e.g., `mutate`, `inner_join`) might drop these non-standard attributes, i.e., the attributes are not always inherited.
+Alternatively, we can use the `read_agd` function to get the raw activity measurements in a more convenient format: a `dplyr` data frame (a `tibble`) of timestamped activity counts, whose attributes are the device settings. However, further manipulations of the `tibble` using the `dplyr` verbs (e.g., `mutate`, `inner_join`) might drop these non-standard attributes, i.e., the attributes are not always inherited.
 
 ```{r }
 agdb_10s <- read_agd(file_10s, tz = "UTC")
 attributes(agdb_10s)[10:12]
 ```
 
-Since the data is stored in a tibble, we can use the dplyr verbs (mutate, select, filter, summarise, group_by, arrange) to manipulate the data. For example, let's compute the magnitude of the three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
+Since the data is stored in a `tibble`, we can use the `dplyr` verbs (`mutate`, `select`, `filter`, `summarise`, `group_by`, `arrange`) to manipulate the data. For example, let's compute the magnitude of the three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
 
 ```{r }
 agdb_10s <- agdb_10s %>%
@@ -132,16 +132,16 @@ SI = 7.601 - (0.065 * AVG) - (1.08 * NATS) - (0.056 * SD) - (0.703 * LG)
 
 where at epoch t:
 
-AVG
+`AVG`
  : the arithmetic mean (average) of the activity counts in an 11-epoch window centered at t;
  
-NATS
+`NATS`
  : the number of epochs in this 11-epoch window which have counts >= 50 and < 100;
  
-SD:
+`SD`
  : the standard deviation of the counts in a 6-epoch window that includes t and the five preceding epochs;
  
-LG
+`LG`
  : the natural (base e) logarithm of the activity at epoch t. To avoid taking the log of 0, we add 1 to the count.
 
 The time series of activity counts is padded with zeros as necessary, at the beginning and at the end, to compute the three functions AVG, SD, NATS within a rolling window. Finally, the sleep state is awake (W) if the sleep index SI is greater than -4; otherwise the sleep state is asleep (S).
@@ -178,10 +178,10 @@ Here are the details. The Cole-Kripke algorithm uses the y-axis (axis 1) counts;
 
 where  at epoch t:
 
-Epoch_prev(i)
+`Epoch_prev`(i)
  : the scaled activity count i epochs before t;
  
-Epoch_next(i)
+`Epoch_next`(i)
  : the scaled activity count i epochs after t.
 
 The time series of activity counts is padded with zeros as necessary, at the beginning and at the end. Finally, the sleep state is awake (W) if the sleep index SI is less than 1; otherwise the sleep state is asleep (S).

@@ -43,11 +43,11 @@ agdb_10s <- read_agd(file_10s)
 ```
 
 The `read_agd` function loads the raw activity measurements into a
-convenient format: a tibble (data frame) of timestamped activity counts,
-whose attributes are the device settings. However, further manipulations
-of the tibble using the `dplyr` verbs (e.g., `mutate`, `inner_join`)
-might drop these non-standard attributes, i.e., the attributes are not
-always inherited.
+convenient format: a `tibble` (data frame) of timestamped activity
+counts, whose attributes are the device settings. However, further
+manipulations of the `tibble` using the `dplyr` verbs (e.g., `mutate`,
+`inner_join`) might drop these non-standard attributes, i.e., the
+attributes are not always inherited.
 
 ``` r
 attributes(agdb_10s)[10:12]

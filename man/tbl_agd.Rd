@@ -17,7 +17,7 @@ one or more activity value columns, and attributes holding settings
 such as \code{epochlength}.
 }
 \description{
-This tibble has several attributes, most importantly, \code{epochlength}.
+This \code{tibble} has several attributes, most importantly, \code{epochlength}.
 }
 \examples{
 data("gtxplus1day")

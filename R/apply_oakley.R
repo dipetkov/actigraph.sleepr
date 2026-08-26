@@ -39,7 +39,7 @@
 #' <https://fccid.io/JIAAWR1/Users-Manual/USERS-MANUAL-1-920937>.
 #'
 #' The implementation and weights were cross-checked against the
-#' [pyActigraphy Oakley documentation](https://ghammad.github.io/pyActigraphy/_autosummary/pyActigraphy.sleep.ScoringMixin.Oakley.html).
+#' [`pyActigraphy` Oakley documentation](https://ghammad.github.io/pyActigraphy/_autosummary/pyActigraphy.sleep.ScoringMixin.Oakley.html).
 #' Its [source implementation](https://ghammad.github.io/pyActigraphy/_modules/pyActigraphy/sleep/scoring_base.html#ScoringMixin.Oakley)
 #' was also consulted.
 #' @seealso [apply_sadeh()], [apply_cole_kripke()]

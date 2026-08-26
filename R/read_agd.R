@@ -1,8 +1,8 @@
-#' Read activity counts from an *.agd file
+#' Read activity counts from an *.`agd` file
 #'
 #' Read ActiGraph sleep watch data from a database stored in an
-#' AGD file. Return a tibble.
-#' @param file Full path to an agd file to read.
+#' AGD file. Return a `tibble`.
+#' @param file Full path to an `agd` file to read.
 #' @param tz Time zone to convert DateTime ticks to POSIX time.
 #' @return A `tibble` of activity data with at
 #' least two columns: timestamp and axis1 counts. Optional columns

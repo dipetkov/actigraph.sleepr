@@ -61,7 +61,7 @@ Respironics, Inc. Available at
 \url{https://fccid.io/JIAAWR1/Users-Manual/USERS-MANUAL-1-920937}.
 
 The implementation and weights were cross-checked against the
-\href{https://ghammad.github.io/pyActigraphy/_autosummary/pyActigraphy.sleep.ScoringMixin.Oakley.html}{pyActigraphy Oakley documentation}.
+\href{https://ghammad.github.io/pyActigraphy/_autosummary/pyActigraphy.sleep.ScoringMixin.Oakley.html}{\code{pyActigraphy} Oakley documentation}.
 Its \href{https://ghammad.github.io/pyActigraphy/_modules/pyActigraphy/sleep/scoring_base.html#ScoringMixin.Oakley}{source implementation}
 was also consulted.
 }
