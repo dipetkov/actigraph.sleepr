@@ -44,6 +44,19 @@ testthat::test_that("group_by works as expected on tibble with time gap", {
   testthat::expect_false(agdb %>% has_missing_epochs())
 })
 
+testthat::test_that("collapse_epochs returns the input when epoch_length = 60", {
+  file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
+                      package = "actigraph.sleepr"
+  )
+  agdb <- read_agd(file) %>%
+    collapse_epochs(60)
+
+  collapsed <- agdb %>%
+    collapse_epochs(60)
+  testthat::expect_equal(agdb, collapsed)
+})
+
+
 testthat::context("Collapse to 60s epochs")
 testthat::test_that("collapse_epochs returns same result as ActiLife 6", {
   agd_file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",

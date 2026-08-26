@@ -3,6 +3,7 @@
 export("%>%")
 export(apply_choi)
 export(apply_cole_kripke)
+export(apply_oakley)
 export(apply_sadeh)
 export(apply_troiano)
 export(apply_tudor_locke)
