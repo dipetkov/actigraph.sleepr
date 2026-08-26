@@ -1,3 +1,4 @@
+
 <!-- badges: start -->
 
 [![Project Status: Active – The project has reached a stable, usable
@@ -15,9 +16,9 @@ Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sl
 
 The `actigraph.sleepr` package implements four sleep scoring/detection
 algorithms: Sadeh (Sadeh et al. 1994), Cole-Kripke (Cole et al. 1992),
-Oakley (Oakley 1997), and Tudor-Locke (Tudor-Locke et al. 2014), as well as
-two non-wear detection algorithms: Troiano (Troiano et al. 2008) and Choi
-(Choi et al. 2011).
+Oakley (Oakley 1997), and Tudor-Locke (Tudor-Locke et al. 2014), as well
+as two non-wear detection algorithms: Troiano (Troiano et al. 2008) and
+Choi (Choi et al. 2011).
 
 ### Installation
 
@@ -39,20 +40,6 @@ file_10s <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
   package = "actigraph.sleepr"
 )
 agdb_10s <- read_agd(file_10s)
-#> Warning: There was 1 warning in `mutate()`.
-#> ℹ In argument: `across(matches("dateOfBirth"), ticks_to_dttm, tz = tz)`.
-#> Caused by warning:
-#> ! The `...` argument of `across()` is deprecated as of dplyr 1.1.0.
-#> Supply arguments directly to `.fns` through an anonymous function instead.
-#>
-#>   # Previously
-#>   across(a:b, mean, na.rm = TRUE)
-#>
-#>   # Now
-#>   across(a:b, \(x) mean(x, na.rm = TRUE))
-#> ℹ The deprecated feature was likely used in the actigraph.sleepr package.
-#>   Please report the issue at
-#>   <https://github.com/dipetkov/actigraph.sleepr/issues>.
 ```
 
 The `read_agd` function loads the raw activity measurements into a
@@ -74,13 +61,15 @@ attributes(agdb_10s)[10:12]
 #> [1] "true"
 ```
 
-Since the data is stored in a tibble, we can use the dplyr verbs
-(mutate, select, filter, summarise, group_by, arrange) to manipulate the
-data. For example, let’s compute the vector magnitude of the three-axis
-counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
+Since the data is stored in a `tibble`, we can use the `dplyr` verbs
+(`mutate`, `select`, `filter`, `summarise`, `group_by`, `arrange`) to
+manipulate the data. For example, let’s compute the vector magnitude of
+the three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 -
+lateral).
 
 ``` r
 suppressMessages(library("dplyr"))
+#> Warning: package 'dplyr' was built under R version 4.4.3
 agdb_10s <- agdb_10s %>% select(timestamp, starts_with("axis"))
 agdb_10s %>%
   mutate(magnitude = sqrt(axis1^2 + axis2^2 + axis3^2))
@@ -112,14 +101,6 @@ that fall into the same 60s epoch.
 ``` r
 # Collapse epochs from 10 sec to 60 sec by summing
 agdb_60s <- agdb_10s %>% collapse_epochs(60)
-#> Warning: `when()` was deprecated in purrr 1.0.0.
-#> ℹ Please use `if` instead.
-#> ℹ The deprecated feature was likely used in the actigraph.sleepr package.
-#>   Please report the issue at
-#>   <https://github.com/dipetkov/actigraph.sleepr/issues>.
-#> This warning is displayed once per session.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-#> generated.
 agdb_60s
 #> # A tibble: 1,500 × 4
 #>    timestamp           axis1 axis2 axis3
@@ -256,6 +237,14 @@ Algorithm.” *Medicine & Science in Sports & Exercise* 43 (2): 357–64.
 Cole, Roger J, Daniel F Kripke, William Gruen, Daniel J Mullaney, and J
 Christian Gillin. 1992. “Automatic Sleep/Wake Identification from Wrist
 Activity.” *Sleep* 15 (5): 461–69.
+
+</div>
+
+<div id="ref-Oakley:1997aa" class="csl-entry">
+
+Oakley, Neil R. 1997. *Validation with Polysomnography of the Sleepwatch
+Sleep/Wake Scoring Algorithm Used by the Actiwatch Activity Monitoring
+System*. Mini-Mitter.
 
 </div>
 
