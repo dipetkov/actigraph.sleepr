@@ -2,12 +2,12 @@
 % Please edit documentation in R/read_agd.R
 \name{read_agd}
 \alias{read_agd}
-\title{Read activity counts from an *.agd file}
+\title{Read activity counts from an *.\code{agd} file}
 \usage{
 read_agd(file, tz = "UTC")
 }
 \arguments{
-\item{file}{Full path to an agd file to read.}
+\item{file}{Full path to an \code{agd} file to read.}
 
 \item{tz}{Time zone to convert DateTime ticks to POSIX time.}
 }
@@ -20,7 +20,7 @@ are stored as attributes, which include \code{epochlength}.
 }
 \description{
 Read ActiGraph sleep watch data from a database stored in an
-AGD file. Return a tibble.
+AGD file. Return a \code{tibble}.
 }
 \examples{
 file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",

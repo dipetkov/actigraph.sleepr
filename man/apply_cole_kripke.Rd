@@ -55,7 +55,7 @@ the first 1, 3, or 4 sleep minutes after respectively 4, 10, or 15 wake
 minutes are rescored awake; sleep runs of at most 6 minutes surrounded by
 10 wake minutes on both sides, and runs of at most 10 minutes surrounded by
 20 wake minutes on both sides, are also rescored awake. These rules are
-applied simultaneously to the initial scores, as in pyActigraphy.
+applied simultaneously to the initial scores, as in \code{pyActigraphy}.
 }
 \examples{
 library("dplyr")

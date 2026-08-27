@@ -1,6 +1,6 @@
 #' A `tibble` of activity data exported by an ActiGraph device
 #'
-#' This tibble has several attributes, most importantly, `epochlength`.
+#' This `tibble` has several attributes, most importantly, `epochlength`.
 #' @param data A `tibble` of raw activity counts.
 #' @param settings A `tibble` of device settings.
 #' @return A `tibble` of activity data. It has a time index, `timestamp`,

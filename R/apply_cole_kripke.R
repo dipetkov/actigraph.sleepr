@@ -40,7 +40,7 @@
 #' minutes are rescored awake; sleep runs of at most 6 minutes surrounded by
 #' 10 wake minutes on both sides, and runs of at most 10 minutes surrounded by
 #' 20 wake minutes on both sides, are also rescored awake. These rules are
-#' applied simultaneously to the initial scores, as in pyActigraphy.
+#' applied simultaneously to the initial scores, as in `pyActigraphy`.
 #'
 #' @references RJ Cole, DF Kripke, W Gruen, DJ Mullaney and JC Gillin.
 #' Automatic sleep/wake identification from wrist activity.
@@ -94,7 +94,7 @@ apply_cole_kripke_1min_ <- function(data, rescoring = FALSE) {
 
 # Webster et al. (1982) rescoring rules, applied to the initial scoring.
 # Each rule uses the unrescored sequence; this matches the reference
-# implementation in pyActigraphy.
+# implementation in `pyActigraphy`.
 webster_rescore <- function(sleep) {
   sleep <- as.character(sleep)
   r <- rle(sleep == "S")
