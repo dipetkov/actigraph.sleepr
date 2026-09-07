@@ -32,6 +32,7 @@ Depends:
     R (>= 3.2.4)
 Imports:
     DBI,
+    Rcpp,
     RcppRoll,
     RSQLite,
     dplyr (>= 1.0.1),
