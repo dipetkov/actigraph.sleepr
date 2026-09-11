@@ -63,14 +63,22 @@ test_that("apply_oakley supports the Actiwatch automatic threshold", {
 
 test_that("Webster rescoring implements all five published rules", {
   expect_identical(webster_rescore(c(rep("W", 4), "S")), rep("W", 5))
-  expect_identical(webster_rescore(c(rep("W", 10), rep("S", 3))),
-    rep("W", 13))
-  expect_identical(webster_rescore(c(rep("W", 15), rep("S", 4))),
-    rep("W", 19))
-  expect_identical(webster_rescore(c(rep("W", 10), rep("S", 6), rep("W", 10))),
-    rep("W", 26))
-  expect_identical(webster_rescore(c(rep("W", 20), rep("S", 10), rep("W", 20))),
-    rep("W", 50))
+  expect_identical(
+    webster_rescore(c(rep("W", 10), rep("S", 3))),
+    rep("W", 13)
+  )
+  expect_identical(
+    webster_rescore(c(rep("W", 15), rep("S", 4))),
+    rep("W", 19)
+  )
+  expect_identical(
+    webster_rescore(c(rep("W", 10), rep("S", 6), rep("W", 10))),
+    rep("W", 26)
+  )
+  expect_identical(
+    webster_rescore(c(rep("W", 20), rep("S", 10), rep("W", 20))),
+    rep("W", 50)
+  )
 })
 
 test_that("Cole-Kripke rescoring is opt-in", {

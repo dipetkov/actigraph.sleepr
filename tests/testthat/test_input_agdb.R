@@ -46,7 +46,7 @@ testthat::test_that("group_by works as expected on tibble with time gap", {
 
 testthat::test_that("collapse_epochs returns the input when epoch_length = 60", {
   file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
-                      package = "actigraph.sleepr"
+    package = "actigraph.sleepr"
   )
   agdb <- read_agd(file) %>%
     collapse_epochs(60)
