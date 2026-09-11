@@ -27,7 +27,6 @@ License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 8.0.0
 Depends:
     R (>= 3.2.4)
 Imports:
@@ -55,3 +54,4 @@ Suggests:
     lintr
 VignetteBuilder: knitr
 LinkingTo: Rcpp
+Config/roxygen2/version: 8.1.0

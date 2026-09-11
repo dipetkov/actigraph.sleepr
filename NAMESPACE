@@ -23,26 +23,40 @@ export(tbl_agd)
 import(dplyr)
 import(ggplot2)
 importFrom(Rcpp,evalCpp)
-importFrom(RcppRoll,roll_mean)
-importFrom(RcppRoll,roll_sd)
-importFrom(RcppRoll,roll_sum)
-importFrom(assertthat,assert_that)
-importFrom(assertthat,has_name)
-importFrom(assertthat,noNA)
-importFrom(lubridate,duration)
-importFrom(lubridate,floor_date)
-importFrom(lubridate,is.POSIXct)
-importFrom(lubridate,time_length)
-importFrom(lubridate,ymd_hms)
+importFrom(RcppRoll,
+  roll_mean,
+  roll_sd,
+  roll_sum
+)
+importFrom(assertthat,
+  assert_that,
+  has_name,
+  noNA
+)
+importFrom(lubridate,
+  duration,
+  floor_date,
+  is.POSIXct,
+  time_length,
+  ymd_hms
+)
 importFrom(magrittr,"%>%")
-importFrom(purrr,map)
-importFrom(purrr,map2)
-importFrom(rlang,.data)
-importFrom(rlang,is_scalar_integerish)
-importFrom(rlang,quo_text)
-importFrom(tidyr,pivot_wider)
-importFrom(tidyr,unnest)
-importFrom(zoo,na.locf)
-importFrom(zoo,na.spline)
-importFrom(zoo,na.trim)
+importFrom(purrr,
+  map,
+  map2
+)
+importFrom(rlang,
+  .data,
+  is_scalar_integerish,
+  quo_text
+)
+importFrom(tidyr,
+  pivot_wider,
+  unnest
+)
+importFrom(zoo,
+  na.locf,
+  na.spline,
+  na.trim
+)
 useDynLib(actigraph.sleepr, .registration = TRUE)
