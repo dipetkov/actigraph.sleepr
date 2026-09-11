@@ -72,7 +72,7 @@ Automatic sleep/wake identification from wrist activity.
 
 JB Webster, DF Kripke, S Messin, DJ Mullaney and G Wyborney.
 An activity-based sleep monitor system for ambulatory use.
-\emph{Sleep}, 5(4):389–399, 1982. \url{https://doi.org/10.1093/sleep/5.4.389}.
+\emph{Sleep}, 5(4):389–399, 1982. \doi{10.1093/sleep/5.4.389}.
 
 ActiLife 6 User's Manual by the ActiGraph Software
 Department. 04/03/2012.

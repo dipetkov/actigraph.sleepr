@@ -47,7 +47,7 @@
 #' *Sleep*, 15(5):461–469, 1992.
 #' @references JB Webster, DF Kripke, S Messin, DJ Mullaney and G Wyborney.
 #' An activity-based sleep monitor system for ambulatory use.
-#' *Sleep*, 5(4):389–399, 1982. <https://doi.org/10.1093/sleep/5.4.389>.
+#' *Sleep*, 5(4):389–399, 1982. \doi{10.1093/sleep/5.4.389}.
 #' @references ActiLife 6 User's Manual by the ActiGraph Software
 #' Department. 04/03/2012.
 #' @seealso [collapse_epochs()], [apply_sadeh()], [apply_tudor_locke()]
