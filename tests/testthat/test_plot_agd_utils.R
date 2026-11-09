@@ -1,10 +1,10 @@
 library("dplyr")
-library("ggplot2")
 library("tibble")
 
 context("Plotting helpers")
 
 test_that("plot_activity uses a constant fill when color is not a column", {
+  skip_if_not_installed("ggplot2")
   start <- as.POSIXct("2020-01-01 00:00:00", tz = "UTC")
   agdb <- tibble(
     timestamp = start + 60 * 0:5,
@@ -17,18 +17,19 @@ test_that("plot_activity uses a constant fill when color is not a column", {
   expect_s3_class(p, "ggplot")
   expect_s3_class(p$facet, "FacetNull")
 
-  built <- ggplot_build(p)
+  built <- ggplot2::ggplot_build(p)
   expect_length(unique(built$data[[1]]$fill), 1)
 })
 
 test_that("plot_activity maps fill and facets grouped data", {
+  skip_if_not_installed("ggplot2")
   start <- as.POSIXct("2020-01-01 00:00:00", tz = "UTC")
   agdb <- tibble(
     subject = c("a", "a", "b", "b"),
     timestamp = start + 60 * 0:3,
     axis1 = c(1, 2, 3, 4),
     sleep = c("S", "W", "S", "W")
-  ) %>%
+  ) |>
     group_by(subject)
 
   p <- plot_activity(agdb, axis1, color = "sleep", nrow = 1, ncol = 2)
@@ -36,11 +37,12 @@ test_that("plot_activity maps fill and facets grouped data", {
   expect_s3_class(p, "ggplot")
   expect_s3_class(p$facet, "FacetWrap")
 
-  built <- ggplot_build(p)
+  built <- ggplot2::ggplot_build(p)
   expect_gt(length(unique(built$data[[1]]$fill)), 1)
 })
 
 test_that("plot_activity_period adds a rectangle layer for the periods", {
+  skip_if_not_installed("ggplot2")
   start <- as.POSIXct("2020-01-01 00:00:00", tz = "UTC")
   agdb <- tibble(
     timestamp = start + 60 * 0:5,

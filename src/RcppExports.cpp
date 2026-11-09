@@ -10,6 +10,42 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// roll_sum_
+NumericVector roll_sum_(NumericVector x, int n);
+RcppExport SEXP _actigraph_sleepr_roll_sum_(SEXP xSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(roll_sum_(x, n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// roll_mean_
+NumericVector roll_mean_(NumericVector x, int n);
+RcppExport SEXP _actigraph_sleepr_roll_mean_(SEXP xSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(roll_mean_(x, n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// roll_sd_
+NumericVector roll_sd_(NumericVector x, int n);
+RcppExport SEXP _actigraph_sleepr_roll_sd_(SEXP xSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(roll_sd_(x, n));
+    return rcpp_result_gen;
+END_RCPP
+}
 // wle
 IntegerVector wle(NumericVector counts, int act_thresh, int spike_tol, int spike_stop);
 RcppExport SEXP _actigraph_sleepr_wle(SEXP countsSEXP, SEXP act_threshSEXP, SEXP spike_tolSEXP, SEXP spike_stopSEXP) {
@@ -38,6 +74,9 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_actigraph_sleepr_roll_sum_", (DL_FUNC) &_actigraph_sleepr_roll_sum_, 2},
+    {"_actigraph_sleepr_roll_mean_", (DL_FUNC) &_actigraph_sleepr_roll_mean_, 2},
+    {"_actigraph_sleepr_roll_sd_", (DL_FUNC) &_actigraph_sleepr_roll_sd_, 2},
     {"_actigraph_sleepr_wle", (DL_FUNC) &_actigraph_sleepr_wle, 4},
     {"_actigraph_sleepr_overlap", (DL_FUNC) &_actigraph_sleepr_overlap, 2},
     {NULL, NULL, 0}

@@ -5,35 +5,39 @@
 #' @param agdb A `tibble` of activity data with an `epochlength` attribute.
 #' @param ... Comma separated list of unquoted variables.
 #' @return A`tibble` of activity data. Each variable in `...` is imputed.
-#' @seealso [zoo::na.spline()], [zoo::na.trim()]
+#' @seealso [stats::splinefun()]
 #' @examples
 #' library("dplyr")
 #' data("gtxplus1day")
 #'
 #' gtxplus1day$axis1[5:10] <- NA
-#' gtxplus1day %>%
+#' gtxplus1day |>
 #'   impute_epochs(axis1)
 #' @export
 impute_epochs <- function(agdb, ...) {
-  selected <- tidyselect::vars_select(names(agdb), ...)
+  selected <- tidyselect::eval_select(
+    rlang::expr(c(...)), agdb,
+    allow_rename = FALSE
+  )
+  selected <- names(agdb)[selected]
   if (length(selected) == 0) {
     return(agdb)
   }
 
-  agdb %>%
+  agdb |>
     group_modify(
       ~ impute_epochs_(., selected)
     )
 }
 impute_epochs_ <- function(data, selected) {
-  impute <- function(x) pmax(round(na.spline(x)), 0)
+  impute <- function(x) pmax(round(na_spline(x)), 0)
 
-  data %>%
-    select(timestamp, !!!selected) %>%
-    na.trim() %>%
+  data |>
+    select(timestamp, !!!selected) |>
+    na_trim() |>
     inner_join(data,
       by = c("timestamp", selected)
-    ) %>%
+    ) |>
     mutate(
       across(all_of(selected), impute)
     )
@@ -52,7 +56,7 @@ has_missing_epochs <- function(agdb) {
     return(TRUE)
   }
 
-  agdb <- agdb %>%
+  agdb <- agdb |>
     group_modify(
       ~ has_missing_epochs_(.)
     )

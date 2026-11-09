@@ -47,8 +47,8 @@
 #' library("dplyr")
 #' data("gtxplus1day")
 #'
-#' gtxplus1day %>%
-#'   collapse_epochs(60) %>%
+#' gtxplus1day |>
+#'   collapse_epochs(60) |>
 #'   apply_oakley()
 #' @export
 apply_oakley <- function(agdb, threshold = 40) {
@@ -56,7 +56,7 @@ apply_oakley <- function(agdb, threshold = 40) {
 
   attr(agdb, "sleep_algorithm") <- "Oakley"
 
-  agdb %>% group_modify(
+  agdb |> group_modify(
     ~ apply_oakley_(., get_epoch_length(.), threshold)
   )
 }
@@ -109,5 +109,5 @@ apply_oakley_ <- function(data, epoch_length, threshold) {
     numeric(1)
   )
 
-  data %>% mutate(sleep = if_else(score <= threshold, "S", "W"))
+  data |> mutate(sleep = if_else(score <= threshold, "S", "W"))
 }

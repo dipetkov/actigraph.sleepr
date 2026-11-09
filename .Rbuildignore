@@ -14,3 +14,6 @@ actigraph\.bib$
 ^doc$
 ^Meta$
 ^CRAN-SUBMISSION$
+^src/.*\.o$
+^src/.*\.so$
+^src/.*\.dll$

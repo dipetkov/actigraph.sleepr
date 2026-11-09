@@ -1,7 +1,7 @@
 Package: actigraph.sleepr
 Type: Package
 Title: Detect Periods of Sleep and Non-Wear in 'ActiGraph' Data
-Version: 0.4.0
+Version: 0.5.0
 Authors@R: c(person(given = "Desislava",
                     family = "Petkova",
                      email = "desislavka@gmail.com",
@@ -28,30 +28,26 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 Depends:
-    R (>= 3.2.4)
+    R (>= 4.1.0)
 Imports:
     DBI,
     Rcpp,
-    RcppRoll,
     RSQLite,
     dplyr (>= 1.0.1),
-    tidyr (>= 1.1.1),
     assertthat,
-    ggplot2,
     lubridate,
-    purrr,
     rlang,
-    zoo,
-    magrittr,
     tibble,
-    tidyselect
+    tidyselect (>= 1.2.0)
 Suggests:
     covr,
+    ggplot2,
     knitr,
     readr,
+    RcppRoll,
     rmarkdown,
     testthat,
-    lintr
+    zoo
 VignetteBuilder: knitr
 LinkingTo: Rcpp
-Config/roxygen2/version: 8.1.0
+Config/roxygen2/version: 8.1.1

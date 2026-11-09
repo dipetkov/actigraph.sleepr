@@ -72,8 +72,8 @@ This implementation of the algorithm expects 60s epochs.
 library("dplyr")
 data("gtxplus1day")
 
-gtxplus1day \%>\%
-  collapse_epochs(60) \%>\%
+gtxplus1day |>
+  collapse_epochs(60) |>
   apply_troiano()
 }
 \references{

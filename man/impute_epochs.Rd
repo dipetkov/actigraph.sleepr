@@ -23,9 +23,9 @@ library("dplyr")
 data("gtxplus1day")
 
 gtxplus1day$axis1[5:10] <- NA
-gtxplus1day \%>\%
+gtxplus1day |>
   impute_epochs(axis1)
 }
 \seealso{
-\code{\link[zoo:na.spline]{zoo::na.spline()}}, \code{\link[zoo:na.trim]{zoo::na.trim()}}
+\code{\link[stats:splinefun]{stats::splinefun()}}
 }

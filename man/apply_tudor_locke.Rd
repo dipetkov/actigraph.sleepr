@@ -110,21 +110,21 @@ data("gtxplus1day")
 
 # Detect sleep periods using Sadeh as the sleep/awake algorithm
 # and Tudor-Locke as the sleep period algorithm
-agdb <- gtxplus1day \%>\%
-  collapse_epochs(60) \%>\%
+agdb <- gtxplus1day |>
+  collapse_epochs(60) |>
   filter(day(timestamp) == 28)
-periods_sleep <- agdb \%>\%
-  apply_sadeh() \%>\%
+periods_sleep <- agdb |>
+  apply_sadeh() |>
   apply_tudor_locke(min_sleep_period = 60)
 periods_sleep
 
 # Group and summarize by an extra varible (hour < 6 or not), which
 # splits one long sleep period in two
-agdb <- agdb \%>\%
-  mutate(hour_lt6 = hour(timestamp) < 6) \%>\%
+agdb <- agdb |>
+  mutate(hour_lt6 = hour(timestamp) < 6) |>
   group_by(hour_lt6)
-periods_sleep <- agdb \%>\%
-  apply_sadeh() \%>\%
+periods_sleep <- agdb |>
+  apply_sadeh() |>
   apply_tudor_locke(min_sleep_period = 60)
 periods_sleep
 }

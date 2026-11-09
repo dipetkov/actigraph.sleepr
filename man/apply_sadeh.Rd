@@ -55,8 +55,8 @@ is greater than -4; otherwise the sleep state is awake (W).
 library("dplyr")
 data("gtxplus1day")
 
-gtxplus1day \%>\%
-  collapse_epochs(60) \%>\%
+gtxplus1day |>
+  collapse_epochs(60) |>
   apply_sadeh()
 }
 \references{

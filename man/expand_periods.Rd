@@ -32,8 +32,8 @@ Expand time periods into a \code{tibble} of equally spaced time points
 library("dplyr")
 data("gtxplus1day")
 
-gtxplus1day \%>\%
-  collapse_epochs(60) \%>\%
-  apply_choi(min_period_len = 45) \%>\%
+gtxplus1day |>
+  collapse_epochs(60) |>
+  apply_choi(min_period_len = 45) |>
   expand_periods(period_start, period_end, units = "30 mins")
 }

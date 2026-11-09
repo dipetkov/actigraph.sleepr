@@ -91,21 +91,21 @@
 #'
 #' # Detect sleep periods using Sadeh as the sleep/awake algorithm
 #' # and Tudor-Locke as the sleep period algorithm
-#' agdb <- gtxplus1day %>%
-#'   collapse_epochs(60) %>%
+#' agdb <- gtxplus1day |>
+#'   collapse_epochs(60) |>
 #'   filter(day(timestamp) == 28)
-#' periods_sleep <- agdb %>%
-#'   apply_sadeh() %>%
+#' periods_sleep <- agdb |>
+#'   apply_sadeh() |>
 #'   apply_tudor_locke(min_sleep_period = 60)
 #' periods_sleep
 #'
 #' # Group and summarize by an extra varible (hour < 6 or not), which
 #' # splits one long sleep period in two
-#' agdb <- agdb %>%
-#'   mutate(hour_lt6 = hour(timestamp) < 6) %>%
+#' agdb <- agdb |>
+#'   mutate(hour_lt6 = hour(timestamp) < 6) |>
 #'   group_by(hour_lt6)
-#' periods_sleep <- agdb %>%
-#'   apply_sadeh() %>%
+#' periods_sleep <- agdb |>
+#'   apply_sadeh() |>
 #'   apply_tudor_locke(min_sleep_period = 60)
 #' periods_sleep
 #' @export
@@ -123,7 +123,7 @@ apply_tudor_locke <- function(agdb,
   # * min_nonzero_epochs < min_sleep_period
   # * n_bedtime_start + n_wake_time_end < min_sleep_period
 
-  sleep <- agdb %>%
+  sleep <- agdb |>
     group_modify(
       ~ apply_tudor_locke_(
         ., n_bedtime_start, n_wake_time_end,
@@ -172,14 +172,14 @@ apply_tudor_locke_ <- function(data,
   #
   # Note that we don't always end up flipping short S's to W's and
   # short W's to S's. That's why we first set short runs to NA and
-  # then impute them with na.locf.
+  # then impute them with na_locf.
 
-  result <- data %>%
+  result <- data |>
     # First round of `group_by`, `summarise`, `mutate` operations
     # Return the stop/end indices for runs of repeated value
     group_by(
       rleid = rleid(.data$sleep)
-    ) %>%
+    ) |>
     summarise(
       timestamp = first(.data$timestamp),
       sleep = first(.data$sleep),
@@ -187,7 +187,7 @@ apply_tudor_locke_ <- function(data,
       nonzero_epochs = sum(.data$axis1 > 0),
       activity_counts = sum(.data$axis1)
     )
-  result <- result %>%
+  result <- result |>
     mutate(
       nb_awakenings = (.data$sleep == "W"),
       dozings = (.data$sleep == "S"),
@@ -203,19 +203,19 @@ apply_tudor_locke_ <- function(data,
         NA_character_, .data$sleep
       ),
       # A special case that I am not sure how to handle:
-      # Leading NAs can't be filled in with `na.locf`.
+      # Leading NAs can't be filled in with `na_locf`.
       # To be conservative, I will fill in such NAs with W (awake).
       sleep = if_else(
         row_number() == 1 & is.na(.data$sleep), "W", .data$sleep
       ),
       # Fill in NAs with the most recent sleep/awake state
-      sleep = na.locf(.data$sleep)
+      sleep = na_locf(.data$sleep)
     )
-  result <- result %>%
+  result <- result |>
     # Second round of `group_by`, `summarise`, `mutate` operations
     group_by(
       rleid = rleid(.data$sleep)
-    ) %>%
+    ) |>
     summarise(
       timestamp = first(.data$timestamp),
       sleep = first(.data$sleep),
@@ -227,7 +227,7 @@ apply_tudor_locke_ <- function(data,
       dozings = sum(.data$dozings),
       dozings_1min = sum(.data$dozings_1min)
     )
-  result <- result %>%
+  result <- result |>
     mutate(
       fragmentation_index = if_else(
         .data$dozings > 0, 100 * .data$dozings_1min / .data$dozings, 0
@@ -241,7 +241,7 @@ apply_tudor_locke_ <- function(data,
         "W", .data$sleep
       )
     )
-  result <- result %>%
+  result <- result |>
     # Filter out wake (W) periods as well as sleep periods that
     # fail the min_nonzero_epochs and max_sleep_period criteria
     filter(
@@ -249,7 +249,7 @@ apply_tudor_locke_ <- function(data,
       .data$nonzero_epochs >= min_nonzero_epochs,
       .data$duration <= max_sleep_period
     )
-  result <- result %>%
+  result <- result |>
     # That's it. The rest are trivial manipulations to compute
     # various sleep quality metrics.
     mutate(
@@ -264,7 +264,7 @@ apply_tudor_locke_ <- function(data,
       onset = .data$timestamp,
       latency = 0
     )
-  result <- result %>%
+  result <- result |>
     select(
       in_bed_time = "timestamp", "out_bed_time", "onset",
       "latency", "efficiency", "duration", "activity_counts",
@@ -272,7 +272,7 @@ apply_tudor_locke_ <- function(data,
       "nb_awakenings", "ave_awakening", "movement_index",
       "fragmentation_index", "sleep_fragmentation_index"
     )
-  result <- result %>%
+  result <- result |>
     mutate(
       across(
         c(

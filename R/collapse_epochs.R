@@ -32,7 +32,7 @@
 #' library("dplyr")
 #' data("gtxplus1day")
 #'
-#' gtxplus1day %>%
+#' gtxplus1day |>
 #'   collapse_epochs(60)
 #' @export
 
@@ -51,7 +51,7 @@ collapse_epochs <- function(agdb, epoch_len_out,
   # though care must be taken with "incomplete"
   # epochs at the start/end of the time series
 
-  agdb %>%
+  agdb |>
     group_modify(
       ~ collapse_epochs_(., epoch_len_out / epoch_len_in, use_incomplete)
     )
@@ -64,16 +64,16 @@ collapse_epochs_ <- function(data, collapse_factor, use_incomplete) {
     "inclinesitting", "inclinelying"
   )
 
-  data <- data %>%
+  data <- data |>
     mutate(
       across(timestamp, function(x) floor_date(x, unit = "min"))
-    ) %>%
+    ) |>
     group_by(.data$timestamp)
   if (!use_incomplete) {
-    data <- data %>%
+    data <- data |>
       filter(n() == collapse_factor)
   }
-  data %>%
+  data |>
     summarise(
       across(any_of(vars_to_sum), sum)
     )

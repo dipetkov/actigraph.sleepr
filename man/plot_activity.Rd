@@ -25,14 +25,16 @@ Plot a time series of activity values (by default, the counts on the
 vertical axis \emph{axis1}).
 }
 \examples{
+\dontshow{if (requireNamespace("ggplot2", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 data("gtxplus1day")
-sub_gt3x <- gtxplus1day \%>\%
+sub_gt3x <- gtxplus1day |>
   dplyr::filter(timestamp <= lubridate::as_datetime("2012-06-27 18:00:00"))
 
-data <- sub_gt3x \%>\%
-  collapse_epochs(60) \%>\%
+data <- sub_gt3x |>
+  collapse_epochs(60) |>
   apply_cole_kripke()
 
 plot_activity(data, axis1, color = "gray")
 plot_activity(data, axis1, color = "sleep")
+\dontshow{\}) # examplesIf}
 }

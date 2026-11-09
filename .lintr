@@ -1,6 +1,6 @@
 linters: linters_with_defaults(
     indentation_linter = NULL,
-    pipe_consistency_linter = pipe_consistency_linter(pipe = "%>%")
+    pipe_consistency_linter = pipe_consistency_linter(pipe = "|>")
   )
 exclusions: list(
     "R/RcppExports.R",

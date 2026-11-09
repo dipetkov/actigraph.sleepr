@@ -23,10 +23,10 @@ The `actigraph.sleepr` package implements two non-wear detection algorithms: Tro
 file_10s <- system.file("extdata", "ActiSleepPlus-RawData-Day01.agd",
   package = "actigraph.sleepr"
 )
-agdb_60s <- read_agd(file_10s) %>%
-  collapse_epochs(60) %>%
-  mutate(date = lubridate::as_date(timestamp)) %>%
-  select(date, timestamp, starts_with("axis")) %>%
+agdb_60s <- read_agd(file_10s) |>
+  collapse_epochs(60) |>
+  mutate(date = lubridate::as_date(timestamp)) |>
+  select(date, timestamp, starts_with("axis")) |>
   group_by(date)
 agdb_60s
 ```
@@ -61,7 +61,7 @@ The Troiano algorithm for detecting periods of non-wear formalizes a technique u
 The Troiano algorithm specifies that a non-wear period starts with `min_length` consecutive epochs/minutes of zero activity and ends with more than `spike_tolerance` epochs/minutes of nonzero activity.
 
 ```{r }
-periods_nonwear <- agdb_60s %>% apply_troiano(min_period_len = 45)
+periods_nonwear <- agdb_60s |> apply_troiano(min_period_len = 45)
 periods_nonwear
 ```
 
@@ -74,7 +74,7 @@ tail(attributes(periods_nonwear), 8)
 Once non-wear periods are detected, we can further screen those intervals. For example, we can ignore non-wear periods that are too short.
 
 ```{r }
-periods_nonwear %>% filter(length >= 60)
+periods_nonwear |> filter(length >= 60)
 ```
 
 Or we can flag 24-hour day as invalid if the device was worn only for a short period of time.
@@ -97,8 +97,8 @@ agdb_wear
 
 # Once we add the wear/nonwear information, it is straightforward to
 # compute summary statistics or join with external minute-by-minute data
-agdb_wear %>%
-  group_by(period_id, .add = TRUE) %>%
+agdb_wear |>
+  group_by(period_id, .add = TRUE) |>
   summarise(
     time_worn = n(),
     ave_counts = mean(axis1),
@@ -123,7 +123,7 @@ The Choi algorithm extends the Troiano algorithm by requiring that short spikes 
  : If true, the magnitude of the vector (axis1, axis2, axis3) is used to measure activity; otherwise the axis1 value is used. The default is FALSE.
  
 ```{r }
-periods_nonwear <- agdb_60s %>% apply_choi(
+periods_nonwear <- agdb_60s |> apply_choi(
   min_period_len = 45,
   min_window_len = 10
 )

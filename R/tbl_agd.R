@@ -27,6 +27,6 @@ tbl_agd <- function(data, settings) {
 }
 
 add_magnitude <- function(data) {
-  data %>%
+  data |>
     mutate(magnitude = sqrt(.data$axis1^2 + .data$axis2^2 + .data$axis3^2))
 }
