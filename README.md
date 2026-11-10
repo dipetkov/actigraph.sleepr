@@ -15,10 +15,10 @@ Status](https://ci.appveyor.com/api/projects/status/github/dipetkov/actigraph.sl
 ### `actigraph.sleepr`: Sleep and non-wear detection from ActiGraph data
 
 The `actigraph.sleepr` package implements four sleep scoring/detection
-algorithms: Sadeh (Sadeh et al. 1994), Cole-Kripke (Cole et al. 1992),
-Oakley (Oakley 1997), and Tudor-Locke (Tudor-Locke et al. 2014), as well
-as two non-wear detection algorithms: Troiano (Troiano et al. 2008) and
-Choi (Choi et al. 2011).
+algorithms: Sadeh (Sadeh, Sharkey, and Carskadon 1994), Cole-Kripke
+(Cole et al. 1992), Oakley (Oakley 1997), and Tudor-Locke (Tudor-Locke
+et al. 2014), as well as two non-wear detection algorithms: Troiano
+(Troiano et al. 2008) and Choi (Choi et al. 2011).
 
 ### Installation
 
@@ -70,8 +70,8 @@ lateral).
 ``` r
 suppressMessages(library("dplyr"))
 #> Warning: package 'dplyr' was built under R version 4.4.3
-agdb_10s <- agdb_10s %>% select(timestamp, starts_with("axis"))
-agdb_10s %>%
+agdb_10s <- agdb_10s |> select(timestamp, starts_with("axis"))
+agdb_10s |>
   mutate(magnitude = sqrt(axis1^2 + axis2^2 + axis3^2))
 #> # A tibble: 8,999 × 5
 #>    timestamp           axis1 axis2 axis3 magnitude
@@ -100,7 +100,7 @@ that fall into the same 60s epoch.
 
 ``` r
 # Collapse epochs from 10 sec to 60 sec by summing
-agdb_60s <- agdb_10s %>% collapse_epochs(60)
+agdb_60s <- agdb_10s |> collapse_epochs(60)
 agdb_60s
 #> # A tibble: 1,500 × 4
 #>    timestamp           axis1 axis2 axis3
@@ -127,7 +127,7 @@ and five future epochs. The `apply_sadeh` function implements the
 algorithm as described in the ActiGraph user manual.
 
 ``` r
-agdb_60s %>% apply_sadeh()
+agdb_60s |> apply_sadeh()
 #> # A tibble: 1,500 × 6
 #>    timestamp           axis1 axis2 axis3 count sleep
 #>    <dttm>              <int> <int> <int> <dbl> <chr>
@@ -154,7 +154,7 @@ The `apply_cole` function implements the algorithm as described in the
 ActiGraph user manual.
 
 ``` r
-agdb_60s %>% apply_cole_kripke()
+agdb_60s |> apply_cole_kripke()
 #> # A tibble: 1,500 × 6
 #>    timestamp           axis1 axis2 axis3 count sleep
 #>    <dttm>              <int> <int> <int> <dbl> <chr>
@@ -180,8 +180,8 @@ bed, total sleep time, number and average length of awakenings, movement
 and fragmentation index.
 
 ``` r
-agdb_60s %>%
-  apply_sadeh() %>%
+agdb_60s |>
+  apply_sadeh() |>
   apply_tudor_locke()
 #> # A tibble: 1 × 15
 #>   in_bed_time         out_bed_time        onset               latency efficiency
@@ -206,14 +206,14 @@ during a non-wear period are preceded and followed by a fixed number of
 consecutive zero epochs.
 
 ``` r
-agdb_60s %>% apply_troiano()
+agdb_60s |> apply_troiano()
 #> # A tibble: 3 × 3
 #>   period_start        period_end          length
 #>   <dttm>              <dttm>               <int>
 #> 1 2012-06-28 00:00:00 2012-06-28 02:37:00    157
 #> 2 2012-06-28 02:46:00 2012-06-28 03:59:00     73
 #> 3 2012-06-28 05:50:00 2012-06-28 07:25:00     95
-agdb_60s %>% apply_choi()
+agdb_60s |> apply_choi()
 #> # A tibble: 1 × 3
 #>   period_start        period_end          length
 #>   <dttm>              <dttm>               <int>
@@ -222,7 +222,8 @@ agdb_60s %>% apply_choi()
 
 ### References
 
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
 <div id="ref-Choi:2011aa" class="csl-entry">
 
@@ -242,9 +243,9 @@ Activity.” *Sleep* 15 (5): 461–69.
 
 <div id="ref-Oakley:1997aa" class="csl-entry">
 
-Oakley, Neil R. 1997. *Validation with Polysomnography of the Sleepwatch
+Oakley, Neil R. 1997. “Validation with Polysomnography of the Sleepwatch
 Sleep/Wake Scoring Algorithm Used by the Actiwatch Activity Monitoring
-System*. Mini-Mitter.
+System.” Bend, OR, USA: Mini-Mitter.
 
 </div>
 

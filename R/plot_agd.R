@@ -9,13 +9,13 @@
 #' activity data is grouped.
 #' @return A `ggplot` object. It shows the activity values in column `var`
 #' as a time series, faceted by group when the input `agdb` is grouped.
-#' @examples
+#' @examplesIf requireNamespace("ggplot2", quietly = TRUE)
 #' data("gtxplus1day")
-#' sub_gt3x <- gtxplus1day %>%
+#' sub_gt3x <- gtxplus1day |>
 #'   dplyr::filter(timestamp <= lubridate::as_datetime("2012-06-27 18:00:00"))
 #'
-#' data <- sub_gt3x %>%
-#'   collapse_epochs(60) %>%
+#' data <- sub_gt3x |>
+#'   collapse_epochs(60) |>
 #'   apply_cole_kripke()
 #'
 #' plot_activity(data, axis1, color = "gray")
@@ -23,31 +23,32 @@
 #' @export
 plot_activity <- function(agdb, var, color = "black",
                           nrow = NULL, ncol = NULL) {
+  rlang::check_installed("ggplot2", reason = "to plot activity data.")
   var <- enquo(var)
   if (color %in% names(agdb)) {
-    p <- agdb %>%
-      ggplot(
-        aes(timestamp, !!var, fill = !!ensym(color))
+    p <- agdb |>
+      ggplot2::ggplot(
+        ggplot2::aes(timestamp, !!var, fill = !!ensym(color))
       ) +
-      geom_col()
+      ggplot2::geom_col()
   } else {
-    p <- agdb %>%
-      ggplot(
-        aes(timestamp, !!var)
+    p <- agdb |>
+      ggplot2::ggplot(
+        ggplot2::aes(timestamp, !!var)
       ) +
-      geom_col(
+      ggplot2::geom_col(
         fill = color
       )
   }
   if (is.grouped_df(agdb)) {
     p <- p +
-      facet_wrap(
+      ggplot2::facet_wrap(
         group_vars(agdb),
         nrow = nrow, ncol = ncol,
         scales = "free_x"
       )
   }
-  p + theme_light() + labs(x = "time")
+  p + ggplot2::theme_light() + ggplot2::labs(x = "time")
 }
 
 #' Plot activity and periods
@@ -64,16 +65,16 @@ plot_activity <- function(agdb, var, color = "black",
 #' @param fill Polygon fill color.
 #' @return A `ggplot` object. It shows the activity values as a time series
 #' and each period as a rectangle from `start_var` to `end_var`.
-#' @examples
+#' @examplesIf requireNamespace("ggplot2", quietly = TRUE)
 #' data("gtxplus1day")
 #'
-#' sub_gt3x <- gtxplus1day %>%
+#' sub_gt3x <- gtxplus1day |>
 #'   dplyr::filter(timestamp <= lubridate::as_datetime("2012-06-27 18:00:00"))
 #' # Detect sleep periods using Sadeh as the sleep/awake algorithm
 #' # and Tudor-Locke as the sleep period algorithm
-#' periods_sleep <- sub_gt3x %>%
-#'   collapse_epochs(60) %>%
-#'   apply_cole_kripke() %>%
+#' periods_sleep <- sub_gt3x |>
+#'   collapse_epochs(60) |>
+#'   apply_cole_kripke() |>
 #'   apply_tudor_locke(min_sleep_period = 60)
 #'
 #' plot_activity_period(
@@ -85,6 +86,7 @@ plot_activity_period <- function(agdb, periods, act_var,
                                  start_var, end_var,
                                  color = "black", fill = "#525252",
                                  ncol = NULL, nrow = NULL) {
+  rlang::check_installed("ggplot2", reason = "to plot activity data.")
   act_var <- enquo(act_var)
   start_var <- enquo(start_var)
   end_var <- enquo(end_var)
@@ -94,9 +96,9 @@ plot_activity_period <- function(agdb, periods, act_var,
       color = color, nrow = nrow, ncol = ncol
     )
   p +
-    geom_rect(
+    ggplot2::geom_rect(
       data = periods,
-      aes(
+      ggplot2::aes(
         xmin = !!start_var, ymin = 0,
         xmax = !!end_var, ymax = Inf
       ),

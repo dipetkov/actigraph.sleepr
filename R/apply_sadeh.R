@@ -48,8 +48,8 @@
 #' library("dplyr")
 #' data("gtxplus1day")
 #'
-#' gtxplus1day %>%
-#'   collapse_epochs(60) %>%
+#' gtxplus1day |>
+#'   collapse_epochs(60) |>
 #'   apply_sadeh()
 #' @export
 
@@ -58,7 +58,7 @@ apply_sadeh <- function(agdb) {
 
   attr(agdb, "sleep_algorithm") <- "Sadeh"
 
-  agdb %>% group_modify(
+  agdb |> group_modify(
     ~ apply_sadeh_(.)
   )
 }
@@ -70,19 +70,14 @@ apply_sadeh_ <- function(data) {
   # epoch and the window of five epochs preceding and following it.
   roll_avg <- function(x) {
     padding <- rep(0, half_window)
-    roll_mean(
-      c(padding, x, padding),
-      n = 2 * half_window + 1, align = "center", partial = FALSE
-    )
+    roll_mean_(c(padding, x, padding), n = 2 * half_window + 1)
   }
   # From the Sadeh paper:
   # SD-last 6 min is the standard deviation of the activity counts during
   # the scored epoch and the five epochs preceding it.
   roll_std <- function(x) {
     padding <- rep(0, half_window)
-    roll_sd(c(padding, x),
-      n = half_window + 1, align = "right", partial = FALSE
-    )
+    roll_sd_(c(padding, x), n = half_window + 1)
   }
   # From the Sadeh paper:
   # NAT is the number of epochs with activity level equal to or higher than
@@ -91,13 +86,10 @@ apply_sadeh_ <- function(data) {
   roll_nats <- function(x) {
     padding <- rep(0, half_window)
     y <- if_else(x >= 50 & x < 100, 1, 0)
-    roll_sum(
-      c(padding, y, padding),
-      n = 2 * half_window + 1, align = "center", partial = FALSE
-    )
+    roll_sum_(c(padding, y, padding), n = 2 * half_window + 1)
   }
 
-  data %>%
+  data |>
     mutate(
       count = pmin(.data$axis1, 300),
       sleep = (

@@ -21,10 +21,10 @@ Guess the epoch length (in seconds) from the timestamp column
 \examples{
 data("gtxplus1day")
 
-gtxplus1day \%>\%
+gtxplus1day |>
   get_epoch_length()
 
-gtxplus1day \%>\%
-  collapse_epochs(60) \%>\%
+gtxplus1day |>
+  collapse_epochs(60) |>
   get_epoch_length()
 }

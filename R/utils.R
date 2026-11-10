@@ -30,7 +30,7 @@
 #' @export
 complement_periods <- function(periods, epochs, start_var, end_var) {
   if (!nrow(periods)) {
-    return(epochs %>%
+    return(epochs |>
       summarise(
         period_start = first(.data$timestamp),
         period_end = last(.data$timestamp),
@@ -39,22 +39,22 @@ complement_periods <- function(periods, epochs, start_var, end_var) {
   }
   start_var <- enquo(start_var)
   end_var <- enquo(end_var)
-  combine_epochs_periods(epochs, periods, !!start_var, !!end_var) %>%
+  combine_epochs_periods(epochs, periods, !!start_var, !!end_var) |>
     mutate(
       rev_id = rleid(is.na(.data$period_id))
-    ) %>%
+    ) |>
     filter(
       is.na(.data$period_id)
-    ) %>%
+    ) |>
     group_by(
       .data$rev_id,
       .add = TRUE
-    ) %>%
+    ) |>
     summarise(
       period_start = first(.data$timestamp),
       period_end = last(.data$timestamp),
       length = n()
-    ) %>%
+    ) |>
     select(
       -"rev_id"
     )
@@ -93,16 +93,16 @@ expand_timestamp <- function(start, end, units = "1 min") {
 #' library("dplyr")
 #' data("gtxplus1day")
 #'
-#' gtxplus1day %>%
-#'   collapse_epochs(60) %>%
-#'   apply_choi(min_period_len = 45) %>%
+#' gtxplus1day |>
+#'   collapse_epochs(60) |>
+#'   apply_choi(min_period_len = 45) |>
 #'   expand_periods(period_start, period_end, units = "30 mins")
 #' @export
 expand_periods <- function(periods, start_var, end_var,
                            units = "1 min") {
   start_var <- enquo(start_var)
   end_var <- enquo(end_var)
-  periods %>%
+  periods |>
     group_modify(
       ~ expand_periods_(., !!start_var, !!end_var, units)
     )
@@ -113,19 +113,19 @@ expand_periods_ <- function(periods, start_var, end_var,
   start_var <- enquo(start_var)
   end_var <- enquo(end_var)
 
-  periods %>%
-    mutate(
-      period_id = row_number(),
-      timestamp = map2(
-        !!start_var, !!end_var, expand_timestamp, units
-      )
-    ) %>%
-    select(
-      "period_id", "timestamp"
-    ) %>%
-    unnest(
-      cols = timestamp
+  start <- pull(periods, !!start_var)
+  end <- pull(periods, !!end_var)
+  timestamps <- Map(
+    expand_timestamp, start, end,
+    MoreArgs = list(units = units)
+  )
+  tibble::tibble(
+    period_id = rep(seq_along(timestamps), lengths(timestamps)),
+    timestamp = .POSIXct(
+      as.numeric(unlist(timestamps)),
+      tz = attr(start, "tzone")
     )
+  )
 }
 
 #' Guess the epoch length (in seconds) from the timestamp column
@@ -137,11 +137,11 @@ expand_periods_ <- function(periods, start_var, end_var,
 #' @examples
 #' data("gtxplus1day")
 #'
-#' gtxplus1day %>%
+#' gtxplus1day |>
 #'   get_epoch_length()
 #'
-#' gtxplus1day %>%
-#'   collapse_epochs(60) %>%
+#' gtxplus1day |>
+#'   collapse_epochs(60) |>
 #'   get_epoch_length()
 #' @export
 get_epoch_length <- function(epochs) {
@@ -171,4 +171,36 @@ mode <- function(x) {
 rleid <- function(x) {
   x <- rle(x)$lengths
   rep(seq_along(x), times = x)
+}
+
+# Last observation carried forward. Replaces `zoo::na.locf()` with its
+# default `na.rm = TRUE`: leading NAs (which have no prior observation)
+# are dropped.
+na_locf <- function(x) {
+  x[cummax(seq_along(x) * !is.na(x))]
+}
+
+# Remove leading and trailing NAs. Replaces `zoo::na.trim()` with its
+# defaults (`sides = "both"`, `is.na = "any"`): for a data frame, leading
+# and trailing rows with an NA in any column are removed.
+na_trim <- function(object) {
+  ok <- stats::complete.cases(object)
+  keep <- cumsum(ok) > 0 & rev(cumsum(rev(ok)) > 0)
+  if (length(dim(object)) < 2L) {
+    object[keep]
+  } else {
+    object[keep, , drop = FALSE]
+  }
+}
+
+# Fill NAs by cubic spline interpolation. Replaces `zoo::na.spline()` on
+# a vector with its defaults (Forsythe, Malcolm and Moler spline, indexed
+# by position).
+na_spline <- function(x) {
+  ok <- !is.na(x)
+  if (!any(ok)) {
+    return(double())
+  }
+  idx <- seq_along(x)
+  stats::splinefun(idx[ok], x[ok], method = "fmm")(idx)
 }

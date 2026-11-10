@@ -20,14 +20,14 @@
 #' read_agd(file)
 #'
 #' library("dplyr")
-#' library("purrr")
 #'
 #' # Read ActiGraph sleep watch data from the AGD files in a directory
 #' # and bind the data into one data frame indexed by `.filename`.
 #' path <- system.file("extdata", package = "actigraph.sleepr")
 #'
-#' list.files(path, pattern = "*.agd", full.names = TRUE) %>%
-#'   map_dfr(read_agd, .id = ".filename")
+#' files <- list.files(path, pattern = "*.agd", full.names = TRUE)
+#' lapply(files, read_agd) |>
+#'   bind_rows(.id = ".filename")
 #' @export
 read_agd <- function(file, tz = "UTC") {
   ticks_to_dttm <- function(ticks, tz) {
@@ -37,11 +37,11 @@ read_agd <- function(file, tz = "UTC") {
   }
 
   agdb <- read_agd_raw(file, tz)
-  data <- agdb[["data"]] %>%
-    rename_with(tolower) %>%
+  data <- agdb[["data"]] |>
+    rename_with(tolower) |>
     rename(
       timestamp = "datatimestamp"
-    ) %>%
+    ) |>
     mutate(
       across(where(is.numeric), as.integer)
     )
@@ -49,13 +49,12 @@ read_agd <- function(file, tz = "UTC") {
   # The settings are stored in a table with settingName, settingValue
   # columns and so all settings are of type `character`, including the
   # timestamps. I typecast the most salient settings appropriately.
-  settings <- agdb[["settings"]] %>%
-    rename_with(tolower) %>%
-    pivot_wider(
-      id_cols = c(),
-      names_from = "settingname",
-      values_from = "settingvalue"
-    ) %>%
+  settings <- agdb[["settings"]] |>
+    rename_with(tolower)
+  settings <- settings[["settingvalue"]] |>
+    stats::setNames(settings[["settingname"]]) |>
+    as.list() |>
+    tibble::as_tibble() |>
     mutate(
       across(matches("dateOfBirth"), function(x) ticks_to_dttm(x, tz = tz)),
       across(ends_with("time"), function(x) ticks_to_dttm(x, tz = tz)),
@@ -99,7 +98,7 @@ read_agd_raw <- function(file, tz = "UTC") {
 
   # Get the names of all tables in the database
   query <- "SELECT name FROM sqlite_master WHERE type = 'table'"
-  tables_agd <- db %>%
+  tables_agd <- db |>
     DBI::dbGetQuery(statement = query)
   tables_agd <- tables_agd[["name"]]
   tables_required <- c("data", "sleep", "awakenings", "filters", "settings")
@@ -128,20 +127,20 @@ read_agd_raw <- function(file, tz = "UTC") {
       )
     }
     query <- paste0(query, " * FROM ", table)
-    db %>%
-      DBI::dbGetQuery(statement = query) %>%
+    db |>
+      DBI::dbGetQuery(statement = query) |>
       select(
         -any_of(cols)
-      ) %>%
+      ) |>
       rename_with(
         ~ sub("_ts$", "", .)
-      ) %>%
+      ) |>
       mutate(
         across(all_of(cols), cast_dttms)
       )
   }
 
-  settings <- db %>%
+  settings <- db |>
     DBI::dbReadTable("settings")
   data <- select_dttms("data", "dataTimestamp")
   sleep <- select_dttms("sleep", c(

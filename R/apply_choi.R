@@ -33,8 +33,8 @@
 #' library("dplyr")
 #' data("gtxplus1day")
 #'
-#' gtxplus1day %>%
-#'   collapse_epochs(60) %>%
+#' gtxplus1day |>
+#'   collapse_epochs(60) |>
 #'   apply_choi()
 #' @export
 
@@ -46,7 +46,7 @@ apply_choi <- function(agdb,
   check_args_nonwear_periods(agdb, "Choi", use_magnitude)
   assert_that(min_window_len >= spike_tolerance)
 
-  nonwear <- agdb %>%
+  nonwear <- agdb |>
     group_modify(
       ~ apply_choi_(
         ., min_period_len, min_window_len, spike_tolerance, use_magnitude
@@ -67,20 +67,20 @@ apply_choi_ <- function(data,
                         min_window_len,
                         spike_tolerance,
                         use_magnitude) {
-  data %>%
-    add_magnitude() %>%
+  data |>
+    add_magnitude() |>
     mutate(
       count = if (use_magnitude) .data$magnitude else .data$axis1,
       wear = as.integer(.data$count > 0)
-    ) %>%
+    ) |>
     group_by(
       rleid = rleid(.data$wear)
-    ) %>%
+    ) |>
     summarise(
       wear = first(.data$wear),
       timestamp = first(.data$timestamp),
       length = n()
-    ) %>%
+    ) |>
     # Let (spike, zero, zero, spike) -> (spike of length 4)
     # as long as (zero, zero) is shorter than spike_tolerance
     mutate(
@@ -88,15 +88,15 @@ apply_choi_ <- function(data,
         .data$wear == 0L & .data$length < spike_tolerance,
         1L, .data$wear
       )
-    ) %>%
+    ) |>
     group_by(
       rleid = rleid(.data$wear)
-    ) %>%
+    ) |>
     summarise(
       wear = first(.data$wear),
       timestamp = first(.data$timestamp),
       length = sum(.data$length)
-    ) %>%
+    ) |>
     # Ignore artifactual movement intervals
     mutate(
       wear = if_else(
@@ -105,25 +105,25 @@ apply_choi_ <- function(data,
           lag(.data$length, default = 0L) >= min_window_len,
         0L, .data$wear
       )
-    ) %>%
+    ) |>
     group_by(
       rleid = rleid(.data$wear)
-    ) %>%
+    ) |>
     summarise(
       wear = first(.data$wear),
       timestamp = first(.data$timestamp),
       length = sum(.data$length)
-    ) %>%
+    ) |>
     filter(
       .data$wear == 0L,
       # TODO: Filtering if the row_number is 1 or n(),
       # regardless of the period length, means that
       # the initial and final non-wear periods can be shorter.
       .data$length >= min_period_len # | row_number() %in% c(1, n())
-    ) %>%
+    ) |>
     mutate(
       period_end = .data$timestamp + duration(.data$length, "mins")
-    ) %>%
+    ) |>
     select(
       period_start = "timestamp", "period_end", "length"
     )

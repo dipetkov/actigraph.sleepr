@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
   echo = TRUE, warning = FALSE, message = FALSE, collapse = TRUE,
   comment = "#>", out.width = "75%", fig.asp = 1 / 1.6, fig.width = 5
 )
-pckg <- c("actigraph.sleepr", "dplyr", "tidyr", "lubridate", "ggplot2")
+pckg <- c("actigraph.sleepr", "dplyr", "lubridate", "ggplot2")
 inst <- suppressMessages(lapply(pckg, library, character.only = TRUE))
 theme_set(
   theme_light() +
@@ -59,8 +59,8 @@ attributes(agdb_10s)[10:12]
 Since the data is stored in a `tibble`, we can use the `dplyr` verbs (`mutate`, `select`, `filter`, `summarise`, `group_by`, `arrange`) to manipulate the data. For example, let's compute the magnitude of the three-axis counts (axis1 - vertical, axis2 - horizontal, axis3 - lateral).
 
 ```{r }
-agdb_10s <- agdb_10s %>%
-  select(timestamp, starts_with("axis")) %>%
+agdb_10s <- agdb_10s |>
+  select(timestamp, starts_with("axis")) |>
   mutate(magnitude = sqrt(axis1^2 + axis2^2 + axis3^2))
 agdb_10s
 ```
@@ -83,7 +83,7 @@ So we aggregate the epochs from 10s to 60s by adding the counts for the six cons
 
 ```{r }
 # Collapse epochs from 10 sec to 60 sec by summing counts
-agdb_60s <- agdb_10s %>% collapse_epochs(60)
+agdb_60s <- agdb_10s |> collapse_epochs(60)
 agdb_60s
 ```
 
@@ -104,16 +104,13 @@ Integration nicely emphasizes a peak of activity just before 6pm.
 With a few lines of code, we can load each AGD file in a directory, collapse from 10s to 60s and save the integrated activity data.
 
 ```{r , eval = TRUE}
-library("purrr")
-
 # Construct a path to the directory which contains the raw AGD files
 path <- system.file("extdata", package = "actigraph.sleepr")
 
-list.files(path, pattern = "*.agd", full.names = TRUE) %>%
-  map_dfr(
-    ~ read_agd(.) %>% collapse_epochs(60),
-    .id = ".filename"
-  )
+files <- list.files(path, pattern = "*.agd", full.names = TRUE)
+collapse_file <- function(file) collapse_epochs(read_agd(file), 60)
+lapply(files, collapse_file) |>
+  bind_rows(.id = ".filename")
 ```
 
 ### Apply the Sadeh algorithm
@@ -121,7 +118,7 @@ list.files(path, pattern = "*.agd", full.names = TRUE) %>%
 The Sadeh sleep scoring algorithm is primarily used for younger adolescents as the supporting research was performed on children and young adults. It requires 60s epochs and uses an 11-minute window that includes the five previous and five future epochs. The `apply_sadeh` function implements the algorithm as described in the ActiGraph user manual.
 
 ```{r }
-agdb_sadeh <- agdb_60s %>% apply_sadeh()
+agdb_sadeh <- agdb_60s |> apply_sadeh()
 ```
 
 Here are the details. The Sadeh algorithm uses the y-axis (axis 1) counts; epoch counts over 300 are set to 300. The sleep index (SI) is defined as
@@ -165,7 +162,7 @@ plot_activity(agdb_sadeh, axis1, color = "sleep") +
 The Cole-Kripke sleep scoring algorithm is primarily used for adult populations as the supporting research was performed on subjects ranging from 35 to 65 years of age. Like the Sadeh algorithm, it requires 60s epochs and uses a 7-minute window that includes the four previous and two future epochs. The `apply_cole_kripke` function implements the algorithm as described in the ActiGraph user manual.
 
 ```{r }
-agdb_colekripke <- agdb_60s %>% apply_cole_kripke()
+agdb_colekripke <- agdb_60s |> apply_cole_kripke()
 ```
 
 Here are the details. The Cole-Kripke algorithm uses the y-axis (axis 1) counts; first epoch counts are divided by 100 and afterwards any scaled counts over 300 are set to 300. The sleep index (SI) is defined as
@@ -230,7 +227,7 @@ min_nonzero_epochs
 Bedtime is (the first minute of) `n_bedtime_start` consecutive epochs/minutes labeled 0. Similarly, wake time is (the first minute of) of `n_wake_time_end` consecutive epochs/minutes labeled 1, after a period of sleep. The time block between bedtime and wake time is one sleep period, if the time elapsed is at least `min_sleep_period minutes`. There can be multiple sleep periods in 24 hours but a sleep period cannot be longer than `max_sleep_period` minutes.
 
 ```{r }
-periods_sleep <- agdb_sadeh %>% apply_tudor_locke()
+periods_sleep <- agdb_sadeh |> apply_tudor_locke()
 periods_sleep
 ```
 
@@ -319,7 +316,7 @@ agdb_awake <- combine_epochs_periods(
   period_start, period_end
 )
 agdb_awake
-agdb_awake %>% count(period_id)
+agdb_awake |> count(period_id)
 ```
 
 ### References

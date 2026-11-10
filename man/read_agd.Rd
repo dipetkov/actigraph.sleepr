@@ -29,14 +29,14 @@ file <- system.file("extdata", "GT3XPlus-RawData-Day01.agd",
 read_agd(file)
 
 library("dplyr")
-library("purrr")
 
 # Read ActiGraph sleep watch data from the AGD files in a directory
 # and bind the data into one data frame indexed by `.filename`.
 path <- system.file("extdata", package = "actigraph.sleepr")
 
-list.files(path, pattern = "*.agd", full.names = TRUE) \%>\%
-  map_dfr(read_agd, .id = ".filename")
+files <- list.files(path, pattern = "*.agd", full.names = TRUE)
+lapply(files, read_agd) |>
+  bind_rows(.id = ".filename")
 }
 \references{
 The AGD file format is described in the ActiLife 6 User's

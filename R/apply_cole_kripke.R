@@ -55,8 +55,8 @@
 #' library("dplyr")
 #' data("gtxplus1day")
 #'
-#' gtxplus1day %>%
-#'   collapse_epochs(60) %>%
+#' gtxplus1day |>
+#'   collapse_epochs(60) |>
 #'   apply_cole_kripke()
 #' @export
 apply_cole_kripke <- function(agdb, rescoring = FALSE) {
@@ -67,8 +67,8 @@ apply_cole_kripke <- function(agdb, rescoring = FALSE) {
 
   attr(agdb, "sleep_algorithm") <- "Cole-Kripke"
 
-  agdb %>%
-    actigraph_adjustment() %>%
+  agdb |>
+    actigraph_adjustment() |>
     group_modify(
       ~ apply_cole_kripke_1min_(., rescoring)
     )
@@ -77,7 +77,7 @@ apply_cole_kripke <- function(agdb, rescoring = FALSE) {
 # The optimal parameters for the mean activity per minute.
 # pg. 466, Sleep, Vol. 15, No. 5, 1992.
 apply_cole_kripke_1min_ <- function(data, rescoring = FALSE) {
-  data %>%
+  data |>
     mutate(
       sleep = .001 * (
         106 * lag(.data$count, 4, default = 0) +
@@ -137,7 +137,7 @@ webster_rescore <- function(sleep) {
 # activity per minute.
 # pg. 466, Sleep, Vol. 15, No. 5, 1992.
 apply_cole_kripke_30sec_ <- function(data) {
-  data %>%
+  data |>
     mutate(
       sleep = .0001 * (
         50 * lag(.data$count, 4, default = 0) +
@@ -155,7 +155,7 @@ apply_cole_kripke_30sec_ <- function(data) {
 # activity per minute.
 # pg. 466, Sleep, Vol. 15, No. 5, 1992.
 apply_cole_kripke_10sec_ <- function(data) {
-  data %>%
+  data |>
     mutate(
       sleep = .00001 * (
         550 * lag(.data$count, 4, default = 0) +
@@ -170,7 +170,7 @@ apply_cole_kripke_10sec_ <- function(data) {
 }
 
 actigraph_adjustment <- function(data) {
-  data %>%
+  data |>
     mutate(
       count = pmin(.data$axis1 / 100, 300)
     )

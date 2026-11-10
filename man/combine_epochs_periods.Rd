@@ -33,10 +33,10 @@ wear/non-wear.
 library("dplyr")
 data("gtxplus1day")
 
-agdb <- gtxplus1day \%>\%
-  collapse_epochs(60) \%>\%
+agdb <- gtxplus1day |>
+  collapse_epochs(60) |>
   apply_sadeh()
-periods <- agdb \%>\%
+periods <- agdb |>
   apply_tudor_locke(min_sleep_period = 60)
 
 agdb_with_periods <- combine_epochs_periods(
@@ -46,7 +46,7 @@ agdb_with_periods <- combine_epochs_periods(
 
 # How many sleep periods were detected and what is their duration,
 # in minutes?
-periods \%>\% select(in_bed_time, out_bed_time, duration)
+periods |> select(in_bed_time, out_bed_time, duration)
 # What is the assignment of epochs to periods?
-agdb_with_periods \%>\% count(period_id)
+agdb_with_periods |> count(period_id)
 }
